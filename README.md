@@ -8,7 +8,7 @@ Majadigi Mobile App recreated (Filkom UB, University of Brawijaya, 2026)
 - Flutter SDK Installed (Currently using Flutter v3.14.2)
 - Git
 
-- Run this command:
+- Run this command::
 ```
 flutter pub get
 ```
