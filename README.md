@@ -2,6 +2,17 @@
 
 Majadigi Mobile App recreated (Filkom UB, University of Brawijaya, 2026)
 
+# For Fresh Github Pull / Clone
+
+### Requirement
+- Flutter SDK Installed (Currently using Flutter v3.14.2)
+- Git
+
+- Run this command:
+```
+flutter pub get
+```
+
 ## Project Structure
 
 Project is defined using [Flutter recommended structure](https://docs.flutter.dev/app-architecture/case-study)

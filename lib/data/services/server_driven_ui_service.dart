@@ -23,9 +23,11 @@ final String docsURL = '/api/cdn/download/docs/';
  * ]
  */
 final pageListFutureProvider = FutureProvider<List<PageItem>>((ref) async {
-  final response = await http.get(
-      Uri.http(baseURLs, '${docsURL}file_list.json'),
-  );
+  // final response = await http.get(
+  //     Uri.http(baseURLs, '${docsURL}file_list.json'),
+  // );
+
+  final response = await http.get(Uri.parse('https://raw.githubusercontent.com/Majadigi-UB-Kelompok-10/majadigi-static-file/refs/heads/main/file_list.json'));
 
   if (response.statusCode == 200) {
     final json = jsonDecode(response.body) as List<dynamic>;
