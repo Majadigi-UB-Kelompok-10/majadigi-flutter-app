@@ -41,7 +41,8 @@ final pageListFutureProvider = FutureProvider<List<PageItem>>((ref) async {
   final dio = await ref.watch(dioProvider.future);
 
   try {
-    final response = await dio.get('${docsURL}file_list.json');
+    // final response = await dio.get('${docsURL}file_list.json');
+    final response = await dio.get('refs/heads/main/file_list.json');
 
     dynamic rawData = response.data;
     if (rawData is String) {

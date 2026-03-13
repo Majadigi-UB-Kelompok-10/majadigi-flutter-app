@@ -4,7 +4,8 @@ import 'package:dio_cache_interceptor_file_store/dio_cache_interceptor_file_stor
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final String baseURL = "http://10.0.2.2:8080/";
+// final String baseURL = "http://10.0.2.2:8080/";
+final String baseURL = 'https://raw.githubusercontent.com/Majadigi-UB-Kelompok-10/majadigi-static-file/';
 final String docsURL = 'api/cdn/download/docs/';
 final String imageURL = 'api/cdn/download/images/';
 
@@ -46,12 +47,13 @@ final dioProvider = FutureProvider<Dio>((ref) async {
 
   // Add the interceptor to Dio
   dio.interceptors.add(DioCacheInterceptor(options: cacheOptions));
-  // dio.interceptors.add(LogInterceptor(
-  //   requestBody: true,
-  //   responseBody: true,
-  //   requestHeader: false,
-  // ));
+  dio.interceptors.add(LogInterceptor(
+    requestBody: true,
+    responseBody: true,
+    requestHeader: false,
+  ));
 
   return dio;
 });
 
+// https://raw.githubusercontent.com/Majadigi-UB-Kelompok-10/majadigi-static-file/refs/heads/main/file_list.json
