@@ -12,17 +12,10 @@ class DynamicJsonViewer extends StatelessWidget {
     if (data is String) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: ListTile(
-          title: Text(
-            nodeKey != null ? '$nodeKey: $data' : data,
-            style: const TextStyle(fontSize: 16),
-          ),
-          tileColor: Colors.grey.shade100,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-            side: BorderSide(color: Colors.grey.shade400, width: 1),
-          ),
-        )
+        child: Text(
+          nodeKey != null ? '$nodeKey: $data' : data,
+          style: const TextStyle(fontSize: 16),
+        ),
       );
     }
 
@@ -49,7 +42,7 @@ class DynamicJsonViewer extends StatelessWidget {
     else if (data is List<dynamic>) {
       final list = data as List<dynamic>;
       return Padding(
-        padding: const EdgeInsets.only(left: 16.0, top: 4.0),
+        padding: const EdgeInsets.only(top: 4.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -58,7 +51,16 @@ class DynamicJsonViewer extends StatelessWidget {
 
             // Iterate through the list and recursively call this widget
             // (Lists don't have keys, so we pass null for the nodeKey)
-            ...list.map((item) => DynamicJsonViewer(data: item)),
+            // ...list.map((item) => DynamicJsonViewer(data: item)),
+            ...list.asMap().entries.map((entry) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Text(
+                  '${entry.key + 1}: ${entry.value}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              );
+            })
           ],
         ),
       );

@@ -213,10 +213,59 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
                             children: [
-                              DynamicJsonViewer(data: data.operationals),
+                              for (final entry in data.operationals.entries) ...[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: ListTile(
+                                    title: Text(
+                                      entry.key,
+                                      style: const TextStyle(fontWeight: FontWeight.bold)
+                                    ),
+                                    tileColor: Colors.grey.shade200,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: BorderSide(color: Colors.grey.shade500, width: 1),
+                                    ),
+                                    subtitle: entry.value is String ? Text(entry.value) : DynamicJsonViewer(data: entry.value),
+                                  ),
+                                )
+                              ]
                             ]
                           ),
-                          2 => Text("This is the Ketentuan Umum Tab", key: ValueKey(2)),
+
+                          // ? Ketentuan Umum
+                          2 => ListView(
+                              key: ValueKey(2),
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              children: [
+                                for (final entry in data.policies.entries) ...[
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                    child: ExpansionTile(
+                                      title: Text(
+                                          entry.key,
+                                          style: const TextStyle(fontWeight: FontWeight.bold)
+                                      ),
+                                      backgroundColor: Colors.grey.shade200,
+                                      collapsedBackgroundColor: Colors.grey.shade200,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        side: BorderSide(color: Colors.grey.shade500, width: 1),
+                                      ),
+                                      collapsedShape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(15),
+                                        side: BorderSide(color: Colors.grey.shade500, width: 1),
+                                      ),
+                                      childrenPadding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
+                                      children: [
+                                        entry.value is String ? Text(entry.value) : DynamicJsonViewer(data: entry.value)
+                                      ],
+                                    ),
+                                  )
+                                ]
+                              ]
+                          ),
                           _ => const Center(
                             key: ValueKey(3),
                             child: Icon(Icons.error), 
