@@ -2,8 +2,28 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:majadigi_mobile/http.dart';
+import 'package:majadigi_mobile/data/services/server_driven_ui_service.dart';
+import 'package:majadigi_mobile/ui/dynamic_page/dynamic_widget.dart';
 
-import '../../data/services/server_driven_ui_service.dart';
+// States
+class SelectedTabNotifier extends Notifier<int> {
+  @override
+  int build() {
+    return 0;
+  }
+
+  void setTab(int choice) {
+    state = choice;
+  }
+
+  void reset() {
+    state = 0;
+  }
+}
+
+final selectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(() {
+  return SelectedTabNotifier();
+});
 
 class GenericServicePage extends ConsumerStatefulWidget {
   final String id;
@@ -16,16 +36,15 @@ class GenericServicePage extends ConsumerStatefulWidget {
 }
 
 class _GenericServicePageState extends ConsumerState<GenericServicePage> {
-  final List<String> RadioButtonChoice = [
-    'Layanan',
-    'Operasional',
-    'Ketentuan Umum'
-  ];
-
-  String _selectedOption = 'Layanan';
+  final Map<int, String> RadioButtonChoice = {
+    0: 'Layanan',
+    1: 'Operasional',
+    2: 'Ketentuan Umum'
+  };
 
   @override
   Widget build(BuildContext context) {
+    final activeTab = ref.watch(selectedTabProvider);
     final asyncPageData = ref.watch(jsonbFutureProvider(widget.id));
 
     return Scaffold(
@@ -78,12 +97,15 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                         }).toList()
                     ),
                   ),
-                ) : CachedNetworkImage(
-                  imageUrl: '$baseURL${imageURL}shared/skull.webp',
-                  fit: BoxFit.contain,
-                  useOldImageOnUrlChange: true,
-                  placeholder: (context, url) => LinearProgressIndicator(),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
+                ) : SizedBox(
+                 height: 200,
+                 child: CachedNetworkImage(
+                   imageUrl: '$baseURL${imageURL}shared/skull.webp',
+                   fit: BoxFit.contain,
+                   useOldImageOnUrlChange: true,
+                   placeholder: (context, url) => LinearProgressIndicator(),
+                   errorWidget: (context, url, error) => Icon(Icons.error),
+                 ),
                 ),
 
                 // 2. Main Content Area
@@ -124,31 +146,82 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                       // Radio Menu Buttons (Stateful)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: RadioButtonChoice.map((options) {
+                        children: RadioButtonChoice.entries.map((entry) {
                           return ChoiceChip(
-                            label: Text(options),
-                            selected: _selectedOption == options,
+                            label: Text(entry.value),
+                            selected: activeTab == entry.key,
                             showCheckmark: false,
                             selectedColor: Colors.deepPurple.shade100,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25.0),
                             ),
-                            side: _selectedOption == options ? BorderSide(
+                            side: activeTab == entry.key ? BorderSide(
                               color: Colors.deepPurple,
                               width: 2.0,
                             ) : BorderSide.none,
                             labelStyle: TextStyle(
-                              color: _selectedOption == options ? Colors.deepPurple : Colors.black87,
-                              fontWeight: _selectedOption == options ? FontWeight.w900 : FontWeight.w400,
+                              color: activeTab == entry.key ? Colors.deepPurple : Colors.black87,
+                              fontWeight: activeTab == entry.key ? FontWeight.w900 : FontWeight.w400,
                             ),
-                            onSelected: (bool selected) {
+                            onSelected: (selected) {
                               setState(() {
-                                _selectedOption = options;
+                                ref.read(selectedTabProvider.notifier).setTab(entry.key);
                               });
                             },
                           );
+                        }).toList(),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Tabs
+                      AnimatedSwitcher(
+                        duration: Duration(milliseconds: 300),
+                        child: switch (activeTab) {
+                          // ? Layanan
+                          0 => ListView(
+                            key: ValueKey(0),
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              for (final entry in data.services.entries) ...[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: ListTile(
+                                    title: Text(entry.key),
+                                    tileColor: Colors.grey.shade200,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: BorderSide(color: Colors.grey.shade500, width: 1),
+                                    ),
+                                    onTap: () => Navigator.pushNamed(
+                                        context,
+                                        '/view/dynamic',
+                                        arguments: [
+                                          entry.value,
+                                        ]
+                                    ),
+                                  ),
+                                )
+                              ]
+                            ]
+                          ),
+
+                          // ? Operasional
+                          1 => ListView(
+                            key: ValueKey(1),
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            children: [
+                              DynamicJsonViewer(data: data.operationals),
+                            ]
+                          ),
+                          2 => Text("This is the Ketentuan Umum Tab", key: ValueKey(2)),
+                          _ => const Center(
+                            key: ValueKey(3),
+                            child: Icon(Icons.error), 
+                          )
                         }
-                        ).toList(),
                       ),
                     ],
                   ),

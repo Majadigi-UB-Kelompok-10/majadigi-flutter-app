@@ -28,11 +28,21 @@ class Siskaperbapo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white,
+        scrolledUnderElevation: 0,
+        title: Text(
+          "Harga Bahan Pokok (SISKAPERBAPO)",
+          style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+        ),
+        iconTheme: const IconThemeData(color: Colors.black87),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(
             horizontal: 24.0,
-            vertical: 60.0,
+            vertical: 20.0,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

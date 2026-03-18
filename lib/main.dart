@@ -73,6 +73,25 @@ class MyApp extends StatelessWidget {
               description: description,
             ),
           );
+        } else if (settings.name == '/view/dynamic') {
+          final pageArgs = settings.arguments as List<dynamic>;
+
+          // Get the JSON Route
+          final String jsonRoute = pageArgs.firstOrNull;
+
+          if (jsonRoute.isEmpty) {
+            return null;
+          }
+
+          return MaterialPageRoute(
+              builder: (context) => const Siskaperbapo()
+          );
+
+
+          // ? Wait until converted to stac json
+          // return MaterialPageRoute(
+          //   builder: (context) => DynamicViewerScreen(pageLayoutName: jsonRoute)
+          // );
         }
 
         // ! Fallback
