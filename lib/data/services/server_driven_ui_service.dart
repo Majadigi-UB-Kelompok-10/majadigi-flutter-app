@@ -1,56 +1,63 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
-import 'package:majadigi_mobile/data/model/sdui_page_items.dart';
+import 'package:majadigi_mobile/data/model/services_list_model.dart';
+import 'package:majadigi_mobile/http.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-final String baseURLs = '10.0.2.2:8080';
-final String docsURL = '/api/cdn/download/docs/';
+import 'package:majadigi_mobile/cache.dart';
 
-// * Fetch List of All Available Server-Driven UI Available in CDN
-/* The JSON Format is as below:
- * [
- *    {
- *      "title": "<service>",
- *      "pageLayout": "<page_url.json>"
- *      "description": "<desc>"
- *    },
- *    {
- *      "title": "<service>",
- *      "pageLayout": "<page_url.json>"
- *      "description": "<desc>"
- *    },
- *    ...
- * ]
- */
-final pageListFutureProvider = FutureProvider<List<PageItem>>((ref) async {
-  // final response = await http.get(
-  //     Uri.http(baseURLs, '${docsURL}file_list.json'),
-  // );
+// * Fetch Services available from Supabase Database
+// * Cached manually
+// ! Strictly uses JSON array (Supabase Default, Starts with "[")
+// ! But delegated to service list model
+final servicesFutureProvider = FutureProvider<List<ServiceModel>>((ref) async {
+  final cacheStore = await ref.read(cacheStoreProvider.future);
+  const cacheKey = 'majadigi_services_list';
 
-  final response = await http.get(Uri.parse('https://raw.githubusercontent.com/Majadigi-UB-Kelompok-10/majadigi-static-file/refs/heads/main/file_list.json'));
+  try {
+    final response = await Supabase.instance.client.from('services_list').select();
 
-  if (response.statusCode == 200) {
-    final json = jsonDecode(response.body) as List<dynamic>;
-    return json.map((item) => PageItem.fromJson(item)).toList();
-  } else {
-    throw Exception('Failed to load page list: ${response.statusCode}');
+    await cacheStore.save(key: cacheKey, value: jsonEncode(response));
+
+    return response.map((json) => ServiceModel.fromJson(json)).toList();
+  } catch (e) {
+    final cachedData = await cacheStore.read(key: cacheKey);
+
+    if (cachedData != null) {
+      final List<dynamic> decodedList = jsonDecode(cachedData);
+
+      return decodedList
+          .map((item) => ServiceModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+
+    throw Exception('No internet and no cached data available.');
   }
 });
 
-// * Fetch THE chosen layout page passed through argument
-/* Since the JSON is made automatically by stac, it follows the object format
- * that starts with curly braces "{", so it uses Map<String, dynamic>
- * Different from the pageListFutureProvider which receive List<dynamic>
- */
+// * Fetch assets based on Argument from Supabase Storage
+// * Cached by Dio
+// ! Strictly uses JSON objects (Starts with "{")
 final pageLayoutFutureProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, pageLayout) async {
-  final response = await http.get(
-    Uri.http(baseURLs, '$docsURL$pageLayout'),
-  );
+  final dio = await ref.watch(dioProvider.future);
 
-  if (response.statusCode == 200) {
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return json;
-  } else {
-    throw Exception('Failed to load page layout: ${response.statusCode}');
+  try {
+    final response = await dio.get(
+      '$dataURL$pageLayout',
+      options: Options(extra: {'fallback': pageLayout})
+    );
+
+    dynamic rawData = response.data;
+    if (rawData is String) {
+      rawData = jsonDecode(rawData);
+    }
+
+    return rawData as Map<String, dynamic>;
+
+  } on DioException catch (e) {
+    throw Exception('Dio Error [${e.response?.statusCode}]: Failed to load $pageLayout');
+  } on Exception catch (e) {
+    throw Exception('Failed to load $pageLayout: $e');
   }
 });

@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:majadigi_mobile/data/services/server_driven_ui_service.dart';
 import 'package:majadigi_mobile/http.dart';
 
 class GenericServicePage extends StatefulWidget {

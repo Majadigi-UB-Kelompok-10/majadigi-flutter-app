@@ -43,8 +43,10 @@ dependencies:
   dio: ^5.9.2
   http: ^1.6.0
   path_provider: ^2.1.5
-  dio_cache_interceptor: ^3.5.1
-  dio_cache_interceptor_file_store: ^1.2.3
+  dio_cache_interceptor: ^4.0.5
+  supabase_flutter: ^2.12.0
+  shared_preferences: ^2.5.4
+  http_cache_file_store: ^2.0.1
 
 dev_dependencies:
   flutter_test:

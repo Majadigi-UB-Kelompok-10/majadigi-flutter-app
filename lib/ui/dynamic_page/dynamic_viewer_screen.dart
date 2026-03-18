@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stac/stac.dart';
-import '../../data/services/server_driven_ui_service.dart';
+import 'package:majadigi_mobile/data/services/server_driven_ui_service.dart';
 
 class DynamicViewerScreen extends ConsumerWidget {
   final String pageLayoutName;
