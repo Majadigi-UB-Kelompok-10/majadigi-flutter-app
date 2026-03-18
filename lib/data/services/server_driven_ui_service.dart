@@ -16,7 +16,11 @@ final servicesFutureProvider = FutureProvider<List<ServiceModel>>((ref) async {
   const cacheKey = 'majadigi_services_list';
 
   try {
-    final response = await Supabase.instance.client.from('services_list').select();
+    final response = await Supabase
+        .instance
+        .client
+        .from('services_list')
+        .select('id, icon, title, description');
 
     await cacheStore.save(key: cacheKey, value: jsonEncode(response));
 
@@ -30,6 +34,38 @@ final servicesFutureProvider = FutureProvider<List<ServiceModel>>((ref) async {
       return decodedList
           .map((item) => ServiceModel.fromJson(item as Map<String, dynamic>))
           .toList();
+    }
+
+    throw Exception('No internet and no cached data available.');
+  }
+});
+
+// * Fetch JSONB Page Data from Supabase Database
+// * Cached manually
+final jsonbFutureProvider = FutureProvider.family<AdditionalData, String>((ref, id) async {
+  final cacheStore = await ref.read(cacheStoreProvider.future);
+  final cacheKey = 'majadigi_services_detail_$id';
+
+  try {
+    final response = await Supabase
+        .instance
+        .client
+        .from('services_list')
+        .select('additional_data')
+        .eq('id', id)
+        .single();
+
+    final Map<String, dynamic> rawJsonb = response['additional_data'] as Map<String, dynamic>;
+
+    await cacheStore.save(key: cacheKey, value: jsonEncode(rawJsonb));
+
+    return AdditionalData.fromJson(rawJsonb);
+  } catch (e) {
+    final cachedData = await cacheStore.read(key: cacheKey);
+
+    if (cachedData != null) {
+      final Map<String, dynamic> decoded = jsonDecode(cachedData);
+      return AdditionalData.fromJson(decoded);
     }
 
     throw Exception('No internet and no cached data available.');

@@ -219,19 +219,47 @@ class HomePage extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final service = services[index];
 
-                    return ExpansionTile(
-                      title: Text(service.title),
-                      subtitle: Text(service.description ?? ''),
-                      children: [
-                        const Text("Policies:"),
-                        DynamicJsonViewer(data: service.additionalData.policies),
-
-                        const Text("Services:"),
-                        DynamicJsonViewer(data: service.additionalData.services),
-
-                        const Text("Operationals:"),
-                        DynamicJsonViewer(data: service.additionalData.operationals),
-                      ],
+                    return ListTile(
+                      leading: SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8.0),
+                          child: CachedNetworkImage(
+                            imageUrl: '$baseURL$imageURL${service.icon ?? 'shared/skull.webp'}',
+                            fit: BoxFit.contain,
+                            useOldImageOnUrlChange: true,
+                            placeholder: (context, url) => LinearProgressIndicator(),
+                            errorWidget: (context, url, error) => Icon(Icons.error),
+                          )
+                        ),
+                      ),
+                      title: Text(
+                        service.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      subtitle: Text(
+                        service.description ?? 'No description available.',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                      onTap: () async {
+                        Navigator.pushNamed(
+                          context,
+                          '/view',
+                          arguments: [
+                            service.id,
+                            service.title,
+                            service.description
+                          ],
+                        );
+                      }
                     );
                   },
                 );

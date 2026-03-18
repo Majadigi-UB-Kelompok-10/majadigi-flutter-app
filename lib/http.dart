@@ -67,7 +67,7 @@ final dioProvider = FutureProvider<Dio>((ref) async {
 
 // ! Debugging Interceptor, REMOVE on prod
 // dio.interceptors.add(LogInterceptor(
-//   requestBody: true,
-//   responseBody: true,
-//   requestHeader: false,
+// requestBody: true,
+// responseBody: true,
+// requestHeader: false,
 // ));

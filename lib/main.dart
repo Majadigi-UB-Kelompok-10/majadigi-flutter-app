@@ -45,29 +45,39 @@ class MyApp extends StatelessWidget {
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const HomePage(),
-      // onGenerateRoute: (settings) {
-      //   if (settings.name == '/view') {
-      //     final pageLayout = settings.arguments as List<dynamic>;
-      //
-      //     // EXTRACT AND CAST
-      //     final String title = pageLayout.elementAt(0);
-      //     final Map<String, dynamic> pageLayouts = pageLayout.elementAt(1);
-      //     final String description = pageLayout.elementAt(2);
-      //     final List<dynamic> images = pageLayout.elementAt(3);
-      //
-      //     return MaterialPageRoute(
-      //       builder: (context) => GenericServicePage(
-      //           title: title,
-      //           pageLayouts: pageLayouts,
-      //           description: description,
-      //           images: images,
-      //       ),
-      //     );
-      //   }
-      //
-      //   // ! Fallback
-      //   return null;
-      // },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/view') {
+          final pageLayout = settings.arguments as List<dynamic>;
+
+          // Get the ID of the service
+          final String id = pageLayout.firstOrNull;
+
+          if (id.isEmpty) {
+            return null;
+          }
+
+          // Get title
+          final String title = pageLayout.elementAtOrNull(1);
+
+          if (title.isEmpty) {
+            return null;
+          }
+
+          // Get description
+          final String description = pageLayout.elementAtOrNull(2) ?? '';
+
+          return MaterialPageRoute(
+            builder: (context) => GenericServicePage(
+              id: id,
+              title: title,
+              description: description,
+            ),
+          );
+        }
+
+        // ! Fallback
+        return null;
+      },
     );
   }
 }
