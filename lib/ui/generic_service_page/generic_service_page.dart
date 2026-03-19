@@ -270,7 +270,7 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                           ),
                           _ => const Center(
                             key: ValueKey(3),
-                            child: Icon(Icons.error),
+                            child: Icon(Icons.error, color: Colors.red),
                           )
                         }
                       ),

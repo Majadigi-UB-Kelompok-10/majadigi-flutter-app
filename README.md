@@ -32,3 +32,5 @@ Notably the example used is the [Compass App by Flutter Team](https://github.com
 Dependency Injection is done through Provider Class provided by [Riverpod](https://riverpod.dev/)
 
 For more information on how it is done in Flutter, refer to this [doc](https://docs.flutter.dev/app-architecture/case-study/dependency-injection)
+
+Icon is taken from [FlutterIcon](https://fluttericon.com/)

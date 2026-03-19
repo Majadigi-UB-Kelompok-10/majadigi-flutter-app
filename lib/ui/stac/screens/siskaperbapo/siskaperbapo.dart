@@ -2,9 +2,24 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:majadigi_mobile/http.dart';
 
-class Siskaperbapo extends StatelessWidget {
+class Siskaperbapo extends StatefulWidget {
   const Siskaperbapo({super.key});
-  static const Map<String, List<String>> menuItems = {
+
+  @override
+  State<StatefulWidget> createState() => _SiskaperbapoState();
+}
+
+class _SiskaperbapoState extends State<Siskaperbapo> {
+  // For Calendar
+  DateTime? _selectedDate;
+  final TextEditingController _dateController = TextEditingController();
+
+  // For overall form data
+  final _formKey = GlobalKey<FormState>();
+  Map<String, String> _selectedFilters = {};
+
+  // Dummy Data
+  final Map<String, List<String>> menuItems = {
     "Jenis Bahan Pokok": [
       'Beras Medium / Kg',
       'Bawang Merah / Kg',
@@ -14,6 +29,50 @@ class Siskaperbapo extends StatelessWidget {
       'Gula Pasir / Kg',
       'Gula Aren / Kg',
     ],
+    "Area": [
+      'Jawa Timur',
+      'Batu',
+      'Blitar',
+      'Kediri',
+      'Madiun',
+      'Malang',
+      'Mojokerto',
+      'Pasuruan',
+    ],
+  };
+
+  // Dummy Data v2
+  final Map<String, dynamic> menuItemsAlt = {
+    "Jenis Bahan Pokok": {
+      "Beras Medium / Kg": {
+        "image": "siskaperbapo/beras-premium.webp",
+        "price": "14.876"
+      },
+      "Bawang Merah / Kg": {
+        "image": "siskaperbapo/bawang-merah.webp",
+        "price": "36.579"
+      },
+      "Bawang Putih / Kg": {
+        "image": "siskaperbapo/bawang-putih.webp",
+        "price": "31.792"
+      },
+      "Cabai Rawit / Kg": {
+        "image": "siskaperbapo/cabai-rawit.webp",
+        "price": "90.876"
+      },
+      "Cabai Merah / Kg": {
+        "image": "siskaperbapo/cabe-merah.webp",
+        "price": "28.236"
+      },
+      "Gula Pasir / Kg": {
+        "image": "siskaperbapo/tepung-terigu.webp",
+        "price": "..."
+      },
+      "Gula Aren / Kg": {
+        "image": "siskaperbapo/tepung-terigu.webp",
+        "price": "..."
+      },
+    },
     "Area": [
       'Jawa Timur',
       'Batu',
@@ -116,13 +175,13 @@ class Siskaperbapo extends StatelessWidget {
                 ),
                 width: double.infinity,
                 child: Form(
-                  key: GlobalKey<FormState>(),
+                  key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     spacing: 16.0,
                     children: [
-                      for (final entry in menuItems.entries) ...[
+                      for (final entry in menuItemsAlt.entries) ...[
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -149,20 +208,33 @@ class Siskaperbapo extends StatelessWidget {
                                   ),
                                   fillColor: Colors.white,
                                   filled: true,
-                                  hintText: entry.value.first,
+                                  hintText: (entry.value is List<String>)
+                                      ? (entry.value as List<String>).firstOrNull
+                                      : (entry.value as Map<String, Map<String, String>>).entries.first.key,
                                   hintStyle: TextStyle(color: Colors.grey.shade500),
                                 );
                               },
+                              // initialSelection: _selectedFilters[entry.key],
                               expandedInsets: EdgeInsets.zero,
-                              dropdownMenuEntries: entry.value.map((String value) {
-                                return DropdownMenuEntry(
-                                  value: value,
-                                  label: value,
-                                  style: ButtonStyle(
-                                    foregroundColor: WidgetStateProperty.all<Color>(Colors.grey.shade500),
-                                  )
-                                );
-                              }).toList(),
+                              dropdownMenuEntries: (entry.value is List<String>)
+                                  ? (entry.value as List<String>).map((String value) {
+                                      return DropdownMenuEntry(
+                                        value: value,
+                                        label: value,
+                                        style: ButtonStyle(
+                                          foregroundColor: WidgetStateProperty.all<Color>(Colors.grey.shade500),
+                                        )
+                                      );
+                                    }).toList()
+                                  : (entry.value as Map<String, Map<String, String>>).entries.map((MapEntry<String, Map<String, String>> value) {
+                                      return DropdownMenuEntry(
+                                        value: value.key,
+                                        label: value.key,
+                                        style: ButtonStyle(
+                                          foregroundColor: WidgetStateProperty.all<Color>(Colors.grey.shade500),
+                                        )
+                                      );
+                                    }).toList(),
                               menuStyle: MenuStyle(
                                 shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
@@ -171,6 +243,11 @@ class Siskaperbapo extends StatelessWidget {
                                 ),
                                 backgroundColor: WidgetStateProperty.all<Color>(Colors.white),
                               ),
+                              onSelected: (value) {
+                                setState(() {
+                                  _selectedFilters[entry.key] = value as String;
+                                });
+                              }
                             ),
                           ],
                         ),
@@ -215,19 +292,28 @@ class Siskaperbapo extends StatelessWidget {
                                 fillColor: Colors.white,
                                 filled: true,
                               ),
+                              controller: _dateController,
                               readOnly: true,
                               onTap: () async {
-                                await showDatePicker(
+                                final DateTime? date = await showDatePicker(
                                   context: context,
                                   initialDate: DateTime.now(),
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2100),
                                 );
+
+                                if (date != null) {
+                                  setState(() {
+                                    _selectedDate = date;
+                                    _dateController.text = "${date.day}/${date.month}/${date.year}";
+                                  });
+                                }
                               }
                           ),
                         ],
                       ),
 
+                      // Button
                       ElevatedButton(
                         onPressed: null,
                         style: ButtonStyle(
@@ -270,7 +356,7 @@ class Siskaperbapo extends StatelessWidget {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
-                      for (int i = 0; i < ((menuItems["Jenis Bahan Pokok"]!.length)).floor(); i += 2) ...[
+                      for (int i = 0; i < ((menuItemsAlt["Jenis Bahan Pokok"]!.length)).floor(); i += 2) ...[
                         Card(
                           color: Colors.white,
                           shadowColor: Colors.grey.shade300,
@@ -282,19 +368,27 @@ class Siskaperbapo extends StatelessWidget {
                                   children: [
                                     Expanded(
                                       child: Container(
+                                        width: double.infinity,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                           color: Colors.grey.shade100,
                                         ),
+                                        child: CachedNetworkImage(
+                                          imageUrl: '$baseURL$imageURL${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).value["image"]}',
+                                          fit: BoxFit.contain,
+                                          useOldImageOnUrlChange: true,
+                                          placeholder: (context, url) => LinearProgressIndicator(),
+                                          errorWidget: (context, url, error) => Icon(Icons.error),
+                                        ),
                                       )
                                     ),
-                                    Text(menuItems["Jenis Bahan Pokok"]!.elementAt(i)),
-                                    Text("Rp ..."),
+                                    Text((menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).key),
+                                    Text('Rp ${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).value["price"]}'),
                                   ]
                               )
                           )
                         ),
-                        if (menuItems["Jenis Bahan Pokok"]!.length - 1 > i) ...[
+                        if (menuItemsAlt["Jenis Bahan Pokok"]!.length - 1 > i) ...[
                           Card(
                             color: Colors.white,
                             shadowColor: Colors.grey.shade300,
@@ -306,14 +400,22 @@ class Siskaperbapo extends StatelessWidget {
                                     children: [
                                       Expanded(
                                           child: Container(
+                                            width: double.infinity,
                                             decoration: BoxDecoration(
                                               borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                               color: Colors.grey.shade100,
                                             ),
+                                            child: CachedNetworkImage(
+                                              imageUrl: '$baseURL$imageURL${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).value["image"]}',
+                                              fit: BoxFit.contain,
+                                              useOldImageOnUrlChange: true,
+                                              placeholder: (context, url) => LinearProgressIndicator(),
+                                              errorWidget: (context, url, error) => Icon(Icons.error),
+                                            ),
                                           )
                                       ),
-                                      Text(menuItems["Jenis Bahan Pokok"]!.elementAt(i+1)),
-                                      Text("Rp ..."),
+                                      Text((menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).key),
+                                      Text("Rp ${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).value["price"]}"),
                                     ]
                                 )
                             )
