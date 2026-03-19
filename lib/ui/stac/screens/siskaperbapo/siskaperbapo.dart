@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:majadigi_mobile/http.dart';
 
 class Siskaperbapo extends StatelessWidget {
   const Siskaperbapo({super.key});
@@ -56,7 +57,7 @@ class Siskaperbapo extends StatelessWidget {
                       Expanded(
                         flex: 3,
                         child: CachedNetworkImage(
-                          imageUrl: "http://10.0.2.2:8080/api/cdn/download/images/logo-provinsi-jawa-timur.webp",
+                          imageUrl: '$baseURL${imageURL}siskaperbapo/logo-provinsi-jawa-timur.webp',
                           fit: BoxFit.contain,
                           height: 75,
                         ),

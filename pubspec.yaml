@@ -47,6 +47,7 @@ dependencies:
   supabase_flutter: ^2.12.0
   shared_preferences: ^2.5.4
   http_cache_file_store: ^2.0.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -86,8 +87,10 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
+  fonts:
+    - family: Majadigi_Mobile
+      fonts:
+        - asset: fonts/Majadigi_mobile.ttf
   #     fonts:
   #       - asset: fonts/Schyler-Regular.ttf
   #       - asset: fonts/Schyler-Italic.ttf

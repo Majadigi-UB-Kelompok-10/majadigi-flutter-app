@@ -16,6 +16,7 @@ resolve to a Map<String, dynamic> and having a tab of their own
         "title": "<title>",
         "description": "<description>",
         "additional_data": {
+            "images": [...],
             "policies": {...},
             "services": {...},
             "operationals": {...},

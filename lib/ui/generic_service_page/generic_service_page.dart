@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:majadigi_mobile/http.dart';
 import 'package:majadigi_mobile/data/services/server_driven_ui_service.dart';
 import 'package:majadigi_mobile/ui/dynamic_page/dynamic_widget.dart';
+import 'package:url_launcher/link.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // States
 class SelectedTabNotifier extends Notifier<int> {
@@ -226,7 +228,7 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                                       borderRadius: BorderRadius.circular(15),
                                       side: BorderSide(color: Colors.grey.shade500, width: 1),
                                     ),
-                                    subtitle: entry.value is String ? Text(entry.value) : DynamicJsonViewer(data: entry.value),
+                                    subtitle: DynamicJsonViewer(originalKey: entry.key, data: entry.value)
                                   ),
                                 )
                               ]
@@ -268,7 +270,7 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                           ),
                           _ => const Center(
                             key: ValueKey(3),
-                            child: Icon(Icons.error), 
+                            child: Icon(Icons.error),
                           )
                         }
                       ),
