@@ -11,7 +11,7 @@ class Siskaperbapo extends StatefulWidget {
 
 class _SiskaperbapoState extends State<Siskaperbapo> {
   // For Calendar
-  DateTime? _selectedDate;
+  late DateTime? _selectedDate;
   final TextEditingController _dateController = TextEditingController();
 
   // For overall form data
@@ -46,31 +46,38 @@ class _SiskaperbapoState extends State<Siskaperbapo> {
     "Jenis Bahan Pokok": {
       "Beras Medium / Kg": {
         "image": "siskaperbapo/beras-premium.webp",
-        "price": "14.876"
+        "price": "14.876",
+        "net": "-"
       },
       "Bawang Merah / Kg": {
         "image": "siskaperbapo/bawang-merah.webp",
-        "price": "36.579"
+        "price": "36.579",
+        "net": "+"
       },
       "Bawang Putih / Kg": {
         "image": "siskaperbapo/bawang-putih.webp",
-        "price": "31.792"
+        "price": "31.792",
+        "net": "+"
       },
       "Cabai Rawit / Kg": {
         "image": "siskaperbapo/cabai-rawit.webp",
-        "price": "90.876"
+        "price": "90.876",
+        "net": "-"
       },
       "Cabai Merah / Kg": {
         "image": "siskaperbapo/cabe-merah.webp",
-        "price": "28.236"
+        "price": "28.236",
+        "net": "+"
       },
       "Gula Pasir / Kg": {
         "image": "siskaperbapo/tepung-terigu.webp",
-        "price": "..."
+        "price": "11.479",
+        "net": "+"
       },
       "Gula Aren / Kg": {
         "image": "siskaperbapo/tepung-terigu.webp",
-        "price": "..."
+        "price": "...",
+        "net": "-"
       },
     },
     "Area": [
@@ -383,7 +390,24 @@ class _SiskaperbapoState extends State<Siskaperbapo> {
                                       )
                                     ),
                                     Text((menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).key),
-                                    Text('Rp ${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).value["price"]}'),
+                                    Row(
+                                      children: [
+                                        Text('Rp ${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).value["price"]}'),
+                                        SizedBox(width: 10.0),
+
+                                        ((menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i).value["net"] as String).contains('+')
+                                            ? Icon(
+                                                Icons.keyboard_double_arrow_up,
+                                                size: 16,
+                                                color: Colors.green
+                                              )
+                                            : Icon(
+                                                Icons.keyboard_double_arrow_down,
+                                                size: 16,
+                                                color: Colors.red
+                                              )
+                                      ],
+                                    ),
                                   ]
                               )
                           )
@@ -415,7 +439,23 @@ class _SiskaperbapoState extends State<Siskaperbapo> {
                                           )
                                       ),
                                       Text((menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).key),
-                                      Text("Rp ${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).value["price"]}"),
+                                      Row(
+                                        children: [
+                                          Text('Rp ${(menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).value["price"]}'),
+                                          SizedBox(width: 10.0),
+                                          ((menuItemsAlt["Jenis Bahan Pokok"] as Map<String, Map<String, String>>).entries.elementAt(i+1).value["net"] as String).contains('+')
+                                              ? Icon(
+                                              Icons.keyboard_double_arrow_up,
+                                              size: 16,
+                                              color: Colors.green
+                                          )
+                                              : Icon(
+                                              Icons.keyboard_double_arrow_down,
+                                              size: 16,
+                                              color: Colors.red
+                                          )
+                                        ],
+                                      ),
                                     ]
                                 )
                             )

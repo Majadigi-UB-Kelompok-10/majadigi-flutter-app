@@ -4,10 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:majadigi_mobile/http.dart';
 import 'package:majadigi_mobile/data/services/server_driven_ui_service.dart';
 import 'package:majadigi_mobile/ui/dynamic_page/dynamic_widget.dart';
-import 'package:url_launcher/link.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-// States
+// States for Tabs
 class SelectedTabNotifier extends Notifier<int> {
   @override
   int build() {
@@ -23,10 +21,12 @@ class SelectedTabNotifier extends Notifier<int> {
   }
 }
 
+// Provider
 final selectedTabProvider = NotifierProvider<SelectedTabNotifier, int>(() {
   return SelectedTabNotifier();
 });
 
+// Main class for Service
 class GenericServicePage extends ConsumerStatefulWidget {
   final String id;
   final String title;
@@ -37,6 +37,7 @@ class GenericServicePage extends ConsumerStatefulWidget {
   ConsumerState<GenericServicePage> createState() => _GenericServicePageState();
 }
 
+// State class
 class _GenericServicePageState extends ConsumerState<GenericServicePage> {
   final Map<int, String> RadioButtonChoice = {
     0: 'Layanan',
@@ -82,7 +83,7 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                   child: SizedBox(
                     height: 200,
                     child: CarouselView.weighted(
-                        flexWeights: [1,7,1],
+                        flexWeights: [1],
                         consumeMaxWeight: true,
                         scrollDirection: Axis.horizontal,
                         itemSnapping: true,
@@ -146,32 +147,36 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
                       const SizedBox(height: 24),
 
                       // Radio Menu Buttons (Stateful)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: RadioButtonChoice.entries.map((entry) {
-                          return ChoiceChip(
-                            label: Text(entry.value),
-                            selected: activeTab == entry.key,
-                            showCheckmark: false,
-                            selectedColor: Colors.deepPurple.shade100,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25.0),
-                            ),
-                            side: activeTab == entry.key ? BorderSide(
-                              color: Colors.deepPurple,
-                              width: 2.0,
-                            ) : BorderSide.none,
-                            labelStyle: TextStyle(
-                              color: activeTab == entry.key ? Colors.deepPurple : Colors.black87,
-                              fontWeight: activeTab == entry.key ? FontWeight.w900 : FontWeight.w400,
-                            ),
-                            onSelected: (selected) {
-                              setState(() {
-                                ref.read(selectedTabProvider.notifier).setTab(entry.key);
-                              });
-                            },
-                          );
-                        }).toList(),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: RadioButtonChoice.entries.map((entry) {
+                            return ChoiceChip(
+                              label: Text(entry.value),
+                              selected: activeTab == entry.key,
+                              showCheckmark: false,
+                              selectedColor: Colors.deepPurple.shade100,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
+                              side: activeTab == entry.key ? BorderSide(
+                                color: Colors.deepPurple,
+                                width: 2.0,
+                              ) : BorderSide.none,
+                              labelStyle: TextStyle(
+                                color: activeTab == entry.key ? Colors.deepPurple : Colors.black87,
+                                fontWeight: activeTab == entry.key ? FontWeight.w900 : FontWeight.w400,
+                              ),
+                              onSelected: (selected) {
+                                setState(() {
+                                  ref.read(selectedTabProvider.notifier).setTab(entry.key);
+                                });
+                              },
+                            );
+                          }).toList(),
+                        ),
                       ),
 
                       const SizedBox(height: 12),
