@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:majadigi_mobile/data/parsers/stac/stac_cached_image_parser.dart';
-import 'package:majadigi_mobile/ui/generic_service_page/generic_service_page.dart';
-import 'package:majadigi_mobile/ui/homepage/viewmodel/home_page.dart';
-import 'package:majadigi_mobile/ui/stac/screens/siskaperbapo/siskaperbapo.dart';
+import 'package:majadigi_mobile/ui/generic_service_page/generic_services_page.dart';
+import 'package:majadigi_mobile/ui/homepage/home_page.dart';
 import 'package:stac/stac.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -47,71 +46,28 @@ class MyApp extends StatelessWidget {
       home: const HomePage(),
       onGenerateRoute: (settings) {
         if (settings.name == '/view') {
-          final pageLayout = settings.arguments as List<dynamic>;
+          final args = settings.arguments as Map<String, String>;
 
-          // Get the ID of the service
-          final String id = pageLayout.firstOrNull;
-
-          if (id.isEmpty) {
+          if (args.isEmpty) {
             return null;
           }
 
-          // Get title
-          final String title = pageLayout.elementAtOrNull(1);
-
-          if (title.isEmpty) {
-            return null;
-          }
-
-          // Get description
-          final String description = pageLayout.elementAtOrNull(2) ?? '';
-
-          return MaterialPageRoute(
-            builder: (context) => GenericServicePage(
-              id: id,
-              title: title,
-              description: description,
-            ),
-          );
-        } else if (settings.name == '/view/dynamic') {
-          final pageArgs = settings.arguments as List<dynamic>;
-
-          // Get the JSON Route
-          final String jsonRoute = pageArgs.firstOrNull;
-
-          if (jsonRoute.isEmpty) {
+          // Check first for keys
+          if (!args.containsKey('id') || !args.containsKey('title') || !args.containsKey('description')) {
             return null;
           }
 
           return MaterialPageRoute(
-              builder: (context) => const Siskaperbapo()
+            builder: (context) => GenericServicesPage(
+              id: args['id'] as String,
+              title: args['title'] as String,
+              description: args['description'] as String
+            )
           );
-
-
-          // ? Wait until converted to stac json
-          // return MaterialPageRoute(
-          //   builder: (context) => DynamicViewerScreen(pageLayoutName: jsonRoute)
-          // );
         }
 
-        // ! Fallback
         return null;
       },
-    );
-  }
-}
-
-class TestPage extends StatelessWidget {
-  const TestPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const Siskaperbapo(),
     );
   }
 }

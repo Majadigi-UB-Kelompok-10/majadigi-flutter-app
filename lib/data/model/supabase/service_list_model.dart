@@ -1,16 +1,10 @@
-/*
- * This is the model for existing supabase table
- * to ensure no second-guessing in development
- */
-
-// * services_list table section * //
 // ? Enums representing columns
 enum ServiceListColumn {
-  id,
+  service_list_id,
   title,
   description,
-  iconUrl,
-  createdAt
+  icon_url,
+  created_at
 }
 
 // ? Main Service List Table
@@ -19,7 +13,7 @@ class ServiceListModel {
   final String? title;
   final String? description;
   final String? iconUrl;
-  final String? createdAt;
+  final DateTime? createdAt;
 
   // Constructor
   ServiceListModel({
@@ -33,11 +27,11 @@ class ServiceListModel {
   // Factory (JSON Parse)
   factory ServiceListModel.fromJson(Map<String, dynamic> json) {
     return ServiceListModel(
-      id: json['id'] as String?,
-      title: json['title'] as String?,
-      description: json['description'] as String?,
-      iconUrl: json['icon_url'] as String?,
-      createdAt: json['created_at'] as String?,
+      id: json[ServiceListColumn.service_list_id.name] as String?,
+      title: json[ServiceListColumn.title.name] as String?,
+      description: json[ServiceListColumn.description.name] as String?,
+      iconUrl: json[ServiceListColumn.icon_url.name] as String?,
+      createdAt: json[ServiceListColumn.created_at.name] as DateTime?,
     );
   }
 }

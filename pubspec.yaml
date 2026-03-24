@@ -48,6 +48,8 @@ dependencies:
   shared_preferences: ^2.5.4
   http_cache_file_store: ^2.0.1
   url_launcher: ^6.3.2
+  equatable: ^2.0.8
+  json_path: ^0.9.0
 
 dev_dependencies:
   flutter_test:

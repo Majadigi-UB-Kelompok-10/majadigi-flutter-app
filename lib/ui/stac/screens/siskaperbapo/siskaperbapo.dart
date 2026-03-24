@@ -16,7 +16,7 @@ class _SiskaperbapoState extends State<Siskaperbapo> {
 
   // For overall form data
   final _formKey = GlobalKey<FormState>();
-  Map<String, String> _selectedFilters = {};
+  final Map<String, String> _selectedFilters = {};
 
   // Dummy Data
   final Map<String, List<String>> menuItems = {

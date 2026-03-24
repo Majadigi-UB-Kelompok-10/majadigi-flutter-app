@@ -34,3 +34,5 @@ Dependency Injection is done through Provider Class provided by [Riverpod](https
 For more information on how it is done in Flutter, refer to this [doc](https://docs.flutter.dev/app-architecture/case-study/dependency-injection)
 
 Icon is taken from [FlutterIcon](https://fluttericon.com/)
+
+Also each time you create a new supabase table, ensure read policy is set

@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:majadigi_mobile/http.dart';
-import 'package:majadigi_mobile/data/services/server_driven_ui_service.dart';
 import 'package:majadigi_mobile/ui/dynamic_page/dynamic_widget.dart';
 
 // States for Tabs
@@ -48,7 +47,6 @@ class _GenericServicePageState extends ConsumerState<GenericServicePage> {
   @override
   Widget build(BuildContext context) {
     final activeTab = ref.watch(selectedTabProvider);
-    final asyncPageData = ref.watch(jsonbFutureProvider(widget.id));
 
     return Scaffold(
       backgroundColor: Colors.grey[50],

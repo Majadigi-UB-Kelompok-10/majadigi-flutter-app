@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:majadigi_mobile/data/model/supabase_table_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:majadigi_mobile/cache.dart';
 
@@ -17,45 +18,32 @@ import 'package:majadigi_mobile/cache.dart';
  * ! sensitive operations or pages that uses auth   !
  */
 
-// * Providers
-// ? Supabase Data Fetch Provider for Services List
-final articleProvider = AsyncNotifierProvider.autoDispose.family<
-    ServiceListNotifier,
-    List<ServiceListModel>,
-    SupabaseFetchArgs<ServiceListColumn>
->(ServiceListNotifier.new);
-
-// * Notifiers
-// ? Supabase Data Fetch Notifier for Services List
-class ServiceListNotifier extends SupabaseFetchNotifier<ServiceListModel, ServiceListColumn> {
-  ServiceListNotifier(this._arguments);
-
-  @override
-  final SupabaseFetchArgs<ServiceListColumn> _arguments;
-
-  @override
-  ServiceListModel fromJson(Map<String, dynamic> json) => ServiceListModel.fromJson(json);
-
-  @override
-  String get tableName => "services_list";
-
-  @override
-  Future<List<ServiceListModel>> build() {
-    // * SWR Caching Strategy for Service List
-    return super.build();
-  }
-}
-
 // * Generic Base Notifiers
-// ? Generic Argument Typedef
-typedef SupabaseFetchArgs<E extends Enum> = ({List<E> columns, String? id, bool? isSingle});
+// ? Generic Argument using Equatable to fix UI rendering issue
+class SupabaseFetchArgs<E extends Enum> extends Equatable {
+  final List<E> columns;
+  final Map<E, String>? filters;
+  final bool? isSingle;
+
+  const SupabaseFetchArgs({
+    required this.columns,
+    this.filters,
+    this.isSingle,
+  });
+
+  // Stop infinite loops by putting props with help of Equatable package
+  @override
+  List<Object?> get props => [columns, filters, isSingle];
+}
 
 // ? Generic Supabase Data Fetch Abstract Class
 // T = Model, E = Enum
 abstract class SupabaseFetchNotifier<T, E extends Enum> extends AsyncNotifier<List<T>> {
   String get tableName;
   T fromJson(Map<String, dynamic> json);
-  SupabaseFetchArgs<E> get _arguments;
+
+  @protected
+  SupabaseFetchArgs<E> get arguments;
 
   // * Helper for Cache Fetch (SWR)
   Future<void> _fetchCache({
@@ -85,40 +73,45 @@ abstract class SupabaseFetchNotifier<T, E extends Enum> extends AsyncNotifier<Li
 
   @override
   Future<List<T>> build() async {
-    if (_arguments.columns.isEmpty) {
+    if (arguments.columns.isEmpty) {
       throw ArgumentError('You must select at least one column.');
     }
 
     // Construct CacheStore
     final cacheStore = await ref.read(cacheStoreProvider.future);
-    String cacheKey = 'majadigi_resource';
+    String cacheKey = 'majadigi_resource_$tableName';
 
     // Map enums using .name property
-    final selectString = _arguments.columns.map((c) => c.name).join(', ');
+    final selectString = arguments.columns.map((c) => c.name).join(', ');
 
     // Build supabase query
     var query = Supabase.instance.client.from(tableName).select(selectString);
 
-    // Check against id
-    if (_arguments.id != null) {
-      query = query.eq('id', _arguments.id!);
-      cacheKey = '${cacheKey}_${tableName}_${_arguments.id}';
+    // Check against filters
+    if (arguments.filters != null && arguments.filters!.isNotEmpty) {
+      for (final entry in arguments.filters!.entries) {
+        query = query.eq(entry.key.name, entry.value);
+        cacheKey = '${cacheKey}_${entry.key.name}_${entry.value}';
+      }
 
       // Check against isSingle
-      if (_arguments.isSingle != null && _arguments.isSingle!) {
+      if (arguments.isSingle != null && arguments.isSingle!) {
         cacheKey = '${cacheKey}_single';
 
         // * SWR
-        await _fetchCache(cacheKey: cacheKey, isSingle: _arguments.isSingle!);
+        await _fetchCache(cacheKey: cacheKey, isSingle: arguments.isSingle!);
 
-        final response = await query.maybeSingle();
+        try {
+          final response = await query.maybeSingle();
 
-        if (response == null) return [];
+          if (response == null) return [];
 
-        // Save to cache first before returning response
-        await cacheStore.save(key: cacheKey, value: jsonEncode(response));
+          await cacheStore.save(key: cacheKey, value: jsonEncode(response));
 
-        return [fromJson(response)];
+          return [fromJson(response)];
+        } catch (e) {
+          return state.value ?? [];
+        }
       }
     }
 
@@ -126,8 +119,12 @@ abstract class SupabaseFetchNotifier<T, E extends Enum> extends AsyncNotifier<Li
     await _fetchCache(cacheKey: cacheKey, isSingle: false);
 
     // If no filter or check, then base query fetch & cache
-    final response = await query;
-    await cacheStore.save(key: cacheKey, value: jsonEncode(response));
-    return response.map((json) => fromJson(json)).toList();
+    try {
+      final response = await query;
+      await cacheStore.save(key: cacheKey, value: jsonEncode(response));
+      return response.map((json) => fromJson(json)).toList();
+    } catch (e) {
+      return state.value ?? [];
+    }
   }
 }
