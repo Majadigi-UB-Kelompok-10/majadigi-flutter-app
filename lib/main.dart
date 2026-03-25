@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:stac/stac.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import 'package:majadigi_mobile/data/parsers/stac/stac_cached_image_parser.dart';
 import 'package:majadigi_mobile/ui/generic_service_page/generic_services_page.dart';
 import 'package:majadigi_mobile/ui/homepage/home_page.dart';
-import 'package:stac/stac.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   // Needed for Supabase, ensure Flutter Engine is bind
@@ -14,6 +15,10 @@ Future<void> main() async {
 
   // Initialize stac with custom parser
   await Stac.initialize(
+    cacheConfig: StacCacheConfig(
+      strategy: StacCacheStrategy.optimistic,
+      maxAge: Duration(days: 365)
+    ),
     parsers: [
       const StacCachedImageParser(),
     ]
@@ -39,7 +44,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Majadigi Mobile App',
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),

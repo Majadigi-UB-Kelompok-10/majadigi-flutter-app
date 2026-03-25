@@ -42,10 +42,17 @@ class _StringRenderer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isMapKeyExist = (mapKey != null);
+    bool isNumeric = false;
+
+    if (isMapKeyExist) {
+      isNumeric = RegExp(r'^\d+$').hasMatch(mapKey!);
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Text(
-        mapKey != null ? '$mapKey. $data' : data,
+        isMapKeyExist ? (isNumeric ? '$mapKey. $data' : '$mapKey: $data') : data,
         style: const TextStyle(fontSize: 16),
       ),
     );

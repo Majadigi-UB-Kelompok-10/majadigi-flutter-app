@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:stac/stac.dart';
 import 'package:flutter/material.dart';
 
-import 'package:majadigi_mobile/ui/stac/build_runner/stac_cached_image.dart';
+import 'package:majadigi_mobile/domain/stac_build_runner/stac_cached_image.dart';
 
 class StacCachedImageParser extends StacParser<StacCachedImage> {
   const StacCachedImageParser();
