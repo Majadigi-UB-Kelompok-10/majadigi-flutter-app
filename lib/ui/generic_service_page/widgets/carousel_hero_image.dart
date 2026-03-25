@@ -21,6 +21,7 @@ class CarouselHeroImage extends ConsumerWidget {
           return imageList.isNotEmpty ? Padding(
             padding: EdgeInsets.symmetric(
               horizontal: 20.0,
+              vertical: 4.0
             ),
             child: SizedBox(
               height: 200,

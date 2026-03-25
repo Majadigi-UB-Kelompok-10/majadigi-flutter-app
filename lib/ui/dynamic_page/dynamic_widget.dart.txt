@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:majadigi_mobile/majadigi_mobile_icons.dart';
 import 'package:url_launcher/link.dart';
 
 class DynamicJsonViewer extends StatelessWidget {

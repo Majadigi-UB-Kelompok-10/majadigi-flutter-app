@@ -61,7 +61,6 @@ class GenericServicePageDataMiddleware extends AsyncNotifier<Map<int, Map<String
       index++;
     }
 
-    print('heo');
     return result;
   }
 }
