@@ -1,3 +1,4 @@
+
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 import 'package:http_cache_file_store/http_cache_file_store.dart';
@@ -12,12 +13,12 @@ final String dataURL = 'data-assets/pages/';
 final String imageURL = 'image-asset/';
 
 // ! Cache Store for Dio
-final dioCacheStoreProvider = FutureProvider<FileCacheStore>((ref) async {
+final dioCacheStoreProvider = FutureProvider.autoDispose<FileCacheStore>((ref) async {
   final dir = await getApplicationDocumentsDirectory();
   return FileCacheStore(dir.path);
 });
 
-final dioProvider = FutureProvider<Dio>((ref) async {
+final dioProvider = FutureProvider.autoDispose<Dio>((ref) async {
   final store = await ref.watch(dioCacheStoreProvider.future);
 
   // Configure the caching rules
@@ -41,33 +42,3 @@ final dioProvider = FutureProvider<Dio>((ref) async {
 
   return dio;
 });
-
-// https://raw.githubusercontent.com/Majadigi-UB-Kelompok-10/majadigi-static-file/refs/heads/main/file_list.json
-
-// final String baseURLAlt = 'https://raw.githubusercontent.com/Majadigi-UB-Kelompok-10/majadigi-static-file/refs/heads/main/';
-
-// Use GITHUB as fallback if SUPABASE fails
-// dio.interceptors.add(InterceptorsWrapper(
-//   onError: (DioException e, handler) async {
-//     if (e.type == DioExceptionType.badResponse && e.response?.statusCode == 500) {
-//       final options = e.requestOptions;
-//       final fallback = e.requestOptions.extra['fallback'];
-//       options.baseUrl = baseURLAlt;
-//
-//       if (fallback != null) {
-//         options.path = fallback;
-//       }
-//
-//       final response = await dio.fetch(options);
-//       return handler.resolve(response);
-//     }
-//     return handler.next(e);
-//   },
-// ));
-
-// ! Debugging Interceptor, REMOVE on prod
-// dio.interceptors.add(LogInterceptor(
-// requestBody: true,
-// responseBody: true,
-// requestHeader: false,
-// ));

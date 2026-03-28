@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:majadigi_mobile/domain/stac_parsers/stac_form_modal_builder_parser.dart';
 import 'package:stac/stac.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:majadigi_mobile/data/parsers/stac/stac_cached_image_parser.dart';
+import 'package:majadigi_mobile/ui/dynamic_page/stac_test_page.dart';
+import 'package:majadigi_mobile/domain/stac_parsers/stac_cached_image_parser.dart';
 import 'package:majadigi_mobile/ui/generic_service_page/generic_services_page.dart';
 import 'package:majadigi_mobile/ui/homepage/home_page.dart';
+import 'package:majadigi_mobile/http.dart';
 
 Future<void> main() async {
   // Needed for Supabase, ensure Flutter Engine is bind
@@ -13,15 +16,21 @@ Future<void> main() async {
   // https://supabase.com/docs/guides/getting-started/quickstarts/flutter
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize stac with custom parser
+  // Create container to fetch dio
+  final container = ProviderContainer();
+  final dio = await container.read(dioProvider.future);
+
+  // Initialize stac with custom parser & our own dio
   await Stac.initialize(
+    dio: dio,
     cacheConfig: StacCacheConfig(
       strategy: StacCacheStrategy.optimistic,
       maxAge: Duration(days: 365)
     ),
     parsers: [
       const StacCachedImageParser(),
-    ]
+      const StacFormModalBuilderParser(),
+    ],
   );
 
   // Initialize Supabase
@@ -32,8 +41,9 @@ Future<void> main() async {
 
   // Main run app w/ Riverpod
   runApp(
-      const ProviderScope(
-          child: MyApp()
+      UncontrolledProviderScope(
+        container: container,
+        child: const MyStacTestPage(),
       )
   );
 }

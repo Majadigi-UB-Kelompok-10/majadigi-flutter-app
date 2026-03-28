@@ -1,7 +1,8 @@
 import 'package:majadigi_mobile/domain/stac_build_runner/stac_cached_image/stac_cached_image.dart';
+import 'package:majadigi_mobile/domain/stac_build_runner/stac_form_builder/stac_form_modal_builder.dart';
 import 'package:stac/stac_core.dart';
 
-@StacScreen(screenName: 'siskaperbapo')
+@StacScreen(screenName: 'siskaperbapo_offline')
 StacWidget siskaperbapo() {
    return StacScaffold(
      appBar: StacAppBar(
@@ -14,50 +15,21 @@ StacWidget siskaperbapo() {
          )
        ),
      ),
-     body: StacDynamicView(
-       request: StacNetworkRequest(
-         url: '\$dataUrl',
-         method: Method.get,
-         results: [
-           // First Fetch
-           StacNetworkResult(
-             statusCode: 200,
-             action: {
-               "actionType": "setValue",
-               "values": [
-                 { "key": "data", "value": "{{response}}" },
-               ]
-             }
-           ),
+     body: StacSingleChildScrollView(
+       scrollDirection: StacAxis.vertical,
+       padding: StacEdgeInsets.all(16.0),
+       child: StacColumn(
+         spacing: 8.0,
+         children: [
+           // ? Title
+           _header(),
 
-           // Cached Fetch
-           StacNetworkResult(
-             statusCode: 304,
-             action: {
-               "actionType": "setValue",
-               "values": [
-                 { "key": "data", "value": "{{response}}" },
-               ]
-             }
-           )
+           // ? Description
+           _description(),
+
+           // ? Form
+           _form(),
          ]
-       ),
-       loaderWidget: StacCenter(child: StacCircularProgressIndicator()),
-       errorWidget: StacCenter(child: StacText(data: 'Error: Failed to fetch Data. Check for Internet Connection.')),
-       emptyTemplate: StacCenter(child: StacText(data: 'Error: No Data Found in Network.')),
-       template: StacSingleChildScrollView(
-         scrollDirection: StacAxis.vertical,
-         padding: StacEdgeInsets.all(16.0),
-         child: StacColumn(
-           spacing: 8.0,
-           children: [
-             // Title
-             _header(),
-
-             // Description
-             _description(),
-           ]
-         )
        )
      )
    );
@@ -94,7 +66,7 @@ StacWidget _header() {
 
             // Subtitle
             StacText(
-              data: 'Sistem Informasi Ketersediaan dan Perkembangan Harga Bahan Pokok',
+              data: 'This is dataUrl: \$dataUrl',
               style: StacTextStyle(
                 fontSize: 12,
                 color: StacColors.grey,
@@ -123,5 +95,17 @@ StacWidget _description() {
       ),
       textAlign: StacTextAlign.justify,
     ),
+  );
+}
+
+StacWidget _form() {
+  return StacContainer(
+    padding: StacEdgeInsets.all(16.0),
+    decoration: StacBoxDecoration(
+      borderRadius: StacBorderRadius.circular(16.0),
+      color: "#E0E0E0",
+    ),
+    width: double.maxFinite,
+    child: StacFormModalBuilder(data: '\$formModalData'),
   );
 }

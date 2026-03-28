@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:majadigi_mobile/http.dart';
 import 'package:stac/stac.dart';
 import 'package:flutter/material.dart';
 
-import 'package:majadigi_mobile/domain/stac_build_runner/stac_cached_image.dart';
+import 'package:majadigi_mobile/domain/stac_build_runner/stac_cached_image/stac_cached_image.dart';
 
 class StacCachedImageParser extends StacParser<StacCachedImage> {
   const StacCachedImageParser();
@@ -16,8 +17,13 @@ class StacCachedImageParser extends StacParser<StacCachedImage> {
 
   @override
   Widget parse(BuildContext context, StacCachedImage model) {
+    final resolvedUrl = model.imageUrl
+        .replaceAll(r'$baseURL', baseURL)
+        .replaceAll(r'${imageURL}', imageURL);
+
     return CachedNetworkImage(
-      imageUrl: model.imageUrl,
+      imageUrl: resolvedUrl,
+      fit: BoxFit.contain,
       height: model.height,
       width: model.width,
       useOldImageOnUrlChange: model.useOldImageOnUrlChange,
