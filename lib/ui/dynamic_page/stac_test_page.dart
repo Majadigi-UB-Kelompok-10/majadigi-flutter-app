@@ -9,7 +9,8 @@ import 'package:stac/stac.dart';
 
 // Wrapper
 class MyStacTestPage extends StatelessWidget {
-  const MyStacTestPage({super.key});
+  final String pageUrl;
+  const MyStacTestPage({super.key, required this.pageUrl});
 
   @override
   Widget build(BuildContext context) {
@@ -18,69 +19,33 @@ class MyStacTestPage extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: _StacExperimentalPage(
-        pageUrl: '${dataURL}siskaperbapo/siskaperbapo.json',
-        dataUrls: {
-          r'$dataUrl': '${dataURL}siskaperbapo/siskaperbapo.json',
-          r'$formModalData': {
-            "Jenis Bahan Pokok": {
-              "Beras Medium / Kg": {
-                "image": "siskaperbapo/beras-premium.webp",
-                "price": "14.876",
-                "net": "-"
-              },
-              "Bawang Merah / Kg": {
-                "image": "siskaperbapo/bawang-merah.webp",
-                "price": "36.579",
-                "net": "+"
-              },
-              "Bawang Putih / Kg": {
-                "image": "siskaperbapo/bawang-putih.webp",
-                "price": "31.792",
-                "net": "+"
-              },
-              "Cabai Rawit / Kg": {
-                "image": "siskaperbapo/cabai-rawit.webp",
-                "price": "90.876",
-                "net": "-"
-              },
-              "Cabai Merah / Kg": {
-                "image": "siskaperbapo/cabe-merah.webp",
-                "price": "28.236",
-                "net": "+"
-              },
-              "Gula Pasir / Kg": {
-                "image": "siskaperbapo/tepung-terigu.webp",
-                "price": "11.479",
-                "net": "+"
-              },
-              "Gula Aren / Kg": {
-                "image": "siskaperbapo/tepung-terigu.webp",
-                "price": "...",
-                "net": "-"
-              },
-            },
-            "Area": [
-              'Jawa Timur',
-              'Batu',
-              'Blitar',
-              'Kediri',
-              'Madiun',
-              'Malang',
-              'Mojokerto',
-              'Pasuruan',
-            ],
-          },
-        }
-      )
+      home:
+      _StacNoParse(pageUrl: pageUrl),
       // _StacLocalTestPage(
       //   pageUrl: "$baseURL${dataURL}siskaperbapo/siskaperbapo.json",
-      //   dataUrl: "$baseURL${dataURL}siskaperbapo/siskaperbapo.json",
+      //   dataUrl: "${extBaseURL}bahan-pokok",
       // ),
       // _StacTestPage(
       //   pageUrl: "$baseURL${dataURL}siskaperbapo/siskaperbapo.json",
       //   dataUrl: "$baseURL${dataURL}siskaperbapo/siskaperbapo.json",
       // ),
+    );
+  }
+}
+
+// No Data Parse
+class _StacNoParse extends ConsumerWidget {
+  final String pageUrl;
+  const _StacNoParse({required this.pageUrl});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // return Stac.fromAssets('stac/.build/screens/siskaperbapo_offline.json');
+    return Stac.fromNetwork(
+      context: context,
+      request: StacNetworkRequest(url: pageUrl, method: Method.get),
+      loadingWidget: (context) => Center(child: CircularProgressIndicator()),
+      errorWidget: (e, s) => Center(child: Text("Failed to Fetch Page")),
     );
   }
 }
@@ -133,6 +98,7 @@ class _StacLocalTestPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncOfflinePage = ref.watch(_fetchOfflineDataProvider((url: pageUrl, asString: true)));
+    final asyncApiData = ref.watch(_asyncApiDataFetcher(dataUrl));
 
     return asyncOfflinePage.when(
         error: (e, s) => Center(child: Text('Error: $e')),
@@ -143,10 +109,22 @@ class _StacLocalTestPage extends ConsumerWidget {
           }
 
           // Convert
-          final convertedPage = jsonDecode((pageData as String).replaceAll(r'$dataUrl', dataUrl));
+          // final convertedPage = jsonDecode((pageData as String).replaceAll(r'$dataUrl', dataUrl));
+          final convertedPage = (pageData as String).replaceAll(r'$dataUrl', dataUrl);
+
+          List<String> komoditasList = [];
+          for (var entry in asyncApiData.requireValue["data"]) {
+            komoditasList.add(entry["komoditas"].toString());
+          }
+
+          String replacementItems = komoditasList.map((item) => '"$item"').join(', ');
+
+          final jsonString = convertedPage.replaceAll('"\$ListBapok"', replacementItems);
+
+          final mostConvertedPage = jsonDecode(jsonString);
 
           // Render Stac
-          return Stac.fromJson(convertedPage, context) ?? const Center(child: Text('Error: Failed to render Stac'));
+          return Stac.fromJson(mostConvertedPage, context) ?? const Center(child: Text('Error: Failed to render Stac'));
         }
     );
   }
@@ -218,6 +196,18 @@ final _fetchOfflineDataProvider = FutureProvider.family<dynamic, FetchParams>((r
     final response = await rootBundle.loadString('stac/.build/screens/siskaperbapo_offline.json');
 
     return asString ? response : jsonDecode(response);
+  } on DioException catch (e) {
+    throw Exception('Failed to fetch data: ${e.message}');
+  }
+});
+
+final _asyncApiDataFetcher = FutureProvider.autoDispose.family<Map<String, dynamic>, String>((ref, url) async {
+  final dio = await ref.watch(dioProvider.future);
+
+  try {
+    final json = await dio.get(url);
+
+    return json.data;
   } on DioException catch (e) {
     throw Exception('Failed to fetch data: ${e.message}');
   }

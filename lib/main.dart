@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:majadigi_mobile/domain/stac_parsers/stac_form_modal_builder_parser.dart';
+import 'package:majadigi_mobile/domain/stac_parsers/stac_custom_date_picker_parser.dart';
+import 'package:majadigi_mobile/domain/stac_parsers/stac_custom_form_modal_parser.dart';
+import 'package:majadigi_mobile/domain/stac_parsers/stac_custom_form_submit_action_parser.dart';
 import 'package:stac/stac.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'package:majadigi_mobile/ui/dynamic_page/stac_test_page.dart';
 import 'package:majadigi_mobile/domain/stac_parsers/stac_cached_image_parser.dart';
 import 'package:majadigi_mobile/ui/generic_service_page/generic_services_page.dart';
 import 'package:majadigi_mobile/ui/homepage/home_page.dart';
@@ -29,8 +30,12 @@ Future<void> main() async {
     ),
     parsers: [
       const StacCachedImageParser(),
-      const StacFormModalBuilderParser(),
+      const StacCustomFormDropdownParser(),
+      const StacCustomDatePickerParser(),
     ],
+    actionParsers: [
+      const StacCustomFormSubmitActionParser(),
+    ]
   );
 
   // Initialize Supabase
@@ -43,7 +48,11 @@ Future<void> main() async {
   runApp(
       UncontrolledProviderScope(
         container: container,
-        child: const MyStacTestPage(),
+        child:
+          const MyApp(),
+        // const MySiskaperbapoApp(),
+        // const MyListTestPage(),
+        // const MyStacTestPage(),
       )
   );
 }

@@ -23,7 +23,6 @@ class IntegrationListNotifier extends SupabaseFetchNotifier<IntegrationListModel
       IntegrationListColumn.service_list_id,
       IntegrationListColumn.title,
       IntegrationListColumn.page_url,
-      IntegrationListColumn.data_url,
       IntegrationListColumn.icon_url,
     ],
     filters: {

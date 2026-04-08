@@ -14,7 +14,7 @@ class TabbedContentView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncData = ref.watch(genericServicePageDataMiddlewareProvider(id));
+    final asyncData = ref.watch(aggregatedServicePageDataMiddlewareProvider(id));
 
     return asyncData.when(
       error: (e, s) => Center(

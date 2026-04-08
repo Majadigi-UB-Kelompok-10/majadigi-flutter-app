@@ -12,6 +12,9 @@ final String baseURL = 'https://nhsdrdhzkogczngslvvh.supabase.co/storage/v1/obje
 final String dataURL = 'data-assets/pages/';
 final String imageURL = 'image-asset/';
 
+// Local for now
+final String extBaseURL = 'http://10.0.2.2:8080/api/v1/';
+
 // ! Cache Store for Dio
 final dioCacheStoreProvider = FutureProvider.autoDispose<FileCacheStore>((ref) async {
   final dir = await getApplicationDocumentsDirectory();
@@ -32,7 +35,6 @@ final dioProvider = FutureProvider.autoDispose<Dio>((ref) async {
 
   final dio = Dio(
     BaseOptions(
-      baseUrl: baseURL,
       connectTimeout: const Duration(seconds: 3),
     ),
   );
