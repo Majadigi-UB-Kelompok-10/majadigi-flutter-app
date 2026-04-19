@@ -1,0 +1,33 @@
+import 'package:isar_community/isar.dart';
+import 'package:majadigi_mobile_rebuild/data/models/isar/policy/policy_registry.dart';
+
+/// Represent the Contract for Policy Local Datasource.
+/// Uses Isar Database.
+abstract class PolicyLocalDatasource {
+  Stream<List<IsarPolicyRegistry>> watchCachedPolicies();
+  Future<List<IsarPolicyRegistry>> getCachedPolicies();
+  Future<void> cachePolicies(List<IsarPolicyRegistry> policies);
+}
+
+/// Represent the Policy Local Datasource Implementation
+class PolicyLocalDatasourceImpl implements PolicyLocalDatasource {
+  final Isar _isar;
+  PolicyLocalDatasourceImpl(this._isar);
+
+  @override
+  Stream<List<IsarPolicyRegistry>> watchCachedPolicies() {
+    return _isar.isarPolicyRegistrys.where().watch(fireImmediately: true);
+  }
+
+  @override
+  Future<void> cachePolicies(List<IsarPolicyRegistry> policies) async {
+    await _isar.writeTxn(() async {
+      await _isar.isarPolicyRegistrys.putAll(policies);
+    });
+  }
+
+  @override
+  Future<List<IsarPolicyRegistry>> getCachedPolicies() {
+    return _isar.isarPolicyRegistrys.where().findAll();
+  }
+}
