@@ -3,10 +3,10 @@
   - [X] Finish Datasources
   - [X] Finish Model
   - [X] Finish Repositories
-- [ ] Domain Layer
+- [X] Domain Layer
   - [X] Finish Entities
   - [X] Finish Repositories
-  - [ ] Finish Use Cases
+  - [X] Finish Use Cases
 - [ ] UI Layer
   - [ ] Finish Recreate Pages
   - [ ] Finish Deferred Build
