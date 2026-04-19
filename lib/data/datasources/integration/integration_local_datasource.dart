@@ -5,7 +5,9 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/integration/integration
 /// Uses Isar Database.
 abstract class IntegrationLocalDatasource {
   Stream<List<IsarIntegrationRegistry>> watchCachedIntegration();
+  Stream<List<IsarIntegrationRegistry>> watchCachedIntegrationForService(String serviceId);
   Future<List<IsarIntegrationRegistry>> getCachedIntegration();
+  Future<List<IsarIntegrationRegistry>> getCachedIntegrationForService(String serviceId);
   Future<void> cacheIntegration(List<IsarIntegrationRegistry> integration);
 }
 
@@ -29,5 +31,15 @@ class IntegrationLocalDatasourceImpl implements IntegrationLocalDatasource {
   @override
   Future<List<IsarIntegrationRegistry>> getCachedIntegration() {
     return _isar.isarIntegrationRegistrys.where().findAll();
+  }
+
+  @override
+  Future<List<IsarIntegrationRegistry>> getCachedIntegrationForService(String serviceId) {
+    return _isar.isarIntegrationRegistrys.filter().fkServiceListIdEqualTo(serviceId).findAll();
+  }
+
+  @override
+  Stream<List<IsarIntegrationRegistry>> watchCachedIntegrationForService(String serviceId) {
+    return _isar.isarIntegrationRegistrys.filter().fkServiceListIdEqualTo(serviceId).watch(fireImmediately: true);
   }
 }

@@ -1,11 +1,3 @@
-import 'package:isar_community/isar.dart';
-import 'package:majadigi_mobile_rebuild/data/models/isar/endpoint/endpoint_registry.dart';
-import 'package:majadigi_mobile_rebuild/data/models/isar/service/service_registry.dart';
-import 'package:majadigi_mobile_rebuild/data/models/isar/policy/policy_registry.dart';
-import 'package:majadigi_mobile_rebuild/data/models/isar/operational/operational_registry.dart';
-import 'package:majadigi_mobile_rebuild/data/models/isar/integration/integration_registry.dart';
-import 'package:majadigi_mobile_rebuild/data/models/isar/image/image_registry.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:stac/stac.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -48,24 +40,12 @@ Future<ProviderContainer> init() async {
   );
 
   // Initialize Database
-  final directory = await getApplicationDocumentsDirectory();
+  final isar = await container.read(openIsarProvider.future);
 
-  final isar = await Isar.open(
-      [
-        IsarServiceRegistrySchema,
-        IsarPolicyRegistrySchema,
-        IsarOperationalRegistrySchema,
-        IsarIntegrationRegistrySchema,
-        IsarImageRegistrySchema,
-        IsarEndpointRegistrySchema
-      ],
-      directory: directory.path
+  // Return a NEW container with isar provider override
+  return ProviderContainer(
+    overrides: [
+      isarProvider.overrideWithValue(isar),
+    ]
   );
-
-  // Override isar provider with our custom isar
-  container.updateOverrides([
-    isarProvider.overrideWithValue(isar)
-  ]);
-
-  return container;
 }

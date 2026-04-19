@@ -5,7 +5,9 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/operational/operational
 /// Uses Isar Database.
 abstract class OperationalLocalDatasource {
   Stream<List<IsarOperationalRegistry>> watchCachedOperational();
+  Stream<List<IsarOperationalRegistry>> watchCachedOperationalForService(String serviceId);
   Future<List<IsarOperationalRegistry>> getCachedOperational();
+  Future<List<IsarOperationalRegistry>> getCachedOperationalForService(String serviceId);
   Future<void> cacheOperational(List<IsarOperationalRegistry> operational);
 }
 
@@ -29,5 +31,15 @@ class OperationalLocalDatasourceImpl implements OperationalLocalDatasource {
   @override
   Future<List<IsarOperationalRegistry>> getCachedOperational() {
     return _isar.isarOperationalRegistrys.where().findAll();
+  }
+
+  @override
+  Future<List<IsarOperationalRegistry>> getCachedOperationalForService(String serviceId) {
+    return _isar.isarOperationalRegistrys.filter().fkServiceListIdEqualTo(serviceId).findAll();
+  }
+
+  @override
+  Stream<List<IsarOperationalRegistry>> watchCachedOperationalForService(String serviceId) {
+    return _isar.isarOperationalRegistrys.filter().fkServiceListIdEqualTo(serviceId).watch(fireImmediately: true);
   }
 }

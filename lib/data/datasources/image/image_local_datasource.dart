@@ -5,7 +5,9 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/image/image_registry.da
 /// Uses Isar Database.
 abstract class ImageLocalDatasource {
   Stream<List<IsarImageRegistry>> watchCachedImage();
+  Stream<List<IsarImageRegistry>> watchCachedImageForService(String serviceId);
   Future<List<IsarImageRegistry>> getCachedImage();
+  Future<List<IsarImageRegistry>> getCachedImageForService(String serviceId);
   Future<void> cacheImage(List<IsarImageRegistry> image);
 }
 
@@ -27,7 +29,17 @@ class ImageLocalDatasourceImpl implements ImageLocalDatasource {
   }
 
   @override
+  Stream<List<IsarImageRegistry>> watchCachedImageForService(String serviceId) {
+    return _isar.isarImageRegistrys.filter().fkServiceListIdEqualTo(serviceId).watch(fireImmediately: true);
+  }
+
+  @override
   Future<List<IsarImageRegistry>> getCachedImage() {
     return _isar.isarImageRegistrys.where().findAll();
+  }
+
+  @override
+  Future<List<IsarImageRegistry>> getCachedImageForService(String serviceId) {
+    return _isar.isarImageRegistrys.filter().fkServiceListIdEqualTo(serviceId).findAll();
   }
 }

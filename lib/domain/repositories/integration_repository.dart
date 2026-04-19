@@ -2,5 +2,10 @@ import 'package:majadigi_mobile_rebuild/domain/entities/integration/integration_
 
 /// Represent Contract for Integrations
 abstract class IntegrationRepository {
+  // SWR Specific Implementation
+  Stream<List<IntegrationEntity>> watchAllIntegrationForService(String serviceId);
+  Future<void> syncIntegrations();
+
+  // General Use Case
   Future<List<IntegrationEntity>> getAllIntegrationForService(String serviceId);
 }

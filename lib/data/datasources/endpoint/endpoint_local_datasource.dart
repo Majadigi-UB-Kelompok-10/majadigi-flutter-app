@@ -5,7 +5,9 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/endpoint/endpoint_regis
 /// Uses Isar Database.
 abstract class EndpointLocalDatasource {
   Stream<List<IsarEndpointRegistry>> watchCachedEndpoint();
+  Stream<List<IsarEndpointRegistry>> watchCachedEndpointForIntegration(String fkEndpointId);
   Future<List<IsarEndpointRegistry>> getCachedEndpoint();
+  Future<List<IsarEndpointRegistry>> getCachedEndpointForIntegration(String fkEndpointId);
   Future<void> cacheEndpoint(List<IsarEndpointRegistry> endpoint);
 }
 
@@ -27,7 +29,23 @@ class EndpointLocalDatasourceImpl implements EndpointLocalDatasource {
   }
 
   @override
+  Stream<List<IsarEndpointRegistry>> watchCachedEndpointForIntegration(String fkEndpointId) {
+    return _isar.isarEndpointRegistrys.filter().idEqualTo(fkEndpointId).watch(fireImmediately: true);
+  }
+
+  @override
   Future<List<IsarEndpointRegistry>> getCachedEndpoint() {
     return _isar.isarEndpointRegistrys.where().findAll();
+  }
+
+  @override
+  Future<List<IsarEndpointRegistry>> getCachedEndpointForIntegration(String fkEndpointId) async {
+    final endpoint = await _isar.isarEndpointRegistrys.filter().idEqualTo(fkEndpointId).findFirst();
+
+    if (endpoint == null) {
+      return [];
+    }
+
+    return [endpoint];
   }
 }

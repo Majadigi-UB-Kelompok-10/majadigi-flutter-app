@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:majadigi_mobile_rebuild/data/models/dto/normalized_service_category/normalized_service_category_dto.dart';
-import 'package:majadigi_mobile_rebuild/data/models/dto/service/service_dto.dart';
 import 'package:majadigi_mobile_rebuild/data/datasources/remote_config.dart';
 
 /// Represent the Contract for Service Remote Datasource

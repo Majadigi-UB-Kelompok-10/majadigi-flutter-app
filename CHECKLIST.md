@@ -1,8 +1,8 @@
 ### Project Refactor To-Do List
-- [ ] Data Layer
+- [X] Data Layer
   - [X] Finish Datasources
   - [X] Finish Model
-  - [ ] Finish Repositories
+  - [X] Finish Repositories
 - [ ] Domain Layer
   - [X] Finish Entities
   - [X] Finish Repositories

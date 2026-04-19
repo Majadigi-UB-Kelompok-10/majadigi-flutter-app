@@ -44,7 +44,7 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
 
   @override
   Future<List<IsarServiceRegistry>> getCachedServicesInCategory(String categoryId) async {
-    final category = await _isar.isarCategoryRegistrys.where().filter().idEqualTo(categoryId).findFirst();
+    final category = await _isar.isarCategoryRegistrys.filter().idEqualTo(categoryId).findFirst();
 
     if (category == null) {
       return [];

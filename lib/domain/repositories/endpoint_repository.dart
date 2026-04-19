@@ -2,5 +2,10 @@ import 'package:majadigi_mobile_rebuild/domain/entities/endpoint/endpoint_entity
 
 /// Represent Contract for Endpoints
 abstract class EndpointRepository {
-  Future<EndpointEntity> getEndpointForIntegration(String integrationId);
+  // SWR Specific Implementation
+  Stream<EndpointEntity> watchEndpointForIntegration(String fkEndpointId);
+  Future<void> syncEndpoints();
+
+  // General Use Case
+  Future<EndpointEntity> getEndpointForIntegration(String fkEndpointId);
 }

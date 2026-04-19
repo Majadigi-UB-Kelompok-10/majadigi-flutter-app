@@ -5,7 +5,9 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/policy/policy_registry.
 /// Uses Isar Database.
 abstract class PolicyLocalDatasource {
   Stream<List<IsarPolicyRegistry>> watchCachedPolicies();
+  Stream<List<IsarPolicyRegistry>> watchCachedPoliciesForService(String serviceId);
   Future<List<IsarPolicyRegistry>> getCachedPolicies();
+  Future<List<IsarPolicyRegistry>> getCachedPoliciesForService(String serviceId);
   Future<void> cachePolicies(List<IsarPolicyRegistry> policies);
 }
 
@@ -29,5 +31,15 @@ class PolicyLocalDatasourceImpl implements PolicyLocalDatasource {
   @override
   Future<List<IsarPolicyRegistry>> getCachedPolicies() {
     return _isar.isarPolicyRegistrys.where().findAll();
+  }
+
+  @override
+  Future<List<IsarPolicyRegistry>> getCachedPoliciesForService(String serviceId) {
+    return _isar.isarPolicyRegistrys.filter().fkServiceListIdEqualTo(serviceId).findAll();
+  }
+
+  @override
+  Stream<List<IsarPolicyRegistry>> watchCachedPoliciesForService(String serviceId) {
+    return _isar.isarPolicyRegistrys.filter().fkServiceListIdEqualTo(serviceId).watch(fireImmediately: true);
   }
 }
