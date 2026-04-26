@@ -9,19 +9,19 @@ part 'normalized_service_category_dto.g.dart';
 /// A Special Normalized Version of Services that includes Category Ids
 /// ```
 /// {
-///   id: "<uuid>",
+///   service_list_id: "<uuid>",
 ///   title: "<string>",
 ///   description: "<string>",
-///   iconUrl: "<string>",
-///   categoryIds: [
+///   icon_url: "<string>",
+///   category_ids: [
 ///     "<uuid>",
 ///     "<uuid>"
 ///   ],
-///   createdAt: "<datetime>"
+///   created_at: "<datetime>"
 /// }
 /// ```
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class NormalizedServiceCategoryDto with _$NormalizedServiceCategoryDto {
   const NormalizedServiceCategoryDto({
     this.id,
@@ -29,31 +29,36 @@ class NormalizedServiceCategoryDto with _$NormalizedServiceCategoryDto {
     this.description,
     this.iconUrl,
     this.categoryIds,
-    this.createdAt
+    this.createdAt,
   });
 
   @override
-  @JsonKey(name: 'service_list_id')
+  @JsonKey(name: 'ServiceListId')
   final String? id;
 
   @override
+  @JsonKey(name: 'Title')
   final String? title;
 
   @override
+  @JsonKey(name: 'Description')
   final String? description;
 
   @override
+  @JsonKey(name: 'IconUrl')
   final String? iconUrl;
 
   @override
-  @JsonKey(defaultValue: [])
+  @JsonKey(defaultValue: [], name: 'CategoryIds')
   final List<String>? categoryIds;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory NormalizedServiceCategoryDto.fromJson(Map<String, dynamic> json) => _$NormalizedServiceCategoryDtoFromJson(json);
+  factory NormalizedServiceCategoryDto.fromJson(Map<String, dynamic> json) =>
+      _$NormalizedServiceCategoryDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$NormalizedServiceCategoryDtoToJson(this);
 

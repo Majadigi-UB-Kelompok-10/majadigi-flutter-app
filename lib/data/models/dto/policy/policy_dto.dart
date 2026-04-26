@@ -7,35 +7,39 @@ part 'policy_dto.g.dart';
 
 /// Model for JSON to Policy Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class PolicyDto with _$PolicyDto {
   const PolicyDto({
     this.id,
     this.fkServiceListId,
     this.benefit,
     this.instruction,
-    this.createdAt
+    this.createdAt,
   });
 
   @override
-  @JsonKey(name: 'policy_list_id')
+  @JsonKey(name: 'PolicyListId')
   final String? id;
 
   @override
-  @JsonKey(name: 'service_list_id')
+  @JsonKey(name: 'ServiceListId')
   final String? fkServiceListId;
 
   @override
+  @JsonKey(name: 'Benefit')
   final Map<String, dynamic>? benefit;
 
   @override
+  @JsonKey(name: 'Instruction')
   final Map<String, dynamic>? instruction;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory PolicyDto.fromJson(Map<String, dynamic> json) => _$PolicyDtoFromJson(json);
+  factory PolicyDto.fromJson(Map<String, dynamic> json) =>
+      _$PolicyDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$PolicyDtoToJson(this);
 

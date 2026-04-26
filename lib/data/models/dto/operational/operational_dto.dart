@@ -7,7 +7,7 @@ part 'operational_dto.g.dart';
 
 /// Model for JSON to Operational Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class OperationalDto with _$OperationalDto {
   const OperationalDto({
     this.id,
@@ -16,34 +16,40 @@ class OperationalDto with _$OperationalDto {
     this.address,
     this.operationalHour,
     this.socialMedia,
-    this.createdAt
+    this.createdAt,
   });
 
   @override
-  @JsonKey(name: 'operational_list_id')
+  @JsonKey(name: 'OperationalListId')
   final String? id;
 
   @override
-  @JsonKey(name: 'service_list_id')
+  @JsonKey(name: 'ServiceListId')
   final String? fkServiceListId;
 
   @override
+  @JsonKey(name: 'ServiceUrl')
   final String? serviceUrl;
 
   @override
+  @JsonKey(name: 'Address')
   final String? address;
 
   @override
+  @JsonKey(name: 'OperationalHour')
   final Map<String, dynamic>? operationalHour;
 
   @override
+  @JsonKey(name: 'SocialMedia')
   final Map<String, dynamic>? socialMedia;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory OperationalDto.fromJson(Map<String, dynamic> json) => _$OperationalDtoFromJson(json);
+  factory OperationalDto.fromJson(Map<String, dynamic> json) =>
+      _$OperationalDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$OperationalDtoToJson(this);
 

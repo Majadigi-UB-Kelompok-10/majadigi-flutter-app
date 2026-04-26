@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:majadigi_mobile_rebuild/data/datasources/decompression.dart';
 import 'package:majadigi_mobile_rebuild/data/datasources/remote_config.dart';
 import 'package:majadigi_mobile_rebuild/data/models/dto/integration/integration_dto.dart';
+import 'package:zstandard/zstandard.dart';
 
 /// Represent the Contract for Integration Remote Datasource.
 /// Uses Public API Gateway
@@ -10,16 +12,17 @@ abstract class IntegrationRemoteDatasource {
 
 /// Represent the Integration Remote Datasource Implementation
 class IntegrationRemoteDatasourceImpl implements IntegrationRemoteDatasource {
-  final Dio _dio;
-  IntegrationRemoteDatasourceImpl(this._dio) {
-    _dio.options.baseUrl = baseUrl;
+  final Dio dio;
+  final Zstandard? zstandard;
+  IntegrationRemoteDatasourceImpl({required this.dio, this.zstandard}) {
+    dio.options.baseUrl = baseUrl;
   }
 
   @override
   Future<List<IntegrationDto>> fetchIntegrationFromNetwork() async {
     // TODO: CHANGE THIS TO REAL API GATEWAY
-    final response = await _dio.get('/integration');
-    final data = response.data as List;
+    final response = await dio.get('/integration');
+    final data = await cleanupData(zstandard: zstandard, response: response);
     return data.map((json) => IntegrationDto.fromJson(json)).toList();
   }
 }

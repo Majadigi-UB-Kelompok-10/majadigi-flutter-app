@@ -7,35 +7,39 @@ part 'image_dto.g.dart';
 
 /// Model for JSON to Image Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class ImageDto with _$ImageDto {
   const ImageDto({
     this.id,
     this.fkServiceListId,
     this.imageUrl,
     this.semanticLabel,
-    this.createdAt
+    this.createdAt,
   });
 
   @override
-  @JsonKey(name: 'image_list_id')
+  @JsonKey(name: 'ImageListId')
   final String? id;
 
   @override
-  @JsonKey(name: 'service_list_id')
+  @JsonKey(name: 'ServiceListId')
   final String? fkServiceListId;
 
   @override
+  @JsonKey(name: 'ImageUrl')
   final String? imageUrl;
 
   @override
+  @JsonKey(name: 'SemanticLabel')
   final String? semanticLabel;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory ImageDto.fromJson(Map<String, dynamic> json) => _$ImageDtoFromJson(json);
+  factory ImageDto.fromJson(Map<String, dynamic> json) =>
+      _$ImageDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ImageDtoToJson(this);
 

@@ -7,34 +7,39 @@ part 'service_dto.g.dart';
 
 /// Model for JSON to Service Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class ServiceDto with _$ServiceDto {
   const ServiceDto({
     this.id,
     this.title,
     this.description,
     this.iconUrl,
-    this.createdAt
+    this.createdAt,
   });
 
   @override
-  @JsonKey(name: 'service_list_id')
+  @JsonKey(name: 'ServiceListId')
   final String? id;
 
   @override
+  @JsonKey(name: 'Title')
   final String? title;
 
   @override
+  @JsonKey(name: 'Description')
   final String? description;
 
   @override
+  @JsonKey(name: 'IconUrl')
   final String? iconUrl;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory ServiceDto.fromJson(Map<String, dynamic> json) => _$ServiceDtoFromJson(json);
+  factory ServiceDto.fromJson(Map<String, dynamic> json) =>
+      _$ServiceDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ServiceDtoToJson(this);
 

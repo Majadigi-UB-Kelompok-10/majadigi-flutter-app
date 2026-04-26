@@ -7,30 +7,29 @@ part 'category_dto.g.dart';
 
 /// Model for JSON to Category Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class CategoryDto with _$CategoryDto {
-  const CategoryDto({
-    this.id,
-    this.name,
-    this.description,
-    this.createdAt
-  });
+  const CategoryDto({this.id, this.name, this.description, this.createdAt});
 
   @override
-  @JsonKey(name: 'category_list_id')
+  @JsonKey(name: 'CategoryListId')
   final String? id;
 
   @override
+  @JsonKey(name: 'Name')
   final String? name;
 
   @override
+  @JsonKey(name: 'Description')
   final String? description;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory CategoryDto.fromJson(Map<String, dynamic> json) => _$CategoryDtoFromJson(json);
+  factory CategoryDto.fromJson(Map<String, dynamic> json) =>
+      _$CategoryDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$CategoryDtoToJson(this);
 

@@ -7,30 +7,29 @@ part 'endpoint_dto.g.dart';
 
 /// Model for JSON to Endpoint Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class EndpointDto with _$EndpointDto {
-  const EndpointDto({
-    this.id,
-    this.slugName,
-    this.pageUrl,
-    this.createdAt
-  });
+  const EndpointDto({this.id, this.slugName, this.pageUrl, this.createdAt});
 
   @override
-  @JsonKey(name: 'endpoint_list_id')
+  @JsonKey(name: 'EndpointListId')
   final String? id;
 
   @override
+  @JsonKey(name: 'SlugName')
   final String? slugName;
 
   @override
+  @JsonKey(name: 'PageUrl')
   final String? pageUrl;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory EndpointDto.fromJson(Map<String, dynamic> json) => _$EndpointDtoFromJson(json);
+  factory EndpointDto.fromJson(Map<String, dynamic> json) =>
+      _$EndpointDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$EndpointDtoToJson(this);
 

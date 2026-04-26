@@ -19,7 +19,10 @@ CategoryLocalDatasource _categoryLocalDatasource(Ref ref) {
 /// Remote Datasource for Category
 @riverpod
 CategoryRemoteDatasource _categoryRemoteDatasource(Ref ref) {
-  return CategoryRemoteDatasourceImpl(ref.watch(dioProvider));
+  return CategoryRemoteDatasourceImpl(
+    dio: ref.watch(dioProvider),
+    zstandard: ref.watch(zstandardProvider),
+  );
 }
 
 /// Repository for Category
@@ -47,7 +50,9 @@ SyncCategoryUseCase syncCategoryUseCase(Ref ref) {
 /// Get all categories in a specific service as a List<CategoryEntity>
 @riverpod
 GetAllCategoryForServiceUseCase _getAllCategoryForServiceUseCase(Ref ref) {
-  return GetAllCategoryForServiceUseCase(ref.watch(_categoryRepositoryProvider));
+  return GetAllCategoryForServiceUseCase(
+    ref.watch(_categoryRepositoryProvider),
+  );
 }
 
 // -- Exposed Use Case for Category --
@@ -66,8 +71,13 @@ Stream<List<CategoryEntity>> categoryList(Ref ref) {
 
 /// Get all categories in a specific service as a List<CategoryEntity> (Passthrough)
 @riverpod
-Future<List<CategoryEntity>> getAllCategoryForService(Ref ref, String serviceId) async {
-  final getAllCategoryForServiceUseCase = ref.watch(_getAllCategoryForServiceUseCaseProvider);
+Future<List<CategoryEntity>> getAllCategoryForService(
+  Ref ref,
+  String serviceId,
+) async {
+  final getAllCategoryForServiceUseCase = ref.watch(
+    _getAllCategoryForServiceUseCaseProvider,
+  );
 
   return await getAllCategoryForServiceUseCase.execute(serviceId);
 }

@@ -7,7 +7,7 @@ part 'integration_dto.g.dart';
 
 /// Model for JSON to Integration Entity Object
 @freezed
-@JsonSerializable(fieldRename: FieldRename.snake, explicitToJson: true)
+@JsonSerializable(explicitToJson: true)
 class IntegrationDto with _$IntegrationDto {
   const IntegrationDto({
     this.id,
@@ -15,32 +15,36 @@ class IntegrationDto with _$IntegrationDto {
     this.fkEndpointListId,
     this.title,
     this.iconUrl,
-    this.createdAt
+    this.createdAt,
   });
 
   @override
-  @JsonKey(name: 'integration_list_id')
+  @JsonKey(name: 'IntegrationListId')
   final String? id;
 
   @override
-  @JsonKey(name: 'service_list_id')
+  @JsonKey(name: 'ServiceListId')
   final String? fkServiceListId;
 
   @override
-  @JsonKey(name: 'endpoint_list_id')
+  @JsonKey(name: 'EndpointListId')
   final String? fkEndpointListId;
 
   @override
+  @JsonKey(name: 'Title')
   final String? title;
 
   @override
+  @JsonKey(name: 'IconUrl')
   final String? iconUrl;
 
   @override
+  @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
   // Json Serializable
-  factory IntegrationDto.fromJson(Map<String, dynamic> json) => _$IntegrationDtoFromJson(json);
+  factory IntegrationDto.fromJson(Map<String, dynamic> json) =>
+      _$IntegrationDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$IntegrationDtoToJson(this);
 

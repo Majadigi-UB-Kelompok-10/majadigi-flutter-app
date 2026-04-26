@@ -6,6 +6,7 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/policy/policy_registry.
 import 'package:majadigi_mobile_rebuild/data/models/isar/operational/operational_registry.dart';
 import 'package:majadigi_mobile_rebuild/data/models/isar/integration/integration_registry.dart';
 import 'package:majadigi_mobile_rebuild/data/models/isar/image/image_registry.dart';
+import 'package:majadigi_mobile_rebuild/data/models/isar/etag/etag_registry.dart';
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,18 +22,16 @@ Future<Directory> directory(Ref ref) async {
 Future<Isar> openIsar(Ref ref) async {
   final dir = await ref.read(directoryProvider.future);
 
-  return await Isar.open(
-      [
-        IsarCategoryRegistrySchema,
-        IsarServiceRegistrySchema,
-        IsarPolicyRegistrySchema,
-        IsarOperationalRegistrySchema,
-        IsarIntegrationRegistrySchema,
-        IsarImageRegistrySchema,
-        IsarEndpointRegistrySchema
-      ],
-      directory: dir.path
-  );
+  return await Isar.open([
+    IsarCategoryRegistrySchema,
+    IsarServiceRegistrySchema,
+    IsarPolicyRegistrySchema,
+    IsarOperationalRegistrySchema,
+    IsarIntegrationRegistrySchema,
+    IsarImageRegistrySchema,
+    IsarEndpointRegistrySchema,
+    IsarEtagRegistrySchema,
+  ], directory: dir.path);
 }
 
 @riverpod

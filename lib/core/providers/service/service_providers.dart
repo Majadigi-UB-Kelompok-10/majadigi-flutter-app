@@ -22,7 +22,10 @@ ServiceLocalDatasource _serviceLocalDatasource(Ref ref) {
 /// Remote Datasource for Service
 @riverpod
 ServiceRemoteDatasource _serviceRemoteDatasource(Ref ref) {
-  return ServiceRemoteDatasourceImpl(ref.watch(dioProvider));
+  return ServiceRemoteDatasourceImpl(
+    dio: ref.watch(dioProvider),
+    zstandard: ref.watch(zstandardProvider),
+  );
 }
 
 /// Repository for Service
@@ -73,8 +76,13 @@ Stream<List<ServiceEntity>> serviceList(Ref ref) {
 
 /// Get all services in a specific category as a List<ServiceEntity> (Passthrough)
 @riverpod
-Future<List<ServiceEntity>> getAllServicesInCategory(Ref ref, String categoryId) async {
-  final getAllServicesInCategoryUseCase = ref.watch(_getAllServicesInCategoryUseCaseProvider);
+Future<List<ServiceEntity>> getAllServicesInCategory(
+  Ref ref,
+  String categoryId,
+) async {
+  final getAllServicesInCategoryUseCase = ref.watch(
+    _getAllServicesInCategoryUseCaseProvider,
+  );
 
   return await getAllServicesInCategoryUseCase.execute(categoryId);
 }
