@@ -18,8 +18,9 @@ Future<List> cleanupData({
   // Put other future compression here (Guard Clause)
   // ...
 
-  // If it's not compressed, return data as is
-  return response.data["data"] as List;
+  // If it's not compressed, convert data from List<int> to Json
+  final jsonData = json.decode(utf8.decode(response.data as List<int>));
+  return jsonData["data"] as List;
 }
 
 /// Converts zstd compressed data to a decompressed List.
