@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -10,7 +11,7 @@ Future<List> cleanupData({
 }) async {
   // If it's zstd compressed, decompress it
   if (zstandard != null &&
-      response.headers.value('content-encoding') == 'zstd') {
+      response.headers.value('Content-Encoding') == 'zstd') {
     return await convertZstdFromResponseToList(zstandard, response);
   }
 
@@ -18,7 +19,7 @@ Future<List> cleanupData({
   // ...
 
   // If it's not compressed, return data as is
-  return response.data as List;
+  return response.data["data"] as List;
 }
 
 /// Converts zstd compressed data to a decompressed List.
@@ -27,9 +28,10 @@ Future<List> convertZstdFromResponseToList(
   Response<dynamic> response,
 ) async {
   final compressedData = response.data;
+
   final decompressedData = await zstandard.decompress(
     Uint8List.fromList(compressedData),
   );
 
-  return decompressedData?.toList() ?? [];
+  return (jsonDecode(utf8.decode(decompressedData!)))["data"] as List;
 }

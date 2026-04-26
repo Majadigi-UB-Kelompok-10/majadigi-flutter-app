@@ -28,6 +28,8 @@ class ServiceRepositoryImpl implements ServiceRepository {
     try {
       final normalizedPayload = await remoteDatasource.fetchNormalizedServicesFromNetwork();
 
+      if (normalizedPayload == null) return;
+
       await localDatasource.processAndCacheServices(normalizedPayload);
     } catch (e) { /* None */ }
   }

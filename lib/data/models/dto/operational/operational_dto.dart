@@ -20,11 +20,11 @@ class OperationalDto with _$OperationalDto {
   });
 
   @override
-  @JsonKey(name: 'OperationalListId')
+  @JsonKey(name: 'OperationalListID')
   final String? id;
 
   @override
-  @JsonKey(name: 'ServiceListId')
+  @JsonKey(name: 'ServiceListID')
   final String? fkServiceListId;
 
   @override

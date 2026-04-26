@@ -26,6 +26,8 @@ class EndpointRepositoryImpl implements EndpointRepository {
     try {
       final endpoints = await remoteDatasource.fetchEndpointFromNetwork();
 
+      if (endpoints == null) return;
+
       final endpointIsar = endpoints.map((endpoint) => endpoint.toIsar()).toList();
 
       localDatasource.cacheEndpoint(endpointIsar);

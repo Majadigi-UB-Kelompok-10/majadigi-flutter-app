@@ -12,7 +12,7 @@ class CategoryDto with _$CategoryDto {
   const CategoryDto({this.id, this.name, this.description, this.createdAt});
 
   @override
-  @JsonKey(name: 'CategoryListId')
+  @JsonKey(name: 'CategoryListID')
   final String? id;
 
   @override

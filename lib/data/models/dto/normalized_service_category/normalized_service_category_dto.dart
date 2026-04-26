@@ -33,7 +33,7 @@ class NormalizedServiceCategoryDto with _$NormalizedServiceCategoryDto {
   });
 
   @override
-  @JsonKey(name: 'ServiceListId')
+  @JsonKey(name: 'ServiceListID')
   final String? id;
 
   @override

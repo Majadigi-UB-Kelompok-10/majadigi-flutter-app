@@ -7,7 +7,7 @@ import 'package:zstandard/zstandard.dart';
 /// Represent the Contract for Policy Remote Datasource.
 /// Uses Public API Gateway
 abstract class PolicyRemoteDatasource {
-  Future<List<PolicyDto>> fetchPoliciesFromNetwork();
+  Future<List<PolicyDto>?> fetchPoliciesFromNetwork();
 }
 
 /// Represent the Policy Remote Datasource Implementation
@@ -19,9 +19,9 @@ class PolicyRemoteDatasourceImpl implements PolicyRemoteDatasource {
   }
 
   @override
-  Future<List<PolicyDto>> fetchPoliciesFromNetwork() async {
-    // TODO: CHANGE THIS TO REAL API GATEWAY
+  Future<List<PolicyDto>?> fetchPoliciesFromNetwork() async {
     final response = await dio.get('/policies');
+    if (response.statusCode == 304) return null;
     final data = await cleanupData(zstandard: zstandard, response: response);
     return data.map((json) => PolicyDto.fromJson(json)).toList();
   }

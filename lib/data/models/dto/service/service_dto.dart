@@ -18,7 +18,7 @@ class ServiceDto with _$ServiceDto {
   });
 
   @override
-  @JsonKey(name: 'ServiceListId')
+  @JsonKey(name: 'ServiceListID')
   final String? id;
 
   @override

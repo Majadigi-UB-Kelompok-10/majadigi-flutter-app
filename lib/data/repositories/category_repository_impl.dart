@@ -26,6 +26,8 @@ class CategoryRepositoryImpl implements CategoryRepository {
     try {
       final categories = await remoteDatasource.fetchCategoryFromNetwork();
 
+      if (categories == null) return;
+
       final categoryIsar = categories.map((category) => category.toIsar()).toList();
 
       localDatasource.cacheCategory(categoryIsar);

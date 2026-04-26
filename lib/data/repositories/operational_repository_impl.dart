@@ -26,6 +26,8 @@ class OperationalRepositoryImpl implements OperationalRepository {
     try {
       final operational = await remoteDatasource.fetchOperationalFromNetwork();
 
+      if (operational == null) return;
+
       final operationalIsar = operational.map((operational) => operational.toIsar()).toList();
 
       localDatasource.cacheOperational(operationalIsar);

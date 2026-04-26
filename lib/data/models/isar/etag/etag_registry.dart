@@ -6,7 +6,7 @@ part 'etag_registry.g.dart';
 class IsarEtagRegistry {
   Id id = Isar.autoIncrement;
 
-  @Index(unique: true, replace: true)
+  @Index(unique: true, replace: true, type: IndexType.value)
   late String endpointUrl = '';
 
   late String etag = '';

@@ -19,15 +19,15 @@ class IntegrationDto with _$IntegrationDto {
   });
 
   @override
-  @JsonKey(name: 'IntegrationListId')
+  @JsonKey(name: 'IntegrationListID')
   final String? id;
 
   @override
-  @JsonKey(name: 'ServiceListId')
+  @JsonKey(name: 'ServiceListID')
   final String? fkServiceListId;
 
   @override
-  @JsonKey(name: 'EndpointListId')
+  @JsonKey(name: 'EndpointListID')
   final String? fkEndpointListId;
 
   @override

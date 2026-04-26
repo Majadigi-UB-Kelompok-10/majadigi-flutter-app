@@ -7,7 +7,7 @@ import 'package:zstandard/zstandard.dart';
 /// Represent the Contract for Service Remote Datasource
 /// uses Public API Gateway
 abstract class ServiceRemoteDatasource {
-  Future<List<NormalizedServiceCategoryDto>>
+  Future<List<NormalizedServiceCategoryDto>?>
   fetchNormalizedServicesFromNetwork();
 }
 
@@ -20,11 +20,11 @@ class ServiceRemoteDatasourceImpl implements ServiceRemoteDatasource {
   }
 
   @override
-  Future<List<NormalizedServiceCategoryDto>>
+  Future<List<NormalizedServiceCategoryDto>?>
   fetchNormalizedServicesFromNetwork() async {
-    // TODO: CHANGE THIS TO REAL API GATEWAY
-    // ! This should fetch the normalized services
-    final response = await dio.get('/services');
+    final response = await dio.get('/services/normalized');
+
+    if (response.statusCode == 304) return null;
 
     final data = await cleanupData(zstandard: zstandard, response: response);
 

@@ -26,6 +26,8 @@ class IntegrationRepositoryImpl implements IntegrationRepository {
     try {
       final integration = await remoteDatasource.fetchIntegrationFromNetwork();
 
+      if (integration == null) return;
+
       final integrationIsar = integration.map((integration) => integration.toIsar()).toList();
 
       localDatasource.cacheIntegration(integrationIsar);

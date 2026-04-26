@@ -7,7 +7,7 @@ import 'package:zstandard/zstandard.dart';
 /// Represent the Contract for Endpoint Remote Datasource.
 /// Uses Public API Gateway.
 abstract class EndpointRemoteDatasource {
-  Future<List<EndpointDto>> fetchEndpointFromNetwork();
+  Future<List<EndpointDto>?> fetchEndpointFromNetwork();
 }
 
 /// Represent the Endpoint Remote Datasource Implementation
@@ -19,9 +19,11 @@ class EndpointRemoteDatasourceImpl implements EndpointRemoteDatasource {
   }
 
   @override
-  Future<List<EndpointDto>> fetchEndpointFromNetwork() async {
-    // TODO: CHANGE THIS TO REAL API GATEWAY
-    final response = await dio.get('/endpoint');
+  Future<List<EndpointDto>?> fetchEndpointFromNetwork() async {
+    final response = await dio.get('/endpoints');
+
+    if (response.statusCode == 304) return null;
+
     final data = await cleanupData(zstandard: zstandard, response: response);
     return data.map((json) => EndpointDto.fromJson(json)).toList();
   }

@@ -26,6 +26,8 @@ class ImageRepositoryImpl implements ImageRepository {
     try {
       final images = await remoteDatasource.fetchImageFromNetwork();
 
+      if (images == null) return;
+
       final imageIsar = images.map((image) => image.toIsar()).toList();
 
       localDatasource.cacheImage(imageIsar);

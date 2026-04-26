@@ -26,6 +26,8 @@ class PolicyRepositoryImpl implements PolicyRepository {
     try {
       final policies = await remoteDatasource.fetchPoliciesFromNetwork();
 
+      if (policies == null) return;
+
       final policyIsar = policies.map((policy) => policy.toIsar()).toList();
 
       localDatasource.cachePolicies(policyIsar);

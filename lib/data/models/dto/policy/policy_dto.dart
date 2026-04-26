@@ -18,11 +18,11 @@ class PolicyDto with _$PolicyDto {
   });
 
   @override
-  @JsonKey(name: 'PolicyListId')
+  @JsonKey(name: 'PolicyListID')
   final String? id;
 
   @override
-  @JsonKey(name: 'ServiceListId')
+  @JsonKey(name: 'ServiceListID')
   final String? fkServiceListId;
 
   @override

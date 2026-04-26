@@ -7,7 +7,7 @@ import 'package:zstandard/zstandard.dart';
 /// Represent the Contract for Integration Remote Datasource.
 /// Uses Public API Gateway
 abstract class IntegrationRemoteDatasource {
-  Future<List<IntegrationDto>> fetchIntegrationFromNetwork();
+  Future<List<IntegrationDto>?> fetchIntegrationFromNetwork();
 }
 
 /// Represent the Integration Remote Datasource Implementation
@@ -19,9 +19,11 @@ class IntegrationRemoteDatasourceImpl implements IntegrationRemoteDatasource {
   }
 
   @override
-  Future<List<IntegrationDto>> fetchIntegrationFromNetwork() async {
-    // TODO: CHANGE THIS TO REAL API GATEWAY
-    final response = await dio.get('/integration');
+  Future<List<IntegrationDto>?> fetchIntegrationFromNetwork() async {
+    final response = await dio.get('/integrations');
+
+    if (response.statusCode == 304) return null;
+
     final data = await cleanupData(zstandard: zstandard, response: response);
     return data.map((json) => IntegrationDto.fromJson(json)).toList();
   }

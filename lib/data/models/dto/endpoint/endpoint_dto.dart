@@ -12,7 +12,7 @@ class EndpointDto with _$EndpointDto {
   const EndpointDto({this.id, this.slugName, this.pageUrl, this.createdAt});
 
   @override
-  @JsonKey(name: 'EndpointListId')
+  @JsonKey(name: 'EndpointListID')
   final String? id;
 
   @override

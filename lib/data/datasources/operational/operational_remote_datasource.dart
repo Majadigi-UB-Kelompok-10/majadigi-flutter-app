@@ -7,7 +7,7 @@ import 'package:zstandard/zstandard.dart';
 /// Represent the Contract for Operational Remote Datasource.
 /// Uses Public API Gateway.
 abstract class OperationalRemoteDatasource {
-  Future<List<OperationalDto>> fetchOperationalFromNetwork();
+  Future<List<OperationalDto>?> fetchOperationalFromNetwork();
 }
 
 /// Represent the Operational Remote Datasource Implementation
@@ -19,9 +19,12 @@ class OperationalRemoteDatasourceImpl implements OperationalRemoteDatasource {
   }
 
   @override
-  Future<List<OperationalDto>> fetchOperationalFromNetwork() async {
+  Future<List<OperationalDto>?> fetchOperationalFromNetwork() async {
     // TODO: CHANGE THIS TO REAL API GATEWAY
     final response = await dio.get('/operational');
+
+    if (response.statusCode == 304) return null;
+
     final data = await cleanupData(zstandard: zstandard, response: response);
     return data.map((json) => OperationalDto.fromJson(json)).toList();
   }

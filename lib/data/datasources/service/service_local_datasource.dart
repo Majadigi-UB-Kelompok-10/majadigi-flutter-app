@@ -9,8 +9,12 @@ import 'package:majadigi_mobile_rebuild/data/models/isar/fast_hash.dart';
 abstract class ServiceLocalDatasource {
   Stream<List<IsarServiceRegistry>> watchCachedServices();
   Future<List<IsarServiceRegistry>> getCachedServices();
-  Future<List<IsarServiceRegistry>> getCachedServicesInCategory(String categoryId);
-  Future<void> processAndCacheServices(List<NormalizedServiceCategoryDto> payload);
+  Future<List<IsarServiceRegistry>> getCachedServicesInCategory(
+    String categoryId,
+  );
+  Future<void> processAndCacheServices(
+    List<NormalizedServiceCategoryDto> payload,
+  );
 }
 
 /// Represent the Service Local Datasource Implementation
@@ -29,22 +33,38 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
   }
 
   @override
-  Future<void> processAndCacheServices(List<NormalizedServiceCategoryDto> payload) async {
+  Future<void> processAndCacheServices(
+    List<NormalizedServiceCategoryDto> payload,
+  ) async {
     await _isar.writeTxn(() async {
       for (NormalizedServiceCategoryDto normalizedService in payload) {
         final linkedCategories = await _isar.isarCategoryRegistrys.getAll(
-          normalizedService.categoryIds!.map((id) => fastHash(id)).toList()
+          normalizedService.categoryIds!.map((id) => fastHash(id)).toList(),
         );
 
-        final serviceIsar = normalizedService.toIsar()..categories.addAll(linkedCategories.whereType<IsarCategoryRegistry>());
+        // Create the Isar object once
+        final serviceIsar = normalizedService.toIsar();
+
+        // Save Service to Isar first (makes it managed by Isar)
+        await _isar.isarServiceRegistrys.put(serviceIsar);
+
+        // Now link categories using the same managed object
+        serviceIsar.categories.addAll(
+          linkedCategories.whereType<IsarCategoryRegistry>(),
+        );
         await serviceIsar.categories.save();
       }
     });
   }
 
   @override
-  Future<List<IsarServiceRegistry>> getCachedServicesInCategory(String categoryId) async {
-    final category = await _isar.isarCategoryRegistrys.filter().idEqualTo(categoryId).findFirst();
+  Future<List<IsarServiceRegistry>> getCachedServicesInCategory(
+    String categoryId,
+  ) async {
+    final category = await _isar.isarCategoryRegistrys
+        .filter()
+        .idEqualTo(categoryId)
+        .findFirst();
 
     if (category == null) {
       return [];

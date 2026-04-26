@@ -7,7 +7,7 @@ import 'package:zstandard/zstandard.dart';
 /// Represent the Contract for Image Remote Datasource.
 /// Uses Public API Gateway.
 abstract class ImageRemoteDatasource {
-  Future<List<ImageDto>> fetchImageFromNetwork();
+  Future<List<ImageDto>?> fetchImageFromNetwork();
 }
 
 /// Represent the Image Remote Datasource Implementation
@@ -19,9 +19,11 @@ class ImageRemoteDatasourceImpl implements ImageRemoteDatasource {
   }
 
   @override
-  Future<List<ImageDto>> fetchImageFromNetwork() async {
-    // TODO: CHANGE THIS TO REAL API GATEWAY
-    final response = await dio.get('/image');
+  Future<List<ImageDto>?> fetchImageFromNetwork() async {
+    final response = await dio.get('/images');
+
+    if (response.statusCode == 304) return null;
+
     final data = await cleanupData(zstandard: zstandard, response: response);
     return data.map((json) => ImageDto.fromJson(json)).toList();
   }

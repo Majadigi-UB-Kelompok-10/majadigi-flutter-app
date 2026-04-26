@@ -18,11 +18,11 @@ class ImageDto with _$ImageDto {
   });
 
   @override
-  @JsonKey(name: 'ImageListId')
+  @JsonKey(name: 'ImageListID')
   final String? id;
 
   @override
-  @JsonKey(name: 'ServiceListId')
+  @JsonKey(name: 'ServiceListID')
   final String? fkServiceListId;
 
   @override
