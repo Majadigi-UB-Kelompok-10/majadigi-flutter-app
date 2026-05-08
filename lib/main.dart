@@ -2,7 +2,7 @@ import 'package:stac/stac.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:majadigi_mobile_rebuild/main/ui/router.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/router_shell.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 

@@ -49,6 +49,7 @@ dependencies:
   zstandard: ^1.5.0
   async: ^2.13.1
   flutter_native_splash: ^2.4.7
+  go_router: ^17.2.3
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +82,7 @@ flutter:
   assets:
     - assets/splash/majadigi-main-logo.png
     - assets/splash/majadigi-main-logo-960px.png
+    - assets/splash/majadigi-main-text.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

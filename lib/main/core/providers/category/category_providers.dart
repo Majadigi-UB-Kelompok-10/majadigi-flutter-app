@@ -47,7 +47,7 @@ SyncCategoryUseCase syncCategoryUseCase(Ref ref) {
   return SyncCategoryUseCase(ref.watch(_categoryRepositoryProvider));
 }
 
-/// Get all categories in a specific service as a List<CategoryEntity>
+/// Get all categories in a specific service as a List\<CategoryEntity\>
 @riverpod
 GetAllCategoryForServiceUseCase _getAllCategoryForServiceUseCase(Ref ref) {
   return GetAllCategoryForServiceUseCase(
