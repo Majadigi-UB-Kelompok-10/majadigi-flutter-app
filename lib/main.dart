@@ -2,9 +2,9 @@ import 'package:stac/stac.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:majadigi_mobile_rebuild/ui/router.dart';
-import 'package:majadigi_mobile_rebuild/core/http.dart';
-import 'package:majadigi_mobile_rebuild/core/storage.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/router.dart';
+import 'package:majadigi_mobile_rebuild/main/core/http.dart';
+import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 
 /// Entrypoint of the App
 Future<void> main() async {
