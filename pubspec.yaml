@@ -38,7 +38,6 @@ dependencies:
   hooks_riverpod: ^3.3.1
   flutter_hooks: ^0.21.3+1
   riverpod_annotation: ^4.0.2
-  stac: ^1.4.0
   supabase_flutter: ^2.12.2
   isar_community: ^3.3.2
   isar_community_flutter_libs: ^3.3.2
@@ -66,6 +65,7 @@ dev_dependencies:
   isar_community_generator: ^3.3.2
   freezed: ^3.2.5
   json_serializable: ^6.13.0
+  flutter_launcher_icons: ^0.14.4
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -83,6 +83,7 @@ flutter:
     - assets/splash/majadigi-main-logo.png
     - assets/splash/majadigi-main-logo-960px.png
     - assets/splash/majadigi-main-text.png
+    - assets/majadigi-main-logo-with-text.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

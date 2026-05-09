@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/splash/widgets/majadigi_logo.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/splash/widgets/majadigi_progress_indicator.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/splash/widgets/majadigi_text.dart';
 
 class SplashScreen extends HookWidget {
   const SplashScreen({super.key});
@@ -23,7 +26,7 @@ class SplashScreen extends HookWidget {
         if (context.mounted) step.value = 2;
       });
 
-      // Step 3: Navigate after everything is done (Uncomment when needed)
+      // Step 3: Navigate after everything is done
       final navTimer = Timer(const Duration(milliseconds: 3800), () {
         if (context.mounted) {
           context.go('/homepage');
@@ -44,8 +47,6 @@ class SplashScreen extends HookWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           spacing: 16.0,
           children: [
-            // Wrapped in a fixed height so the layout doesn't jump vertically
-            // when the text appears
             SizedBox(
               height: 100,
               child: Row(
@@ -53,48 +54,16 @@ class SplashScreen extends HookWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // Main Logo
-                  AnimatedOpacity(
-                    opacity: step.value >= 1 ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 1200),
-                    child: Padding(
-                      padding: EdgeInsetsGeometry.all(12.0),
-                      child: Image.asset('assets/splash/majadigi-main-logo.png'),
-                    )
-                  ),
+                  MajadigiLogo(step: step),
 
                   // TEXT (Appears on the left)
-                  AnimatedSize(
-                    duration: const Duration(milliseconds: 1000),
-                    curve: Curves.easeOutCubic,
-                    alignment: Alignment.centerRight,
-                    child: step.value >= 2
-                        ? AnimatedOpacity(
-                      opacity: step.value >= 2 ? 1.0 : 0.0,
-                      duration: const Duration(milliseconds: 800),
-                      child: Image.asset(
-                        'assets/splash/majadigi-main-text.png',
-                        width: MediaQuery.of(context).size.width * 0.4,
-                        height: 100,
-                        fit: BoxFit.contain
-                      )
-                    )
-                        : const SizedBox.shrink(),
-                  ),
+                  MajadigiText(step: step),
                 ],
               ),
             ),
 
             // PROGRESS INDICATOR (Expands width)
-            // AnimatedContainer(
-            //   duration: const Duration(milliseconds: 1000),
-            //   curve: Curves.easeOutCubic,
-            //   width: step.value >= 2 ? MediaQuery.of(context).size.width * 0.5 : 0.0,
-            //   height: 4.0,
-            //   child: const ClipRRect(
-            //     borderRadius: BorderRadius.all(Radius.circular(4)),
-            //     child: LinearProgressIndicator(),
-            //   ),
-            // )
+            MajadigiProgressIndicator(step: step),
           ],
         ),
       ),

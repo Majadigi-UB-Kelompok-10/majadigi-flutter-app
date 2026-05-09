@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' show ValueNotifier;
 import 'package:go_router/go_router.dart';
-import 'package:majadigi_mobile_rebuild/main/ui/sandbox/sandbox.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/search/search_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/splash/splash_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,8 +18,17 @@ final List<RouteBase> goRoutes = <RouteBase>[
   // Homepage
   GoRoute(
     path: '/homepage',
-    builder: (context, state) => const Sandbox(),
+    builder: (context, state) => const DashboardNavigation(),
   ),
+
+  // Search
+  GoRoute(
+    path: '/search',
+    builder: (context, state) {
+      final query = state.uri.queryParameters['q'] ?? '';
+      return SearchPage(query: query);
+    },
+  )
 ];
 
 /// GoRouter Config

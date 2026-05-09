@@ -1,4 +1,3 @@
-import 'package:stac/stac.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -37,9 +36,6 @@ Future<ProviderContainer> init() async {
   final dio = newContainer.read(dioProvider);
   newContainer.read(addETagMiddlewareProvider);
   newContainer.read(addZstdMiddlewareProvider);
-
-  // Initialize stac with custom parser & our own dio
-  await Stac.initialize(dio: dio, parsers: [], actionParsers: []);
 
   await Supabase.initialize(
     url: 'https://nhsdrdhzkogczngslvvh.supabase.co',
