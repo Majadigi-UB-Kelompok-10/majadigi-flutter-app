@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' show ValueNotifier;
 import 'package:go_router/go_router.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/search_page.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/service_detail/service_detail_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/splash/splash_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -28,7 +29,21 @@ final List<RouteBase> goRoutes = <RouteBase>[
       final query = state.uri.queryParameters['q'] ?? '';
       return SearchPage(query: query);
     },
-  )
+  ),
+
+  // Service Detail
+  GoRoute(
+    path: '/page-detail',
+    builder: (context, state) {
+      final data = state.extra as Map<String, dynamic>;
+
+      return ServiceDetailPage(
+        serviceId: data['serviceId'],
+        title: data['title'],
+        description: data['description']
+      );
+    }
+  ),
 ];
 
 /// GoRouter Config

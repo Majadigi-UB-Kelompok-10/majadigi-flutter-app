@@ -7,5 +7,5 @@ abstract class PolicyRepository {
   Future<void> syncPolicies();
 
   // General Use Case
-  Future<PolicyEntity> getPolicyForService(String serviceId);
+  Future<PolicyEntity?> getPolicyForService(String serviceId);
 }

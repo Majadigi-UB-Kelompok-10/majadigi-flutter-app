@@ -32,7 +32,7 @@ class GetPolicyForServiceUseCase {
 
   GetPolicyForServiceUseCase(this.repository);
 
-  Future<PolicyEntity> execute(String serviceId) async {
+  Future<PolicyEntity?> execute(String serviceId) async {
     return await repository.getPolicyForService(serviceId);
   }
 }

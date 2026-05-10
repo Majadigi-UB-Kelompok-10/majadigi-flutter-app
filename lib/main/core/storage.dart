@@ -10,6 +10,7 @@ import 'package:majadigi_mobile_rebuild/main/data/models/isar/etag/etag_registry
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 part 'storage.g.dart';
 
@@ -49,4 +50,15 @@ Future<void> clearIsar(Ref ref) async {
 Future<void> clearAndRestartIsar(Ref ref) async {
   await ref.read(clearIsarProvider.future);
   ref.read(openIsarProvider);
+}
+
+@riverpod
+CacheManager getCustomCacheManager(Ref ref) {
+  return CacheManager(
+    Config(
+      'Majadigi-Assets',
+      stalePeriod: const Duration(days: 30),
+      maxNrOfCacheObjects: 100
+    ),
+  );
 }

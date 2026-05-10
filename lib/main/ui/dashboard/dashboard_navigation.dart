@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/home_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/provider/navigation_index_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/service_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_bottom_navigation_bar.dart';
 
 /// Main Navigation Shell
@@ -18,7 +19,7 @@ class DashboardNavigation extends ConsumerWidget {
           index: navigationIndex,
           children: [
             HomePage(),
-            const Center(child: Text('History')),
+            ServicePage(),
             const Center(child: Text('Profile')),
           ],
         ),

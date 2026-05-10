@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/sync_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/router_shell.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
@@ -42,6 +43,9 @@ Future<ProviderContainer> init() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5oc2RyZGh6a29nY3puZ3NsdnZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNzQ4NjEsImV4cCI6MjA4ODg1MDg2MX0.aImo2p-pPCjyHWPRw43Hlhppc9SkkKyuG6c2Qj1j0nM',
   );
+
+  // Sync in background silently
+  newContainer.read(startupSyncAllProvider.notifier).syncSilently();
 
   // Return a NEW container with isar provider override
   return newContainer;

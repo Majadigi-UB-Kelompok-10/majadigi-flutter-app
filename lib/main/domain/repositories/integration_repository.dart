@@ -7,5 +7,5 @@ abstract class IntegrationRepository {
   Future<void> syncIntegrations();
 
   // General Use Case
-  Future<List<IntegrationEntity>> getAllIntegrationForService(String serviceId);
+  Future<List<IntegrationEntity>?> getAllIntegrationForService(String serviceId);
 }

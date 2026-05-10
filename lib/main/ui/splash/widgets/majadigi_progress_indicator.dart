@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class MajadigiProgressIndicator extends StatelessWidget {
   final ValueNotifier<int> step;
-  const MajadigiProgressIndicator({super.key, required this.step});
+  final ValueNotifier<double?> syncProgress;
+  const MajadigiProgressIndicator({super.key, required this.step, required this.syncProgress});
 
   @override
   Widget build(BuildContext context) {
@@ -14,10 +15,18 @@ class MajadigiProgressIndicator extends StatelessWidget {
           curve: Curves.easeOutCubic,
           width: value >= 2 ? MediaQuery.of(context).size.width * 0.5 : 0.0,
           height: 4.0,
-          child: const ClipRRect(
-            borderRadius: BorderRadius.all(Radius.circular(4)),
-            child: LinearProgressIndicator(),
-          ),
+          child: value >= 2
+              ? ValueListenableBuilder<double?>(
+            valueListenable: syncProgress,
+            builder: (context, progress, child) {
+              return ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(4)),
+                child: LinearProgressIndicator(
+                  value: progress,
+                ),
+              );
+            },
+          ) : const SizedBox.shrink(),
         );
       },
     );

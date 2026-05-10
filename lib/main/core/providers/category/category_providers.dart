@@ -60,10 +60,6 @@ GetAllCategoryForServiceUseCase _getAllCategoryForServiceUseCase(Ref ref) {
 @riverpod
 Stream<List<CategoryEntity>> categoryList(Ref ref) {
   final watchAllCategoryUseCase = ref.watch(_watchAllCategoryUseCaseProvider);
-  final syncCategoryUseCase = ref.watch(syncCategoryUseCaseProvider);
-
-  // Sync database from network
-  syncCategoryUseCase.execute();
 
   // Watch from database
   return watchAllCategoryUseCase.execute();

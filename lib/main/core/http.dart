@@ -130,3 +130,9 @@ SupabaseClient? supabase(Ref ref) {
 
   return Supabase.instance.client;
 }
+
+/// Base URL for Supabase
+const supabaseBaseUrl = "https://nhsdrdhzkogczngslvvh.supabase.co/storage/v1/object/public/";
+
+/// Variant URL for supabase
+const supabaseImageUrl = "image-asset/";

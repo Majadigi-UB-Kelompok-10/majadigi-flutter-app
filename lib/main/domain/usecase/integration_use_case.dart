@@ -32,7 +32,7 @@ class GetAllIntegrationsForServiceUseCase {
 
   GetAllIntegrationsForServiceUseCase(this.repository);
 
-  Future<List<IntegrationEntity>> execute(String serviceId) async {
+  Future<List<IntegrationEntity>?> execute(String serviceId) async {
     return await repository.getAllIntegrationForService(serviceId);
   }
 }

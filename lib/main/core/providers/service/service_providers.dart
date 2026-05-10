@@ -1,5 +1,4 @@
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
-import 'package:majadigi_mobile_rebuild/main/core/providers/category/category_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/service/service_local_datasource.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/service/service_remote_datasource.dart';
@@ -61,14 +60,6 @@ GetAllServicesInCategoryUseCase _getAllServicesInCategoryUseCase(Ref ref) {
 @riverpod
 Stream<List<ServiceEntity>> serviceList(Ref ref) {
   final watchAllServicesUseCase = ref.watch(_watchAllServicesUseCaseProvider);
-  final syncServicesUseCase = ref.watch(syncServicesUseCaseProvider);
-  final syncCategoryUseCase = ref.watch(syncCategoryUseCaseProvider);
-
-  // In case category is not populated yet
-  syncCategoryUseCase.execute();
-
-  // Sync database from network
-  syncServicesUseCase.execute();
 
   // Watch from database
   return watchAllServicesUseCase.execute();

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
@@ -19,7 +20,7 @@ Future<List> cleanupData({
   // ...
 
   // If it's not compressed, convert data from List<int> to Json
-  final jsonData = json.decode(utf8.decode(response.data as List<int>));
+  final jsonData = await Isolate.run(json.decode(utf8.decode(response.data as List<int>)));
   return jsonData["data"] as List;
 }
 
@@ -30,9 +31,9 @@ Future<List> convertZstdFromResponseToList(
 ) async {
   final compressedData = response.data;
 
-  final decompressedData = await zstandard.decompress(
+  final decompressedData = await Isolate.run(() => zstandard.decompress(
     Uint8List.fromList(compressedData),
-  );
+  ));
 
   return (jsonDecode(utf8.decode(decompressedData!)))["data"] as List;
 }

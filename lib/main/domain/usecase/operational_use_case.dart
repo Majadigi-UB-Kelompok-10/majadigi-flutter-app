@@ -32,7 +32,7 @@ class GetOperationalForServiceUseCase {
 
   GetOperationalForServiceUseCase(this.repository);
 
-  Future<OperationalEntity> execute(String serviceId) async {
+  Future<OperationalEntity?> execute(String serviceId) async {
     return await repository.getOperationalForService(serviceId);
   }
 }

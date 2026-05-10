@@ -7,5 +7,5 @@ abstract class OperationalRepository {
   Future<void> syncOperationals();
 
   // General Use Case
-  Future<OperationalEntity> getOperationalForService(String serviceId);
+  Future<OperationalEntity?> getOperationalForService(String serviceId);
 }

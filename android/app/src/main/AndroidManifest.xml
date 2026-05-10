@@ -2,7 +2,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="majadigi_mobile_rebuild"
-        android:name="${applicationName}"
+        android:name="io.flutter.embedding.android.FlutterPlayStoreSplitApplication"
         android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"

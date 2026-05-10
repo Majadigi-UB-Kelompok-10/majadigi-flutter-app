@@ -4,8 +4,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/provider/navigation_index_provider.dart';
 
 /// Top Header for Home Page
-class HomePageHeader extends ConsumerWidget {
-  const HomePageHeader({super.key});
+class DashboardHeader extends ConsumerWidget {
+  const DashboardHeader({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

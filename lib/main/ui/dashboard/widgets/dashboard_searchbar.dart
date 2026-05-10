@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 /// Search Bar Widget for Home Page
-class HomePageSearchbar extends HookWidget {
+class DashboardSearchbar extends HookWidget {
   final ValueChanged<String>? onSearch;
-  const HomePageSearchbar({super.key, this.onSearch});
+  const DashboardSearchbar({super.key, this.onSearch});
 
   @override
   Widget build(BuildContext context) {
