@@ -12,6 +12,7 @@ part 'service_registry.g.dart';
 class IsarServiceRegistry {
   Id get isarId => fastHash(id);
 
+  @Index(type: IndexType.value, unique: true)
   late String id;
 
   late String title;
@@ -20,6 +21,15 @@ class IsarServiceRegistry {
 
   @Index(type: IndexType.value, caseSensitive: false)
   List<String> get contentWords => Isar.splitWords('$title $description');
+
+  @Index(type: IndexType.value, caseSensitive: false)
+  List<String> get revContentWords {
+    return contentWords
+        .map((word) => word.split('')
+        .reversed
+        .join(''))
+        .toList();
+  }
 
   late String iconUrl;
 

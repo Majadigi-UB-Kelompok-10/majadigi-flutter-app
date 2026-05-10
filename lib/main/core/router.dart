@@ -19,7 +19,10 @@ final List<RouteBase> goRoutes = <RouteBase>[
   // Homepage
   GoRoute(
     path: '/homepage',
-    builder: (context, state) => const DashboardNavigation(),
+    builder: (context, state) {
+      final query = state.uri.queryParameters['nav'] ?? '0';
+      return DashboardNavigation(initialIndex: int.parse(query));
+    },
   ),
 
   // Search

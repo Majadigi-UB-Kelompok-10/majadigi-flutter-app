@@ -3,12 +3,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 /// Search Bar Widget for Home Page
 class DashboardSearchbar extends HookWidget {
+  final String? initialValue;
   final ValueChanged<String>? onSearch;
-  const DashboardSearchbar({super.key, this.onSearch});
+  const DashboardSearchbar({super.key, this.onSearch, this.initialValue});
 
   @override
   Widget build(BuildContext context) {
-    final searchController = useTextEditingController();
+    final searchController = useTextEditingController(text: initialValue ?? "");
 
     // Handle Search
     void executeSearch() {

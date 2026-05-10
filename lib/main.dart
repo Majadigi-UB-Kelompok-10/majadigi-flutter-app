@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/sync_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/core/router.dart';
+import 'package:majadigi_mobile_rebuild/main/deferred_registry.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/router_shell.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
@@ -46,6 +48,10 @@ Future<ProviderContainer> init() async {
 
   // Sync in background silently
   newContainer.read(startupSyncAllProvider.notifier).syncSilently();
+
+  // Setup Routes
+  newContainer.read(routerProvider);
+  newContainer.read(registerDeferredRouteProvider);
 
   // Return a NEW container with isar provider override
   return newContainer;

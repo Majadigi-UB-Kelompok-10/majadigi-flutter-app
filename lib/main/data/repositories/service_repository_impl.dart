@@ -40,4 +40,28 @@ class ServiceRepositoryImpl implements ServiceRepository {
       return services.map((service) => service.toEntity()).toList();
     });
   }
+
+  @override
+  Future<void> addFavoriteService(String serviceId) async {
+    await localDatasource.addFavoriteService(serviceId);
+  }
+
+  @override
+  Stream<List<ServiceEntity>> watchFavoritedServices() {
+    return localDatasource.watchCachedFavoriteServices().map((services) {
+      return services.map((service) => service.toEntity()).toList();
+    });
+  }
+
+  @override
+  Future<void> removeFavoriteService(String serviceId) async {
+    await localDatasource.removeFavoriteService(serviceId);
+  }
+
+  @override
+  Future<List<ServiceEntity>> searchServicesByQuery(String query) async {
+    final services = await localDatasource.searchCachedServiceByQuery(query);
+
+    return services.map((service) => service.toEntity()).toList();
+  }
 }

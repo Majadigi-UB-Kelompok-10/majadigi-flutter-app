@@ -8,4 +8,12 @@ abstract class ServiceRepository {
 
   // General Use Cases
   Future<List<ServiceEntity>> getAllServicesInCategory(String categoryId);
+
+  // Favorite Use Case
+  Stream<List<ServiceEntity>> watchFavoritedServices();
+  Future<void> addFavoriteService(String serviceId);
+  Future<void> removeFavoriteService(String serviceId);
+
+  // Search by String Use Case
+  Future<List<ServiceEntity>> searchServicesByQuery(String query);
 }

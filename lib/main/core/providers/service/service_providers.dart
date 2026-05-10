@@ -5,6 +5,7 @@ import 'package:majadigi_mobile_rebuild/main/data/datasources/service/service_re
 import 'package:majadigi_mobile_rebuild/main/data/repositories/service_repository_impl.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/service/service_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/repositories/service_repository.dart';
+import 'package:majadigi_mobile_rebuild/main/domain/usecase/search_use_case.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/usecase/service_use_cases.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -55,6 +56,30 @@ GetAllServicesInCategoryUseCase _getAllServicesInCategoryUseCase(Ref ref) {
   return GetAllServicesInCategoryUseCase(ref.watch(_serviceRepositoryProvider));
 }
 
+/// Watch All Favorites
+@riverpod
+WatchAllFavoriteUseCase _watchAllFavoriteUseCase(Ref ref) {
+  return WatchAllFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
+}
+
+/// Add Favorites
+@riverpod
+AddFavoriteUseCase addFavoriteUseCase(Ref ref) {
+  return AddFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
+}
+
+/// Remove Favorites
+@riverpod
+RemoveFavoriteUseCase removeFavoriteUseCase(Ref ref) {
+  return RemoveFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
+}
+
+/// Search by Query
+@riverpod
+SearchServicesByQueryUseCase _searchServicesByQueryUseCase(Ref ref) {
+  return SearchServicesByQueryUseCase(ref.watch(_serviceRepositoryProvider));
+}
+
 // -- Exposed Use Cases for Service --
 /// Sync Services from Remote Datasource while Providing Stale Data
 @riverpod
@@ -76,4 +101,20 @@ Future<List<ServiceEntity>> getAllServicesInCategory(
   );
 
   return await getAllServicesInCategoryUseCase.execute(categoryId);
+}
+
+/// Watch All Favorites
+@riverpod
+Stream<List<ServiceEntity>> favoriteList(Ref ref) {
+  final watchAllFavoriteUseCase = ref.watch(_watchAllFavoriteUseCaseProvider);
+
+  return watchAllFavoriteUseCase.execute();
+}
+
+/// Search by Query
+@riverpod
+Future<List<ServiceEntity>> searchServicesByQuery(Ref ref, String query) {
+  final searchServicesByQueryUseCase = ref.watch(_searchServicesByQueryUseCaseProvider);
+
+  return searchServicesByQueryUseCase.execute(query);
 }

@@ -24,7 +24,7 @@ class HomePageStatistic extends StatelessWidget {
 /// Header for Statistics
 class _StatisticHeader extends StatelessWidget {
   final String title;
-  const _StatisticHeader({super.key, required this.title});
+  const _StatisticHeader({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class _StatisticHeader extends StatelessWidget {
 /// Cards items for Statistic
 class _StatisticCards extends StatelessWidget {
   final List<StatisticEntity> statisticList;
-  const _StatisticCards({super.key, required this.statisticList});
+  const _StatisticCards({required this.statisticList});
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,7 @@ class _StatisticCardItem extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
-  const _StatisticCardItem({super.key, required this.label, required this.value, required this.icon});
+  const _StatisticCardItem({required this.label, required this.value, required this.icon});
 
   @override
   Widget build(BuildContext context) {

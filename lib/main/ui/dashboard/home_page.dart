@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:majadigi_mobile_rebuild/main/ui/dashboard/mock/service_data.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/mock/news_data.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/mock/statistic_data.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_favorite.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_header.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_searchbar.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/home_page_news.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/home_page_statistic.dart';
 
 /// Home Page View
@@ -20,7 +21,7 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            DashboardHeader(),
+            DashboardHeader(useNavIndex: true),
 
             // Search Bar
             DashboardSearchbar(
@@ -35,12 +36,13 @@ class HomePage extends StatelessWidget {
             ),
 
             // Favorites
-            DashboardFavorite(serviceList: serviceData),
+            DashboardFavorite(),
 
             // Statistics
             HomePageStatistic(statisticList: statisticData),
 
             // News
+            HomePageNews(newsList: newsData, onSeeAll: () => ())
           ],
         ),
       ),

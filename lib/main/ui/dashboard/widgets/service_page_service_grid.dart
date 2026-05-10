@@ -3,19 +3,18 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/service/service_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/service/service_entity.dart';
-import 'package:majadigi_mobile_rebuild/main/ui/dashboard/mock/service_data.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/service_icons.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/service_status_badge.dart';
 
 /// Main Service Grid for Service Page
 class ServicePageServiceGrid extends ConsumerWidget {
   final bool isEditMode;
-  const ServicePageServiceGrid({super.key, required this.isEditMode});
+  final int favoriteListLength;
+  const ServicePageServiceGrid({super.key, required this.isEditMode, required this.favoriteListLength});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncList = ref.watch(serviceListProvider);
-
-    // Create Local copy of favorites
-    final favoriteList = serviceData;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +53,7 @@ class ServicePageServiceGrid extends ConsumerWidget {
                 return _ServiceGridCreator(
                   service: service,
                   isEditMode: isEditMode,
-                  favoriteList: favoriteList,
+                  favoriteListLength: favoriteListLength,
                 );
               },
             );
@@ -68,7 +67,7 @@ class ServicePageServiceGrid extends ConsumerWidget {
 /// Header for Service Grid
 class _ServiceGridHeader extends StatelessWidget {
   final String title;
-  const _ServiceGridHeader({super.key, required this.title});
+  const _ServiceGridHeader({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -83,108 +82,88 @@ class _ServiceGridHeader extends StatelessWidget {
 }
 
 /// Services Grid Items
-class _ServiceGridCreator extends StatelessWidget {
+class _ServiceGridCreator extends ConsumerWidget {
   final bool isEditMode;
   final ServiceEntity service;
-  final List<ServiceEntity> favoriteList;
-  const _ServiceGridCreator({super.key, required this.isEditMode, required this.favoriteList, required this.service});
+  final int favoriteListLength;
+  const _ServiceGridCreator({required this.isEditMode, required this.service, required this.favoriteListLength});
 
   @override
-  Widget build(BuildContext context) {
-    final isFavorite = favoriteList.contains(service);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favoriteList = ref.watch(favoriteListProvider);
+    final favoriteListSnapshot = favoriteList.value ?? [];
+    final isFavorite = favoriteListSnapshot.any((e) => e.id == service.id);
 
     return GestureDetector(
-      onTap: isEditMode
-          ? () {
-        if (!isFavorite &&
-            favoriteList.length >= 4) {
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _handleTap(context, ref, isFavorite, favoriteListSnapshot.length),
+      child: AnimatedContainer( // Use AnimatedContainer for smoother border transitions
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE3F2FD),
+          borderRadius: BorderRadius.circular(12),
+          border: isEditMode && isFavorite
+              ? Border.all(color: const Color(0xFF0652C5), width: 2)
+              : Border.all(color: Colors.transparent, width: 2),
+        ),
+        child: Stack(
+          clipBehavior: Clip.none, // Allow badges to sit slightly outside
+          children: [
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ServiceIcons(service: service),
+                const SizedBox(height: 4),
+                _buildTitle(),
+              ],
+            ),
+            if (isFavorite && !isEditMode) ServiceStatusBadge(),
+            if (isEditMode) EditActionBadge(isFavorite: isFavorite),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _handleTap(BuildContext context, WidgetRef ref, bool isFavorite, int snapshotLength) async {
+    if (isEditMode) {
+      if (isFavorite) {
+        await ref.read(removeFavoriteUseCaseProvider).execute(service.id!);
+      } else {
+        if (snapshotLength >= favoriteListLength) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Maksimal 4 favorit'),
+              content: Text('Maksimal $favoriteListLength favorit'),
               duration: const Duration(milliseconds: 1500),
+              behavior: SnackBarBehavior.floating,
             ),
           );
         } else {
-          //
+          await ref.read(addFavoriteUseCaseProvider).execute(service.id!);
         }
-      } : () => context.push(
+      }
+
+      ref.invalidate(favoriteListProvider);
+    } else {
+      context.push(
         '/page-detail',
         extra: {
           'serviceId': service.id,
           'title': service.title,
           'description': service.description
         }
-      ),
-      child: Container(
-        padding:
-        const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        decoration: BoxDecoration(
-          color: const Color(0xFFE3F2FD),
-          borderRadius: BorderRadius.circular(12),
-          border: isEditMode && isFavorite
-              ? Border.all(color: const Color(0xFF0652C5), width: 2)
-              : null,
-        ),
-        child: Stack(
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.apps, color: Colors.blue),
-                const SizedBox(height: 4),
-                Text(
-                  service.title!,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFF0652C5),
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-            // Badge saat favorit dan bukan edit mode
-            if (isFavorite && !isEditMode)
-              Positioned(
-                top: -4,
-                right: -4,
-                child: Container(
-                  width: 18,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE91E63),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.check,
-                      color: Colors.white, size: 10),
-                ),
-              ),
-            // Icon edit saat edit mode
-            if (isEditMode)
-              Positioned(
-                bottom: -4,
-                right: -4,
-                child: Container(
-                  width: 20,
-                  height: 20,
-                  decoration: BoxDecoration(
-                    color:
-                    isFavorite ? Colors.red : Colors.green,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isFavorite ? Icons.remove : Icons.add,
-                    color: Colors.white,
-                    size: 12,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
+      );
+    }
+  }
+
+  Widget _buildTitle() {
+    return Text(
+      service.title ?? 'No Title',
+      style: const TextStyle(fontSize: 10, color: Color(0xFF0652C5), fontWeight: FontWeight.w600),
+      textAlign: TextAlign.center,
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

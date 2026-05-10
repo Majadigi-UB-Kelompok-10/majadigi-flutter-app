@@ -5,7 +5,8 @@ import 'package:majadigi_mobile_rebuild/main/ui/dashboard/provider/navigation_in
 
 /// Top Header for Home Page
 class DashboardHeader extends ConsumerWidget {
-  const DashboardHeader({super.key});
+  final bool useNavIndex;
+  const DashboardHeader({super.key, required this.useNavIndex});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -14,7 +15,16 @@ class DashboardHeader extends ConsumerWidget {
       children: [
         // Avatar
         GestureDetector(
-          onTap: () => ref.read(navigationIndexProvider.notifier).setIndex(2),
+          onTap: () {
+            if (useNavIndex) {
+              ref.read(navigationIndexProvider.notifier).setIndex(2);
+            }
+
+            context.go(Uri(
+              path: '/homepage',
+              queryParameters: { 'nav' : '2' }
+            ).toString());
+          },
           child: const CircleAvatar(
             backgroundColor: Color(0xFF0652C5),
             child: Icon(Icons.person, color: Colors.white),

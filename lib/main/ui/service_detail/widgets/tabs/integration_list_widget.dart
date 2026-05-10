@@ -37,8 +37,7 @@ class IntegrationListWidget extends ConsumerWidget {
                       placeholder: (context, idk) => const LinearProgressIndicator(),
                     )
                 )
-            )
-                : const Icon(Icons.link),
+            ) : const Icon(Icons.link),
             title: Text(
                 entry.title!,
                 style: TextStyle(fontWeight: FontWeight.normal, color: Colors.blue.shade900)

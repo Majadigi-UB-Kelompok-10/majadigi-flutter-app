@@ -36,3 +36,36 @@ class SyncServicesUseCase {
     return await repository.syncServices();
   }
 }
+
+/// Watch All Favorites
+class WatchAllFavoriteUseCase {
+  final ServiceRepository repository;
+
+  WatchAllFavoriteUseCase(this.repository);
+
+  Stream<List<ServiceEntity>> execute() {
+    return repository.watchFavoritedServices();
+  }
+}
+
+/// Add Favorites
+class AddFavoriteUseCase {
+  final ServiceRepository repository;
+  
+  AddFavoriteUseCase(this.repository);
+  
+  Future<void> execute(String serviceId) async {
+    return await repository.addFavoriteService(serviceId);
+  }
+}
+
+/// Remove Favories
+class RemoveFavoriteUseCase {
+  final ServiceRepository repository;
+
+  RemoveFavoriteUseCase(this.repository);
+
+  Future<void> execute(String serviceId) async {
+    return await repository.removeFavoriteService(serviceId);
+  }
+}

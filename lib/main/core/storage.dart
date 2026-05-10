@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/category_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/endpoint/endpoint_registry.dart';
+import 'package:majadigi_mobile_rebuild/main/data/models/isar/favorites/favorite_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/service/service_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/policy/policy_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/operational/operational_registry.dart';
@@ -24,6 +25,7 @@ Future<Isar> openIsar(Ref ref) async {
   final dir = await ref.read(directoryProvider.future);
 
   return await Isar.open([
+    IsarFavoriteRegistrySchema,
     IsarCategoryRegistrySchema,
     IsarServiceRegistrySchema,
     IsarPolicyRegistrySchema,

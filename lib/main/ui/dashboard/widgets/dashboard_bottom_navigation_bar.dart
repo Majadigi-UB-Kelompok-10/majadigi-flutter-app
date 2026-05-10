@@ -59,7 +59,6 @@ class _CustomNavigationItems extends StatelessWidget {
   final bool active;
 
   const _CustomNavigationItems({
-    super.key,
     required this.icon,
     required this.label,
     required this.active

@@ -123,7 +123,7 @@ class TabWidgetHelper extends HookConsumerWidget {
             alignment: Alignment.topCenter,
             children: <Widget>[
               ...previousChildren,
-              if (currentChild != null) currentChild,
+              ?currentChild,
             ],
           );
         },
