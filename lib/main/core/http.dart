@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/etag/etag_registry.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,6 +16,7 @@ part 'http.g.dart';
 // matches its own kind, allowing both to coexist in dio.interceptors.
 // ---------------------------------------------------------------------------
 
+/// Zstandard Interceptor
 class _ZstdInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
@@ -23,6 +26,7 @@ class _ZstdInterceptor extends Interceptor {
   }
 }
 
+/// ETag Interceptor
 class _ETagInterceptor extends Interceptor {
   const _ETagInterceptor({required this.isar});
 
@@ -31,6 +35,11 @@ class _ETagInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     if (options.method.toUpperCase() != 'GET') {
+      return handler.next(options);
+    }
+
+    // Whitelist ETagging from favorites
+    if (options.path.contains('/user/auth/favorites')) {
       return handler.next(options);
     }
 
@@ -80,6 +89,91 @@ class _ETagInterceptor extends Interceptor {
   }
 }
 
+/// Authorization Bearer Token Interceptor
+class _AuthInterceptor extends Interceptor {
+  final FlutterSecureStorage secureStorage;
+  final Ref ref;
+  final Dio dio;
+
+  // Concurrency Lock
+  Future<void>? _refreshTask;
+
+  _AuthInterceptor({
+    required this.secureStorage,
+    required this.ref,
+    required this.dio,
+  });
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    final token = await secureStorage.read(key: SecureStorageKeys.accessToken);
+
+    if (token != null) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+
+    return handler.next(options);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final response = err.response;
+    final requestOptions = err.requestOptions;
+
+    // Prevent the refresh endpoint from triggering a refresh loop
+    final isRefreshEndpoint = requestOptions.path.contains('/user/auth/refresh');
+
+    if (response?.statusCode == 401 && !isRefreshEndpoint) {
+
+      // Put a hard limit on retries (Original request + 1 Retry)
+      final retryCount = requestOptions.extra['retry_count'] as int? ?? 0;
+
+      if (retryCount >= 1) {
+        // If it has already been retried once and still failed with 401, reject it immediately.
+        return handler.next(err);
+      }
+
+      try {
+        // Handle Concurrency: If a refresh is already happening, just wait for it to finish.
+        if (_refreshTask != null) {
+          await _refreshTask;
+        } else {
+          // If no refresh is happening, start one and attach it to the variable
+          _refreshTask = ref.read(authProvider.notifier).refresh().whenComplete(() {
+            // Ensure the lock is cleared when the refresh finishes (success or fail)
+            _refreshTask = null;
+          });
+          await _refreshTask;
+        }
+
+        // Verify the refresh was actually successful
+        final isLoggedIn = ref.read(authProvider).value ?? false;
+        final newToken = await secureStorage.read(key: SecureStorageKeys.accessToken);
+
+        if (!isLoggedIn || newToken == null) {
+          return handler.reject(err);
+        }
+
+        // Increment the retry count so it doesn't get stuck in a loop if the new token is also rejected
+        requestOptions.extra['retry_count'] = retryCount + 1;
+        requestOptions.headers['Authorization'] = '${SecureStorageKeys.tokenType} $newToken';
+
+        // Retry the request
+        final retryResponse = await dio.fetch(requestOptions);
+        return handler.resolve(retryResponse);
+
+      } on DioException catch (e) {
+        return handler.next(e);
+      } catch (e) {
+        return handler.reject(err);
+      }
+    }
+
+    // If it's not a 401, or it is the refresh endpoint failing, just pass the error along
+    return handler.next(err);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Providers
 // ---------------------------------------------------------------------------
@@ -119,6 +213,19 @@ void addETagMiddleware(Ref ref) {
   }
 
   dio.interceptors.add(_ETagInterceptor(isar: isar));
+}
+
+/// Returns a [Dio] instance with the [_AuthInterceptor] registered.
+@Riverpod(keepAlive: true)
+void addAuthMiddleware(Ref ref) {
+  final dio = ref.watch(dioProvider);
+  final secureStorage = ref.watch(secureStorageProvider);
+
+  if (dio.interceptors.any((i) => i is _AuthInterceptor)) {
+    return;
+  }
+
+  dio.interceptors.add(_AuthInterceptor(secureStorage: secureStorage, ref: ref, dio: dio));
 }
 
 /// Return the [SupabaseClient] instance for making Supabase requests.

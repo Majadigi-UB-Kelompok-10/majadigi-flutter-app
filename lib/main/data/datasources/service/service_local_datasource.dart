@@ -17,9 +17,10 @@ abstract class ServiceLocalDatasource {
     List<NormalizedServiceCategoryDto> payload,
   );
   Stream<List<IsarServiceRegistry>> watchCachedFavoriteServices();
-  Future<List<IsarServiceRegistry>> getFavoriteServices();
+  Future<({List<IsarServiceRegistry> services, DateTime lastUpdated})?> getFavoriteServices();
   Future<void> addFavoriteService(String serviceId);
   Future<void> removeFavoriteService(String serviceId);
+  Future<void> processAndCacheFavorites(List<String> serviceIds, {DateTime? syncDate});
   Future<List<IsarServiceRegistry>> searchCachedServiceByQuery(String query);
 }
 
@@ -82,16 +83,18 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
   }
 
   @override
-  Future<List<IsarServiceRegistry>> getFavoriteServices() async {
-    final favorites = await _isar.isarFavoriteRegistrys.where().findAll();
+  Future<({List<IsarServiceRegistry> services, DateTime lastUpdated})?> getFavoriteServices() async {
+    final favorites = await _isar.isarFavoriteRegistrys.where().findFirst();
 
-    if (favorites.isEmpty) {
-      return [];
-    }
+    if (favorites == null) return null;
 
-    await Future.wait(favorites.map((fav) => fav.fkServiceId.load()));
+    await favorites.fkServiceId.load();
 
-    return favorites.expand((fav) => fav.fkServiceId).toSet().toList();
+    // Using Dart 3 Records for a clean, type-safe return
+    return (
+    services: favorites.fkServiceId.toList(),
+    lastUpdated: favorites.lastUpdated.toUtc()
+    );
   }
 
   @override
@@ -99,20 +102,16 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
     return _isar.isarFavoriteRegistrys
         .where()
         .filter()
-        .idEqualTo('default_user_favorites')
+        .idEqualTo("favorites")
         .watch(fireImmediately: true)
-        .asyncMap((favorites) async {
+        .asyncMap((favoritesList) async {
+      if (favoritesList.isEmpty) return [];
 
-      if (favorites.isEmpty) return [];
+      final favorites = favoritesList.first;
 
-      await Future.wait(favorites.map((fav) => fav.fkServiceId.load()));
+      await favorites.fkServiceId.load();
 
-      final services = favorites
-          .expand((fav) => fav.fkServiceId)
-          .toSet()
-          .toList();
-
-      return services;
+      return favorites.fkServiceId.toList();
     });
   }
 
@@ -127,13 +126,13 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
       var favoriteRegistry = await _isar.isarFavoriteRegistrys.where().findFirst();
 
       if (favoriteRegistry == null) {
-        favoriteRegistry = IsarFavoriteRegistry()..id = 'default_user_favorites';
+        favoriteRegistry = IsarFavoriteRegistry();
         await _isar.isarFavoriteRegistrys.put(favoriteRegistry);
       }
 
       favoriteRegistry.fkServiceId.add(serviceModel);
 
-      favoriteRegistry.lastUpdated = DateTime.now();
+      favoriteRegistry.lastUpdated = DateTime.now().toUtc();
 
       await favoriteRegistry.fkServiceId.save();
     });
@@ -154,7 +153,7 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
 
         favoriteRegistry.fkServiceId.remove(serviceToRemove);
 
-        favoriteRegistry.lastUpdated = DateTime.now();
+        favoriteRegistry.lastUpdated = DateTime.now().toUtc();
 
         await favoriteRegistry.fkServiceId.save();
       } catch (e) { /* None */ }
@@ -170,5 +169,46 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
         .or()
         .revContentWordsElementStartsWith(query.split('').reversed.join(''))
         .findAll();
+  }
+
+  @override
+  Future<void> processAndCacheFavorites(List<String> serviceIds, {DateTime? syncDate}) async {
+    await _isar.writeTxn(() async {
+      // 1. Fetch or create the registry
+      var favoriteRegistry = await _isar.isarFavoriteRegistrys.where().findFirst() ?? IsarFavoriteRegistry();
+      await _isar.isarFavoriteRegistrys.put(favoriteRegistry);
+
+      // 2. Load current links so we can compare them
+      await favoriteRegistry.fkServiceId.load();
+
+      // Convert to Sets for easy mathematical difference calculations
+      final currentLinkedIds = favoriteRegistry.fkServiceId.map((s) => s.id).toSet();
+      final incomingIds = serviceIds.toSet();
+
+      // 3. REMOVE outdated links (Items deleted on the remote server)
+      final idsToRemove = currentLinkedIds.difference(incomingIds);
+      if (idsToRemove.isNotEmpty) {
+        final itemsToRemove = favoriteRegistry.fkServiceId.where((s) => idsToRemove.contains(s.id)).toList();
+        for (final item in itemsToRemove) {
+          favoriteRegistry.fkServiceId.remove(item);
+        }
+      }
+
+      // 4. ADD new links (Items added on the remote server)
+      final idsToAdd = incomingIds.difference(currentLinkedIds);
+      for (final id in idsToAdd) {
+        final serviceModel = await _isar.isarServiceRegistrys.where().idEqualTo(id).findFirst();
+        if (serviceModel != null) {
+          // Isar inherently prevents duplicates, but filtering idsToAdd saves us
+          // from making unnecessary database reads for items we already have.
+          favoriteRegistry.fkServiceId.add(serviceModel);
+        }
+      }
+
+      // 5. Save everything
+      favoriteRegistry.lastUpdated = syncDate?.toUtc() ?? DateTime.now().toUtc();
+      await _isar.isarFavoriteRegistrys.put(favoriteRegistry);
+      await favoriteRegistry.fkServiceId.save();
+    });
   }
 }

@@ -6,26 +6,28 @@ import 'package:dio/dio.dart';
 import 'package:zstandard/zstandard.dart';
 
 /// Cleanup data utility
-Future<List> cleanupData({
+Future<dynamic> cleanupData({
   Zstandard? zstandard,
   required Response<dynamic> response,
 }) async {
   // If it's zstd compressed, decompress it
   if (zstandard != null &&
-      response.headers.value('Content-Encoding') == 'zstd') {
+      response.headers.value('content-encoding') != null &&
+      response.headers.value('content-encoding')!.isNotEmpty &&
+      response.headers.value('content-encoding')!.contains('zstd')) {
     return await convertZstdFromResponseToList(zstandard, response);
   }
 
   // Put other future compression here (Guard Clause)
   // ...
 
-  // If it's not compressed, convert data from List<int> to Json
-  final jsonData = await Isolate.run(json.decode(utf8.decode(response.data as List<int>)));
-  return jsonData["data"] as List;
+  // If it's not compressed, convert data from Json
+  final jsonData = await Isolate.run(() => json.decode(response.data));
+  return jsonData;
 }
 
 /// Converts zstd compressed data to a decompressed List.
-Future<List> convertZstdFromResponseToList(
+Future<dynamic> convertZstdFromResponseToList(
   Zstandard zstandard,
   Response<dynamic> response,
 ) async {
@@ -35,5 +37,5 @@ Future<List> convertZstdFromResponseToList(
     Uint8List.fromList(compressedData),
   ));
 
-  return (jsonDecode(utf8.decode(decompressedData!)))["data"] as List;
+  return (jsonDecode(utf8.decode(decompressedData!)));
 }

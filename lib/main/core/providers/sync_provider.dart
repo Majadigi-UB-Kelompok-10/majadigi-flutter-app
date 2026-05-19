@@ -28,7 +28,9 @@ class StartupSyncAll extends _$StartupSyncAll {
       final syncOperational = ref.read(syncOperationalUseCaseProvider);
       final syncPolicy = ref.read(syncPoliciesUseCaseProvider);
       final syncImage = ref.read(syncImageUseCaseProvider);
+      final syncFavorite = ref.read(syncFavoritesUseCaseProvider);
 
+      syncFavorite.execute().timeout(const Duration(seconds: 20));
       await syncServices.execute().timeout(const Duration(seconds: 20));
       await syncCategory.execute().timeout(const Duration(seconds: 20));
       await syncIntegration.execute().timeout(const Duration(seconds: 20));
@@ -62,28 +64,40 @@ class SyncDatabaseService {
       final syncOperational = ref.read(syncOperationalUseCaseProvider);
       final syncPolicy = ref.read(syncPoliciesUseCaseProvider);
       final syncImage = ref.read(syncImageUseCaseProvider);
+      final syncFavorite = ref.read(syncFavoritesUseCaseProvider);
+
+      final double progressStep = 1 / 7;
+      double progress = 0;
+
+      // Fire and Forget
+      syncFavorite.execute().timeout(const Duration(seconds: 20));
 
       await syncServices.execute().timeout(const Duration(seconds: 20));
-      yield 0.1;
+      progress += progressStep;
+      yield progress;
 
       await syncCategory.execute().timeout(const Duration(seconds: 20));
-      yield 0.3;
+      progress += progressStep;
+      yield progress;
 
       await syncIntegration.execute().timeout(const Duration(seconds: 20));
-      yield 0.5;
+      progress += progressStep;
+      yield progress;
 
       await syncOperational.execute().timeout(const Duration(seconds: 20));
-      yield 0.7;
+      progress += progressStep;
+      yield progress;
 
       await syncPolicy.execute().timeout(const Duration(seconds: 20));
-      yield 0.85;
+      progress += progressStep;
+      yield progress;
 
       await syncImage.execute().timeout(const Duration(seconds: 20));
-      yield 1.0;
     } catch (e) {
       // Skip
-      yield 1.0;
       print("Silent sync failed or timed out: $e");
+    } finally {
+      yield 1.0;
     }
   }
 }

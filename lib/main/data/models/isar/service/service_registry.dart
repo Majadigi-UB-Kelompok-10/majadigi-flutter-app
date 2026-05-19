@@ -24,7 +24,7 @@ class IsarServiceRegistry {
 
   @Index(type: IndexType.value, caseSensitive: false)
   List<String> get revContentWords {
-    return contentWords
+    return Isar.splitWords('$title $description')
         .map((word) => word.split('')
         .reversed
         .join(''))

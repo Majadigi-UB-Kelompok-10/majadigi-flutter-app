@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/integration/integration_entity.dart';
@@ -47,7 +48,8 @@ class IntegrationListWidget extends ConsumerWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             onTap: () async {
-              // None
+              // Just for testing
+              context.push("/transjatim");
             },
           );
         },

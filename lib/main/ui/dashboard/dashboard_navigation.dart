@@ -5,6 +5,7 @@ import 'package:majadigi_mobile_rebuild/main/ui/dashboard/home_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/provider/navigation_index_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/service_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_bottom_navigation_bar.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/profile_page.dart';
 
 /// Main Navigation Shell
 class DashboardNavigation extends HookConsumerWidget {
@@ -35,9 +36,9 @@ class DashboardNavigation extends HookConsumerWidget {
         child: IndexedStack(
           index: navigationIndex,
           children: [
-            HomePage(),
-            ServicePage(),
-            const Center(child: Text('Profile')),
+            const HomePage(),
+            const ServicePage(),
+            const ProfilePage(),
           ],
         ),
       ),

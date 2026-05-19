@@ -1,10 +1,15 @@
-import 'package:flutter/material.dart' show ValueNotifier;
 import 'package:go_router/go_router.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/login/login_screen.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/example/example.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/onboarding/onboarding_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/search_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/service_detail/service_detail_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/splash/splash_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:majadigi_mobile_rebuild/main/deferred_registry.dart';
 
 part 'router.g.dart';
 
@@ -14,6 +19,24 @@ final List<RouteBase> goRoutes = <RouteBase>[
   GoRoute(
     path: '/',
     builder: (context, state) => const SplashScreen(),
+  ),
+
+  // Login
+  GoRoute(
+    path: '/login',
+    builder: (context, state) => const LoginScreen(),
+  ),
+
+  // Register
+  GoRoute(
+    path: '/register',
+    builder: (context, state) => const RegisterScreen(),
+  ),
+
+  // Onboarding
+  GoRoute(
+    path: '/onboarding',
+    builder: (context, state) => const OnboardingScreen(),
   ),
 
   // Homepage
@@ -47,41 +70,27 @@ final List<RouteBase> goRoutes = <RouteBase>[
       );
     }
   ),
+
+  // Example Page for Debugging
+  // TODO: Remove This
+  GoRoute(
+    path: '/example',
+    builder: (context, state) => const OverlappingHeaderPage(),
+  ),
+
+  // Add Deferred Routes
+  ...deferredRoutes,
 ];
-
-/// GoRouter Config
-@riverpod
-class RoutingConfigNotifier extends _$RoutingConfigNotifier {
-  @override
-  ValueNotifier<RoutingConfig> build() {
-    final notifier = ValueNotifier<RoutingConfig>(
-      RoutingConfig(
-        routes: goRoutes
-      ),
-    );
-
-    ref.onDispose(notifier.dispose);
-
-    return notifier;
-  }
-
-  // Method to get current list of route at runtime
-  List<RouteBase> getRoutes() {
-    return state.value.routes;
-  }
-
-  // Method to swap routes at runtime
-  void updateRoutes(List<RouteBase> newRoutes) {
-    state.value = RoutingConfig(routes: newRoutes);
-  }
-}
 
 /// GoRouter Instance
 @riverpod
 GoRouter router(Ref ref) {
-  final routingConfig = ref.watch(routingConfigProvider);
+  final routerNotifier = RouterNotifier(ref);
 
-  return GoRouter.routingConfig(
-    routingConfig: routingConfig,
+  return GoRouter(
+    initialLocation: '/',
+    refreshListenable: routerNotifier,
+    redirect: routerNotifier.redirect,
+    routes: goRoutes,
   );
 }

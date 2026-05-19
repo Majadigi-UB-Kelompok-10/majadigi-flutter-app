@@ -74,6 +74,12 @@ RemoveFavoriteUseCase removeFavoriteUseCase(Ref ref) {
   return RemoveFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
 }
 
+/// Sync Favorites
+@riverpod
+SyncFavoriteUseCase syncFavoritesUseCase(Ref ref) {
+  return SyncFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
+}
+
 /// Search by Query
 @riverpod
 SearchServicesByQueryUseCase _searchServicesByQueryUseCase(Ref ref) {

@@ -16,6 +16,7 @@ class SplashScreen extends HookConsumerWidget {
     // We use a step integer to control the sequence of animations
     // 0 = Initial, 1 = Logo Visible, 2 = Text & Progress Visible
     final step = useState(0);
+    final destination = '/homepage';
 
     // Control sync progress value
     final syncProgress = useState<double?>(null);
@@ -43,7 +44,7 @@ class SplashScreen extends HookConsumerWidget {
             syncProgress.value = 1.0;
             await Future.delayed(const Duration(milliseconds: 500)); // Brief pause for visual Polish
 
-            if (context.mounted) context.go('/homepage');
+            if (context.mounted) context.go(destination);
           } else {
             syncSubscription = ref
                 .read(syncDatabaseServiceProvider)
@@ -55,13 +56,13 @@ class SplashScreen extends HookConsumerWidget {
                 if (progress >= 1.0) {
                   syncSubscription?.cancel();
                   if (context.mounted) {
-                    context.go('/homepage');
+                    context.go(destination);
                   }
                 }
               },
               onError: (error) {
                 debugPrint("Sync stream threw an error: $error");
-                if (context.mounted) context.go('/homepage');
+                if (context.mounted) context.go(destination);
               },
               cancelOnError: true,
             );
@@ -73,12 +74,12 @@ class SplashScreen extends HookConsumerWidget {
               const SnackBar(content: Text('Sync timed out. Loading offline mode.')),
             );
 
-            context.go('/homepage');
+            context.go(destination);
           }
         } catch (e) {
           debugPrint("Error during initialization: $e");
           if (context.mounted) {
-            context.go('/homepage');
+            context.go(destination);
           }
         }
       }

@@ -23,6 +23,6 @@ class PolicyRemoteDatasourceImpl implements PolicyRemoteDatasource {
     final response = await dio.get('/policies');
     if (response.statusCode == 304) return null;
     final data = await cleanupData(zstandard: zstandard, response: response);
-    return data.map((json) => PolicyDto.fromJson(json)).toList();
+    return (data["data"] as List).map((json) => PolicyDto.fromJson(json)).toList();
   }
 }

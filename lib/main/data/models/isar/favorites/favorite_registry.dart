@@ -8,9 +8,9 @@ part 'favorite_registry.g.dart';
 class IsarFavoriteRegistry {
   Id get isarId => fastHash(id);
 
-  late String id;
+  String id = "favorites";
 
   final fkServiceId = IsarLinks<IsarServiceRegistry>();
 
-  DateTime lastUpdated = DateTime.now();
+  DateTime lastUpdated = DateTime.now().toUtc();
 }

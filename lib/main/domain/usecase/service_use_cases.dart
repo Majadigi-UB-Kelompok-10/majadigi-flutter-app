@@ -59,7 +59,7 @@ class AddFavoriteUseCase {
   }
 }
 
-/// Remove Favories
+/// Remove Favorites
 class RemoveFavoriteUseCase {
   final ServiceRepository repository;
 
@@ -67,5 +67,16 @@ class RemoveFavoriteUseCase {
 
   Future<void> execute(String serviceId) async {
     return await repository.removeFavoriteService(serviceId);
+  }
+}
+
+/// Sync Favorites
+class SyncFavoriteUseCase {
+  final ServiceRepository repository;
+
+  SyncFavoriteUseCase(this.repository);
+
+  Future<void> execute() async {
+    return await repository.syncFavorites();
   }
 }
