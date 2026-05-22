@@ -30,7 +30,7 @@ class IntegrationRepositoryImpl implements IntegrationRepository {
 
       final integrationIsar = integration.map((integration) => integration.toIsar()).toList();
 
-      localDatasource.cacheIntegration(integrationIsar);
+      await localDatasource.cacheIntegration(integrationIsar);
     } catch (e) { /* None */ }
   }
 

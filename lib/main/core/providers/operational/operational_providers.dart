@@ -56,7 +56,7 @@ GetOperationalForServiceUseCase _getOperationalForServiceUseCase(Ref ref) {
 // -- Exposed Use Cases for Operational --
 /// Watch Operational based on ServiceId (Streams)
 @riverpod
-Stream<OperationalEntity> watchOperationalsForService(Ref ref, String serviceId) {
+Stream<OperationalEntity?> watchOperationalsForService(Ref ref, String serviceId) {
   final watchOperationalsForServiceUseCase = ref.watch(_watchOperationalForServiceUseCaseProvider);
 
   return watchOperationalsForServiceUseCase.execute(serviceId);

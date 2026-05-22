@@ -20,10 +20,10 @@ class PolicyEntity with _$PolicyEntity {
   final String? fkServiceListId;
 
   @override
-  final Map<String, dynamic>? benefit;
+  final dynamic benefit;
 
   @override
-  final Map<String, dynamic>? instruction;
+  final dynamic instruction;
 
   @override
   final DateTime? createdAt;

@@ -48,7 +48,7 @@ Isar isar(Ref ref) {
 @riverpod
 Future<void> clearIsar(Ref ref) async {
   final isar = ref.read(isarProvider);
-  isar.close(deleteFromDisk: true);
+  await isar.close(deleteFromDisk: true);
 }
 
 @riverpod
@@ -77,5 +77,6 @@ FlutterSecureStorage secureStorage(Ref ref) {
 class SecureStorageKeys {
   static const String accessToken = 'access_token';
   static const String refreshToken = 'refresh_token';
-  static const String tokenType = 'type';
+  static const String tokenType = 'token_type';
+  static const String guestMode = 'guest_mode';
 }

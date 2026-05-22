@@ -1,27 +1,19 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import './onboarding_indicator.dart';
 
-class OnboardingHeroCard extends StatefulWidget {
+const String _heroImageUrl = 'https://res.cloudinary.com/duxmv7lnl/image/upload/v1779115843/ovpo22g0dwhssefswboa.png';
+
+class OnboardingHeroCard extends HookConsumerWidget {
   const OnboardingHeroCard({super.key});
 
-  static const String _heroImageUrl = 'https://res.cloudinary.com/duxmv7lnl/image/upload/v1779115843/ovpo22g0dwhssefswboa.png';
-
   @override
-  State<OnboardingHeroCard> createState() => _OnboardingHeroCardState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = usePageController();
+    final currentPage = useState(0);
 
-class _OnboardingHeroCardState extends State<OnboardingHeroCard> {
-  final PageController _controller = PageController();
-  int _current = 0;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
       decoration: BoxDecoration(
@@ -72,16 +64,16 @@ class _OnboardingHeroCardState extends State<OnboardingHeroCard> {
             child: AspectRatio(
               aspectRatio: 1.93,
               child: PageView.builder(
-                controller: _controller,
+                controller: controller,
                 itemCount: 4,
                 physics: const BouncingScrollPhysics(),
-                onPageChanged: (i) => setState(() => _current = i),
+                onPageChanged: (i) => currentPage.value = i,
                 itemBuilder: (context, index) {
-                  return Image.network(
-                    OnboardingHeroCard._heroImageUrl,
+                  return CachedNetworkImage(
+                    imageUrl: _heroImageUrl,
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
+                    useOldImageOnUrlChange: true,
+                    placeholder: (context, url) {
                       return Container(
                         color: const Color(0xFFEAF1FF),
                         alignment: Alignment.center,
@@ -92,7 +84,7 @@ class _OnboardingHeroCardState extends State<OnboardingHeroCard> {
                         ),
                       );
                     },
-                    errorBuilder: (context, error, stackTrace) {
+                    errorWidget: (context, url, error) {
                       return Container(
                         color: const Color(0xFFEAF1FF),
                         alignment: Alignment.center,
@@ -105,7 +97,8 @@ class _OnboardingHeroCardState extends State<OnboardingHeroCard> {
             ),
           ),
           const SizedBox(height: 10),
-          Center(child: OnboardingIndicator(activeIndex: _current, itemCount: 4)),
+
+          Center(child: OnboardingIndicator(activeIndex: currentPage.value, itemCount: 4)),
         ],
       ),
     );

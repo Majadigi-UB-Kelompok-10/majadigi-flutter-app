@@ -15,10 +15,14 @@ class PolicyRepositoryImpl implements PolicyRepository {
   );
 
   @override
-  Future<PolicyEntity> getPolicyForService(String serviceId) {
-    return localDatasource.getCachedPoliciesForService(serviceId).then((policy) {
-      return policy.first.toEntity();
-    });
+  Future<PolicyEntity?> getPolicyForService(String serviceId) async {
+    final cachedPolicies = await localDatasource.getCachedPoliciesForService(serviceId);
+
+    if (cachedPolicies.isEmpty) {
+      return null;
+    }
+
+    return cachedPolicies.first.toEntity();
   }
 
   @override
@@ -30,14 +34,18 @@ class PolicyRepositoryImpl implements PolicyRepository {
 
       final policyIsar = policies.map((policy) => policy.toIsar()).toList();
 
-      localDatasource.cachePolicies(policyIsar);
+      await localDatasource.cachePolicies(policyIsar);
     } catch (e) { /* None */ }
   }
 
   @override
-  Stream<PolicyEntity> watchPolicyForService(String serviceId) {
+  Stream<PolicyEntity?> watchPolicyForService(String serviceId) {
     return localDatasource.watchCachedPoliciesForService(serviceId).map((policy) {
-      return policy.first.toEntity();
+      if (policy.isNotEmpty) {
+        return policy.first.toEntity();
+      }
+
+      return null;
     });
   }
 }

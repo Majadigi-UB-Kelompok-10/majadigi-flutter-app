@@ -80,3 +80,14 @@ class SyncFavoriteUseCase {
     return await repository.syncFavorites();
   }
 }
+
+/// Clear Favorite (only for offline use)
+class ClearAllFavoriteUseCase {
+  final ServiceRepository repository;
+
+  ClearAllFavoriteUseCase(this.repository);
+
+  Future<void> execute() async {
+    return await repository.clearFavorites();
+  }
+}

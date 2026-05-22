@@ -5,11 +5,13 @@ class OnboardingActionArea extends StatelessWidget {
     super.key,
     this.onLoginPressed,
     this.onRegisterPressed,
+    this.onSkipPressed,
     this.onSupportPressed,
   });
 
   final VoidCallback? onLoginPressed;
   final VoidCallback? onRegisterPressed;
+  final VoidCallback? onSkipPressed;
   final VoidCallback? onSupportPressed;
 
   @override
@@ -55,6 +57,52 @@ class OnboardingActionArea extends StatelessWidget {
             child: const Text(
               'Belum punya akun? Daftar dulu',
               style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 12),
+          child: Row(
+            children: [
+              Expanded(
+                child: Divider(
+                  color: Colors.black, // Line color
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10), // Space between line and text
+                child: Text("ATAU"),
+              ),
+              Expanded(
+                child: Divider(
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 56,
+          child: ElevatedButton(
+            onPressed: onSkipPressed,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFDEDED),
+              foregroundColor: const Color(0xFFE74C3C),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+              ),
+            ),
+            child: const Text(
+              'Lewati',
+              style: TextStyle(
+                color: Color(0xFFE74C3C),
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
               ),

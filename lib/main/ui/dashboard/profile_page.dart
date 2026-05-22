@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
+import '../../core/http.dart';
 import 'widgets/profile_information_screen.dart';
 import 'widgets/profile_setting_screen.dart';
 import 'widgets/profile_about_screen.dart';
@@ -143,7 +147,11 @@ class _MainProfileView extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 24),
+
+            // Logout button cuz someone doesn't make one
+            _LogoutButton()
           ],
         ),
       ),
@@ -183,6 +191,60 @@ class _Divider extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
       child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
+    );
+  }
+}
+
+class _LogoutButton extends ConsumerWidget {
+  const _LogoutButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      child: FilledButton(
+        onPressed: () async {
+          await ref.read(authProvider.notifier).logout();
+
+          // Ensure Auth Middleware is on and toggled
+          ref.read(addAuthMiddlewareProvider);
+          ref.read(authFeatureToggleProvider.notifier).enableAuth();
+
+          // Disable Guest Mode
+          ref.read(guestStatusProvider.notifier).disableGuest();
+
+          if (context.mounted) {
+            context.go("/onboarding");
+          }
+        },
+        style: FilledButton.styleFrom(
+          backgroundColor: const Color(0xFFFDEDED),
+          foregroundColor: const Color(0xFFE74C3C),
+          minimumSize: const Size.fromHeight(64),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.logout,
+              color: Color(0xFFE74C3C),
+              size: 28,
+            ),
+            SizedBox(width: 12),
+            Text(
+              "Log Out",
+              style: TextStyle(
+                color: Color(0xFFE74C3C),
+                fontWeight: FontWeight.w400,
+                fontSize: 18,
+              ),
+            ),
+          ],
+        )
+      )
     );
   }
 }

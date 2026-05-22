@@ -15,10 +15,14 @@ class EndpointRepositoryImpl implements EndpointRepository {
   );
 
   @override
-  Future<EndpointEntity> getEndpointForIntegration(String fkEndpointId) {
-    return localDatasource.getCachedEndpointForIntegration(fkEndpointId).then((endpoint) {
-      return endpoint.first.toEntity();
-    });
+  Future<EndpointEntity> getEndpointForIntegration(String fkEndpointId) async {
+    final cachedEndpoint = await localDatasource.getCachedEndpointForIntegration(fkEndpointId);
+
+    if (cachedEndpoint.isEmpty) {
+      return EndpointEntity();
+    }
+
+    return cachedEndpoint.first.toEntity();
   }
 
   @override
@@ -30,12 +34,18 @@ class EndpointRepositoryImpl implements EndpointRepository {
 
       final endpointIsar = endpoints.map((endpoint) => endpoint.toIsar()).toList();
 
-      localDatasource.cacheEndpoint(endpointIsar);
+      await localDatasource.cacheEndpoint(endpointIsar);
     } catch (e) { /* None */ }
   }
 
   @override
-  Stream<EndpointEntity> watchEndpointForIntegration(String fkEndpointId) {
-    throw UnimplementedError();
+  Stream<EndpointEntity?> watchEndpointForIntegration(String fkEndpointId) {
+    return localDatasource.watchCachedEndpointForIntegration(fkEndpointId).map((endpoint) {
+      if (endpoint.isNotEmpty) {
+        return endpoint.first.toEntity();
+      }
+
+      return null;
+    });
   }
 }

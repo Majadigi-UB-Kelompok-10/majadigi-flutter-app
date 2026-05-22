@@ -24,12 +24,12 @@ class PolicyListWidget extends StatelessWidget {
             spacing: 12.0,
             children: [
               // Manfaat
-              if (entry.benefit != null && entry.benefit!.isNotEmpty) ...{
+              if (entry.benefit != null) ...{
                 _BenefitExpansionTile(benefit: entry.benefit!),
               },
 
               // Instruksi
-              if (entry.instruction != null && entry.instruction!.isNotEmpty) ...{
+              if (entry.instruction != null) ...{
                 _InstructionExpansionTile(instruction: entry.instruction!),
               }
             ],
@@ -41,7 +41,7 @@ class PolicyListWidget extends StatelessWidget {
 }
 
 class _BenefitExpansionTile extends StatelessWidget {
-  final Map<String, dynamic> benefit;
+  final dynamic benefit;
   const _BenefitExpansionTile({required this.benefit});
 
   @override
@@ -61,16 +61,19 @@ class _BenefitExpansionTile extends StatelessWidget {
       ),
       childrenPadding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       children: [
-        for (var entry in benefit.entries) ...[
-          DynamicJsonToTextRenderer(data: entry.value)
-        ]
+        if (benefit is Map)
+          for (var entry in benefit.entries) ...[
+            DynamicJsonToTextRenderer(data: entry.value)
+          ]
+        else
+          DynamicJsonToTextRenderer(data: benefit)
       ],
     );
   }
 }
 
 class _InstructionExpansionTile extends StatelessWidget {
-  final Map<String, dynamic> instruction;
+  final dynamic instruction;
   const _InstructionExpansionTile({required this.instruction});
 
   @override
@@ -91,9 +94,12 @@ class _InstructionExpansionTile extends StatelessWidget {
       childrenPadding: const EdgeInsets.only(
           left: 16.0, right: 16.0, bottom: 16.0),
       children: [
-        for (var entry in instruction.entries) ...[
-          DynamicJsonToTextRenderer(data: entry.value)
-        ]
+        if (instruction is Map)
+          for (var entry in instruction.entries) ...[
+            DynamicJsonToTextRenderer(data: entry.value)
+          ]
+        else
+          DynamicJsonToTextRenderer(data: instruction)
       ],
     );
   }

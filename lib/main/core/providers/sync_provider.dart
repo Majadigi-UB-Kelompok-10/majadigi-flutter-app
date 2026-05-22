@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show debugPrint;
 import 'package:isar_community/isar.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/image/image_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/integration/integration_providers.dart';
@@ -10,6 +11,8 @@ import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/category_
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/operational/operational_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/service/service_registry.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'endpoint/endpoint_provider.dart';
 
 part 'sync_provider.g.dart';
 
@@ -29,16 +32,18 @@ class StartupSyncAll extends _$StartupSyncAll {
       final syncPolicy = ref.read(syncPoliciesUseCaseProvider);
       final syncImage = ref.read(syncImageUseCaseProvider);
       final syncFavorite = ref.read(syncFavoritesUseCaseProvider);
+      final syncEndpoints = ref.read(syncEndpointsUseCaseProvider);
 
-      syncFavorite.execute().timeout(const Duration(seconds: 20));
-      await syncServices.execute().timeout(const Duration(seconds: 20));
       await syncCategory.execute().timeout(const Duration(seconds: 20));
+      await syncServices.execute().timeout(const Duration(seconds: 20));
+      syncFavorite.execute().timeout(const Duration(seconds: 20));
       await syncIntegration.execute().timeout(const Duration(seconds: 20));
       await syncOperational.execute().timeout(const Duration(seconds: 20));
       await syncPolicy.execute().timeout(const Duration(seconds: 20));
       await syncImage.execute().timeout(const Duration(seconds: 20));
+      await syncEndpoints.execute().timeout(const Duration(seconds: 20));
     } catch (e) {
-      print("Silent sync failed or timed out: $e");
+      debugPrint("Silent sync failed or timed out: $e");
     }
   }
 }
@@ -65,20 +70,21 @@ class SyncDatabaseService {
       final syncPolicy = ref.read(syncPoliciesUseCaseProvider);
       final syncImage = ref.read(syncImageUseCaseProvider);
       final syncFavorite = ref.read(syncFavoritesUseCaseProvider);
+      final syncEndpoints = ref.read(syncEndpointsUseCaseProvider);
 
       final double progressStep = 1 / 7;
       double progress = 0;
 
-      // Fire and Forget
-      syncFavorite.execute().timeout(const Duration(seconds: 20));
+      await syncCategory.execute().timeout(const Duration(seconds: 20));
+      progress += progressStep;
+      yield progress;
 
       await syncServices.execute().timeout(const Duration(seconds: 20));
       progress += progressStep;
       yield progress;
 
-      await syncCategory.execute().timeout(const Duration(seconds: 20));
-      progress += progressStep;
-      yield progress;
+      // Fire and Forget
+      syncFavorite.execute().timeout(const Duration(seconds: 20));
 
       await syncIntegration.execute().timeout(const Duration(seconds: 20));
       progress += progressStep;
@@ -93,9 +99,13 @@ class SyncDatabaseService {
       yield progress;
 
       await syncImage.execute().timeout(const Duration(seconds: 20));
+      progress += progressStep;
+      yield progress;
+
+      await syncEndpoints.execute().timeout(const Duration(seconds: 20));
     } catch (e) {
       // Skip
-      print("Silent sync failed or timed out: $e");
+      debugPrint("Silent sync failed or timed out: $e");
     } finally {
       yield 1.0;
     }

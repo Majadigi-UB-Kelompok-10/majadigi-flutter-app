@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/decompression.dart';
-import 'package:majadigi_mobile_rebuild/main/data/datasources/remote_config.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/dto/operational/operational_dto.dart';
 import 'package:zstandard/zstandard.dart';
 
@@ -14,16 +13,14 @@ abstract class OperationalRemoteDatasource {
 class OperationalRemoteDatasourceImpl implements OperationalRemoteDatasource {
   final Dio dio;
   final Zstandard? zstandard;
-  OperationalRemoteDatasourceImpl({required this.dio, this.zstandard}) {
-    dio.options.baseUrl = baseUrl;
-  }
+  OperationalRemoteDatasourceImpl({required this.dio, this.zstandard});
 
   @override
   Future<List<OperationalDto>?> fetchOperationalFromNetwork() async {
     // TODO: CHANGE THIS TO REAL API GATEWAY
     final response = await dio.get('/operational');
 
-    if (response.statusCode == 304) return null;
+    if (response.statusCode != 200) return null;
 
     final data = await cleanupData(zstandard: zstandard, response: response);
     return (data["data"] as List).map((json) => OperationalDto.fromJson(json)).toList();

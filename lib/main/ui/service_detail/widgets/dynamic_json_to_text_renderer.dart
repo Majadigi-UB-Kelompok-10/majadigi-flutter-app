@@ -8,6 +8,8 @@
  * for policy list widget in generic service page
  */
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 class DynamicJsonToTextRenderer extends StatelessWidget {
@@ -54,6 +56,7 @@ class _StringRenderer extends StatelessWidget {
       child: Text(
         isMapKeyExist ? (isNumeric ? '$mapKey. $data' : '$mapKey: $data') : data,
         style: const TextStyle(fontSize: 16),
+        textAlign: TextAlign.justify,
       ),
     );
   }

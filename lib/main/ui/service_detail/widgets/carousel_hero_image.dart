@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:majadigi_mobile_rebuild/main/core/http.dart' show supabaseBaseUrl, supabaseImageUrl;
+import 'package:majadigi_mobile_rebuild/main/core/credentials.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/image/image_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 
@@ -36,7 +36,7 @@ class CarouselHeroImage extends ConsumerWidget {
                     return Semantics(
                         label: item.semanticLabel ?? 'No Semantic',
                         child: CachedNetworkImage(
-                          imageUrl: '$supabaseBaseUrl$supabaseImageUrl${item.imageUrl}',
+                          imageUrl: item.imageUrl!,
                           fit: BoxFit.contain,
                           cacheManager: cacheManager,
                           useOldImageOnUrlChange: true,

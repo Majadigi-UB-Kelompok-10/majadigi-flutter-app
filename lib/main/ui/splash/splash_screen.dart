@@ -16,7 +16,7 @@ class SplashScreen extends HookConsumerWidget {
     // We use a step integer to control the sequence of animations
     // 0 = Initial, 1 = Logo Visible, 2 = Text & Progress Visible
     final step = useState(0);
-    final destination = '/homepage';
+    final destination = '/onboarding';
 
     // Control sync progress value
     final syncProgress = useState<double?>(null);

@@ -38,25 +38,29 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
 
   @override
   Future<void> removeLocalAuth() async {
-    await _secureStorage.delete(key: SecureStorageKeys.accessToken);
-    await _secureStorage.delete(key: SecureStorageKeys.refreshToken);
-    await _secureStorage.delete(key: SecureStorageKeys.tokenType);
+    await Future.wait([
+      _secureStorage.delete(key: SecureStorageKeys.accessToken),
+      _secureStorage.delete(key: SecureStorageKeys.refreshToken),
+      _secureStorage.delete(key: SecureStorageKeys.tokenType)
+    ]);
   }
 
   @override
   Future<void> setLocalAuth(AuthEntity entity) async {
-    await _secureStorage.write(
-      key: SecureStorageKeys.accessToken,
-      value: entity.accessToken,
-    );
-    await _secureStorage.write(
-      key: SecureStorageKeys.refreshToken,
-      value: entity.refreshToken,
-    );
-    await _secureStorage.write(
-      key: SecureStorageKeys.tokenType,
-      value: entity.tokenType,
-    );
+    await Future.wait([
+      _secureStorage.write(
+        key: SecureStorageKeys.accessToken,
+        value: entity.accessToken,
+      ),
+      _secureStorage.write(
+        key: SecureStorageKeys.refreshToken,
+        value: entity.refreshToken,
+      ),
+      _secureStorage.write(
+        key: SecureStorageKeys.tokenType,
+        value: entity.tokenType,
+      )
+    ]);
   }
 
   @override

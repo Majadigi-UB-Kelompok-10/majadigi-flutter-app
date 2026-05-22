@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
+import '../../../../core/http.dart';
+import '../../../../core/providers/service/service_providers.dart';
 import './login_input_field.dart';
 
 class LoginForm extends HookConsumerWidget {
@@ -104,6 +106,12 @@ class LoginForm extends HookConsumerWidget {
           height: 52,
           child: ElevatedButton(
             onPressed: authState.isLoading ? null : () async {
+              // Ensure Auth Middleware is on and toggled
+              // Also remove personalization to have clean slate
+              await ref.read(clearAllFavoriteUseCaseProvider).execute();
+              ref.read(addAuthMiddlewareProvider);
+              ref.read(authFeatureToggleProvider.notifier).enableAuth();
+
               await authNotifier.login(emailController.text, passwordController.text);
 
               if (rememberMe.value) {

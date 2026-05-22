@@ -1,14 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/http.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/service/service_providers.dart';
 import 'widgets/onboarding_action_area.dart';
 import 'widgets/onboarding_header.dart';
 import 'widgets/onboarding_hero_card.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends HookConsumerWidget {
   const OnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Redirect user to homepage if already logged in before
+    useEffect(() {
+      Future<void> checkUserAuthState() async {
+        if (!context.mounted) return;
+
+        final isLoggedIn = await ref.read(authRepositoryProvider).isLoggedIn();
+
+        final isGuest = await ref.read(guestStatusProvider.future);
+
+        if (context.mounted) {
+          if (isLoggedIn) {
+            context.go('/homepage');
+          }
+
+          if (isGuest) {
+            // Only disable auth without removing personalization
+            ref.read(removeAuthMiddlewareProvider);
+            ref.read(authFeatureToggleProvider.notifier).disableAuth();
+
+            context.go('/homepage');
+          }
+        }
+      }
+
+      checkUserAuthState();
+
+      return () {};
+    }, const []);
+
     return Scaffold(
       backgroundColor: const Color(0xFF0A63D2),
       body: Stack(
@@ -43,18 +77,36 @@ class OnboardingScreen extends StatelessWidget {
                               children: [
                                 OnboardingHeader(),
                                 SizedBox(height: 22),
+
                                 OnboardingHeroCard(),
                                 SizedBox(height: 28),
+
                                 _WelcomeSection(),
                                 SizedBox(height: 32),
-                                    OnboardingActionArea(
-                                      onLoginPressed: () {
-                                        context.go('login');
-                                      },
-                                      onRegisterPressed: () {
-                                        context.go('register');
-                                      },
-                                    ),
+
+                                OnboardingActionArea(
+                                  onLoginPressed: () {
+                                    context.push('/login');
+                                  },
+                                  onRegisterPressed: () {
+                                    context.push('/register');
+                                  },
+                                  onSkipPressed: () async {
+                                    // Attempt to remove all personalisation
+                                    // Features and Authentication
+                                    await ref.read(authProvider.notifier).logout();
+                                    await ref.read(clearAllFavoriteUseCaseProvider).execute();
+                                    ref.read(removeAuthMiddlewareProvider);
+                                    ref.read(authFeatureToggleProvider.notifier).disableAuth();
+
+                                    // Set Guest Mode
+                                    ref.read(guestStatusProvider.notifier).enableGuest();
+
+                                    if (context.mounted) {
+                                      context.go("/homepage");
+                                    }
+                                  },
+                                ),
                               ],
                             ),
                           ),

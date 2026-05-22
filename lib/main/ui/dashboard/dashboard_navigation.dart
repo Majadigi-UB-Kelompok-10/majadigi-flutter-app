@@ -9,8 +9,8 @@ import 'package:majadigi_mobile_rebuild/main/ui/dashboard/profile_page.dart';
 
 /// Main Navigation Shell
 class DashboardNavigation extends HookConsumerWidget {
-  final int? initialIndex;
-  const DashboardNavigation({super.key, this.initialIndex});
+  final int initialIndex;
+  const DashboardNavigation({super.key, required this.initialIndex});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +20,7 @@ class DashboardNavigation extends HookConsumerWidget {
       Future<void> setNavIndex() async {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (context.mounted) {
-            ref.read(navigationIndexProvider.notifier).setIndex(initialIndex!);
+            ref.read(navigationIndexProvider.notifier).setIndex(initialIndex);
           }
         });
       }

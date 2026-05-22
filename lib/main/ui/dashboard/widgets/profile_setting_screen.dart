@@ -132,7 +132,7 @@ class AccountSettingScreen extends HookWidget {
             Switch(
               value: value,
               onChanged: onChanged,
-              activeColor: const Color(0xFF0652C5),
+              activeThumbColor: const Color(0xFF0652C5),
             )
           else
             const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),

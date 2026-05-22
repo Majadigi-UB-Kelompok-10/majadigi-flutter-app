@@ -15,10 +15,14 @@ class OperationalRepositoryImpl implements OperationalRepository {
   );
 
   @override
-  Future<OperationalEntity> getOperationalForService(String serviceId) {
-    return localDatasource.getCachedOperationalForService(serviceId).then((operational) {
-      return operational.first.toEntity();
-    });
+  Future<OperationalEntity?> getOperationalForService(String serviceId) async {
+    final cachedOperational = await localDatasource.getCachedOperationalForService(serviceId);
+
+    if (cachedOperational.isEmpty) {
+        return null;
+    }
+
+    return cachedOperational.first.toEntity();
   }
 
   @override
@@ -30,14 +34,18 @@ class OperationalRepositoryImpl implements OperationalRepository {
 
       final operationalIsar = operational.map((operational) => operational.toIsar()).toList();
 
-      localDatasource.cacheOperational(operationalIsar);
+      await localDatasource.cacheOperational(operationalIsar);
     } catch (e) { /* None */ }
   }
 
   @override
-  Stream<OperationalEntity> watchOperationalForService(String serviceId) {
+  Stream<OperationalEntity?> watchOperationalForService(String serviceId) {
     return localDatasource.watchCachedOperationalForService(serviceId).map((operational) {
-      return operational.first.toEntity();
+      if (operational.isNotEmpty) {
+        return operational.first.toEntity();
+      }
+
+      return null;
     });
   }
 }

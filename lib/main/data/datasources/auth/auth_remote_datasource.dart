@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:majadigi_mobile_rebuild/main/data/datasources/remote_config.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/auth/auth_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/dto/profile/profile_dto.dart';
@@ -24,9 +23,7 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
   final Dio dio;
   final Zstandard? zstandard;
   final FlutterSecureStorage secureStorage;
-  AuthRemoteDatasourceImpl({required this.dio, this.zstandard, required this.secureStorage}) {
-    dio.options.baseUrl = baseUrl;
-  }
+  AuthRemoteDatasourceImpl({required this.dio, this.zstandard, required this.secureStorage});
 
   @override
   Future<AuthEntity?> getRemoteAuth(String email, String password) async {
@@ -35,7 +32,7 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
       'password': password
     });
 
-    if (response.statusCode != 200 && response.data == null) {
+    if (response.statusCode != 200 || response.data == null) {
       return null;
     }
 

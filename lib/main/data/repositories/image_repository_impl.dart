@@ -30,7 +30,7 @@ class ImageRepositoryImpl implements ImageRepository {
 
       final imageIsar = images.map((image) => image.toIsar()).toList();
 
-      localDatasource.cacheImage(imageIsar);
+      await localDatasource.cacheImage(imageIsar);
     } catch (e) { /* None */ }
   }
 

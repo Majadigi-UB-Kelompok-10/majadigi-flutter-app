@@ -22,24 +22,24 @@ class IsarPolicyRegistry {
   late DateTime createdAt;
 
   @ignore
-  Map<String, dynamic> get jsonBenefitData {
+  dynamic get jsonBenefitData {
     if (rawBenefit.isEmpty) return {};
-    return jsonDecode(rawBenefit) as Map<String, dynamic>;
+    return jsonDecode(rawBenefit) as dynamic;
   }
 
   @ignore
-  set jsonBenefitData(Map<String, dynamic> value) {
+  set jsonBenefitData(dynamic value) {
     rawBenefit = jsonEncode(value);
   }
 
   @ignore
-  Map<String, dynamic> get jsonInstructionData {
+  dynamic get jsonInstructionData {
     if (rawInstruction.isEmpty) return {};
-    return jsonDecode(rawInstruction) as Map<String, dynamic>;
+    return jsonDecode(rawInstruction) as dynamic;
   }
 
   @ignore
-  set jsonInstructionData(Map<String, dynamic> value) {
+  set jsonInstructionData(dynamic value) {
     rawInstruction = jsonEncode(value);
   }
 

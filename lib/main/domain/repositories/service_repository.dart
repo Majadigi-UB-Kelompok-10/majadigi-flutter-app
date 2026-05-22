@@ -14,6 +14,7 @@ abstract class ServiceRepository {
   Future<void> addFavoriteService(String serviceId);
   Future<void> removeFavoriteService(String serviceId);
   Future<void> syncFavorites();
+  Future<void> clearFavorites();
 
   // Search by String Use Case
   Future<List<ServiceEntity>> searchServicesByQuery(String query);

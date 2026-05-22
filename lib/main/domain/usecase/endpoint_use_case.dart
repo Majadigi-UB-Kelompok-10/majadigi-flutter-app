@@ -18,7 +18,7 @@ class WatchEndpointForIntegrationUseCase {
   final EndpointRepository repository;
   WatchEndpointForIntegrationUseCase(this.repository);
 
-  Stream<EndpointEntity> execute(String integrationId) {
+  Stream<EndpointEntity?> execute(String integrationId) {
     return repository.watchEndpointForIntegration(integrationId);
   }
 }

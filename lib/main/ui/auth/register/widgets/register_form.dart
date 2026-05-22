@@ -2,19 +2,34 @@ import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/router.dart';
 import 'register_input_field.dart';
 
-class RegisterForm extends HookWidget {
+class RegisterForm extends HookConsumerWidget {
   const RegisterForm({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final loginRecognizer = useMemoized(() => TapGestureRecognizer());
 
     useEffect(() {
       loginRecognizer.onTap = () {
         if (context.mounted) {
-          context.pop();
+          final router = ref.read(routerProvider);
+          final matches = router.routerDelegate.currentConfiguration.matches;
+
+          String? previousLocation;
+          if (matches.length > 1) {
+            previousLocation = matches[matches.length - 2].matchedLocation;
+          }
+
+          if (previousLocation == '/login') {
+            context.pop();
+            return;
+          }
+
+          context.push("/login");
         }
       };
 

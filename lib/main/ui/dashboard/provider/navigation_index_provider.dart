@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'navigation_index_provider.g.dart';
 
 /// Navigation Index Provider to avoid Prop Drilling
-@riverpod
+@Riverpod(keepAlive: true)
 class NavigationIndex extends _$NavigationIndex {
   @override
   int build() {

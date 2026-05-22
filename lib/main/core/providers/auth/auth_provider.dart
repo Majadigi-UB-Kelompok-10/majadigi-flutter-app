@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart' show ChangeNotifier, BuildContext;
 import 'package:go_router/go_router.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
-import 'package:majadigi_mobile_rebuild/main/core/providers/profile/profile_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/auth/auth_local_datasource.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/auth/auth_remote_datasource.dart';
-import 'package:majadigi_mobile_rebuild/main/data/datasources/remote_config.dart' show baseUrl;
 import 'package:majadigi_mobile_rebuild/main/data/repositories/auth_repository_impl.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/auth/auth_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/repositories/auth_repository.dart';
@@ -130,7 +128,7 @@ class RouterNotifier extends ChangeNotifier {
     final isLoggingIn = state.matchedLocation == '/login';
 
     // Page Exclusion from redirect to Login Page
-    final List<String> excludedPage = ['/', '/example', '/homepage'];
+    final List<String> excludedPage = ['/', '/example'];
     final isExcluded = excludedPage.contains(state.matchedLocation);
 
     if (!isLoggedIn && !isExcluded) {
@@ -162,4 +160,33 @@ class AuthFeatureToggle extends _$AuthFeatureToggle {
   void enableAuth() => state = true;
   void disableAuth() => state = false;
   void toggleAuth() => state = !state;
+}
+
+/// Guest Toggler
+@riverpod
+class GuestStatus extends _$GuestStatus {
+  @override
+  Future<bool> build() async {
+    final secureStorage = ref.watch(secureStorageProvider);
+
+    final status = await secureStorage.read(key: SecureStorageKeys.guestMode);
+
+    if (status != null && status.isNotEmpty) {
+      return true;
+    }
+
+    return false;
+  }
+
+  void enableGuest() async {
+    final secureStorage = ref.watch(secureStorageProvider);
+
+    await secureStorage.write(key: SecureStorageKeys.guestMode, value: 'true');
+  }
+
+  void disableGuest() async {
+    final secureStorage = ref.watch(secureStorageProvider);
+
+    await secureStorage.delete(key: SecureStorageKeys.guestMode);
+  }
 }

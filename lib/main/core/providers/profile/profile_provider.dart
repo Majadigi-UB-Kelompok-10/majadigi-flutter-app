@@ -8,6 +8,17 @@ part 'profile_provider.g.dart';
 class ProfileNotifier extends _$ProfileNotifier {
   @override
   FutureOr<ProfileEntity?> build() async {
+    final isAuthEnabled = ref.watch(authFeatureToggleProvider);
+
+    if (!isAuthEnabled) {
+      return const ProfileEntity(
+        firstName: 'Majadigi',
+        lastName: 'Guest',
+        email: 'guest@majadigi.id',
+        role: 'user',
+      );
+    }
+
     return ref.watch(authRepositoryProvider).getProfile();
   }
 

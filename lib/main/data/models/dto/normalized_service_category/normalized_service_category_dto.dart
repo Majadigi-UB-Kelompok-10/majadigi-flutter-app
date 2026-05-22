@@ -26,6 +26,7 @@ class NormalizedServiceCategoryDto with _$NormalizedServiceCategoryDto {
   const NormalizedServiceCategoryDto({
     this.id,
     this.title,
+    this.longTitle,
     this.description,
     this.iconUrl,
     this.categoryIds,
@@ -39,6 +40,10 @@ class NormalizedServiceCategoryDto with _$NormalizedServiceCategoryDto {
   @override
   @JsonKey(name: 'Title')
   final String? title;
+
+  @override
+  @JsonKey(name: 'LongTitle')
+  final String? longTitle;
 
   @override
   @JsonKey(name: 'Description')
@@ -67,6 +72,7 @@ class NormalizedServiceCategoryDto with _$NormalizedServiceCategoryDto {
     return IsarServiceRegistry()
       ..id = id!
       ..title = title!
+      ..longTitle = longTitle ?? ''
       ..description = description ?? ''
       ..iconUrl = iconUrl ?? ''
       ..createdAt = createdAt!;

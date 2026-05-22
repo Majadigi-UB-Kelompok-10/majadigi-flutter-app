@@ -14,9 +14,9 @@ part 'service_detail_provider.g.dart';
 /// Get Service Detail Aggregated Payload
 @riverpod
 Future<Map<int, Map<String, ServiceDetailAggregatorPayload>>> serviceDetailPayload(Ref ref, String serviceId) async {
-  IntegrationRepository integrationRepository = await ref.watch(integrationRepositoryProvider);
-  OperationalRepository operationalRepository = await ref.watch(operationalRepositoryProvider);
-  PolicyRepository policyRepository = await ref.watch(policyRepositoryProvider);
+  IntegrationRepository integrationRepository = ref.watch(integrationRepositoryProvider);
+  OperationalRepository operationalRepository = ref.watch(operationalRepositoryProvider);
+  PolicyRepository policyRepository = ref.watch(policyRepositoryProvider);
 
   return await GetAggregatedServiceUseCase(
     integrationRepository: integrationRepository,

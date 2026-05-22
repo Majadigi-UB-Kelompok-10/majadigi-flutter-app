@@ -56,7 +56,7 @@ GetPolicyForServiceUseCase _getPolicyForServiceUseCase(Ref ref) {
 // -- Exposed Use Cases for Policy --
 /// Watch Policy based on ServiceId (Streams)
 @riverpod
-Stream<PolicyEntity> watchPolicyForService(Ref ref, String serviceId) {
+Stream<PolicyEntity?> watchPolicyForService(Ref ref, String serviceId) {
   final watchPolicyForServiceUseCase = ref.watch(_watchPolicyForServiceUseCaseProvider);
 
   return watchPolicyForServiceUseCase.execute(serviceId);

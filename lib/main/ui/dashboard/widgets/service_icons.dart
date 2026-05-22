@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/service/service_entity.dart';
-import 'package:majadigi_mobile_rebuild/main/core/http.dart' show supabaseBaseUrl, supabaseImageUrl;
+import 'package:majadigi_mobile_rebuild/main/core/credentials.dart';
 
 class ServiceIcons extends ConsumerWidget {
   final ServiceEntity service;
@@ -18,7 +18,7 @@ class ServiceIcons extends ConsumerWidget {
     return Expanded(
       child: Center(
           child: CachedNetworkImage(
-            imageUrl: '$supabaseBaseUrl$supabaseImageUrl${service.iconUrl!}',
+            imageUrl: service.iconUrl!,
             fit: BoxFit.contain,
             cacheManager: cacheManager,
             errorWidget: (context, url, error) => const Icon(Icons.apps, color: Colors.blue),

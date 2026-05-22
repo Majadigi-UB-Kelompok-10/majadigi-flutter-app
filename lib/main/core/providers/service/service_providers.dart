@@ -80,6 +80,12 @@ SyncFavoriteUseCase syncFavoritesUseCase(Ref ref) {
   return SyncFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
 }
 
+/// Clear Favorites (Only for Offline Use)
+@riverpod
+ClearAllFavoriteUseCase clearAllFavoriteUseCase(Ref ref) {
+  return ClearAllFavoriteUseCase(ref.watch(_serviceRepositoryProvider));
+}
+
 /// Search by Query
 @riverpod
 SearchServicesByQueryUseCase _searchServicesByQueryUseCase(Ref ref) {

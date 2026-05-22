@@ -47,8 +47,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
-    // Remove from remote
-    await remoteDatasource.logout();
+    // Remove from remote (Fire and Forget)
+    try {
+      await remoteDatasource.logout();
+    } catch (e) { /* Continue */ }
 
     // Remove from local
     await localDatasource.removeLocalAuth();
@@ -78,7 +80,15 @@ class AuthRepositoryImpl implements AuthRepository {
     if (entity.accessToken == null || entity.accessToken!.isEmpty) {
       return false;
     }
-    
-    return true;
+
+    // Attempt to Refresh Token
+    try {
+      await refreshLogin();
+
+      return true;
+    } catch (e) {
+      // If token refresh failed or unable to reach network
+      return false;
+    }
   }
 }

@@ -8,7 +8,7 @@ class WatchOperationalForServiceUseCase {
 
   WatchOperationalForServiceUseCase(this.repository);
 
-  Stream<OperationalEntity> execute(String serviceId) {
+  Stream<OperationalEntity?> execute(String serviceId) {
     return repository.watchOperationalForService(serviceId);
   }
 }

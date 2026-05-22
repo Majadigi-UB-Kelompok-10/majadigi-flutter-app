@@ -84,8 +84,6 @@ class ServiceRepositoryImpl implements ServiceRepository {
       final remoteDate = remotePayload?.updatedAt?.toUtc() ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
       final localDate = localData?.lastUpdated.toUtc() ?? DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
-      print("Remote Date: $remoteDate");
-      print("Local Data: $localDate");
       // SCENARIO 1: Remote is newer OR Local has never been created
       if (remoteDate.isAfter(localDate) || localData == null) {
         final remoteServiceIds = remotePayload?.serviceIds ?? [];
@@ -136,5 +134,11 @@ class ServiceRepositoryImpl implements ServiceRepository {
       // SCENARIO 3: Timestamps are equal
       // No action needed as both sides are synchronized.
     } catch (e) { /* None */ }
+  }
+
+  /// Only meant to be used during offline skip
+  @override
+  Future<void> clearFavorites() async {
+    await localDatasource.removeAllFavorites();
   }
 }

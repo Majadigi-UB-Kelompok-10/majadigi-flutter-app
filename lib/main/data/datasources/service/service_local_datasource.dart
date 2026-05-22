@@ -21,6 +21,7 @@ abstract class ServiceLocalDatasource {
   Future<void> addFavoriteService(String serviceId);
   Future<void> removeFavoriteService(String serviceId);
   Future<void> processAndCacheFavorites(List<String> serviceIds, {DateTime? syncDate});
+  Future<void> removeAllFavorites();
   Future<List<IsarServiceRegistry>> searchCachedServiceByQuery(String query);
 }
 
@@ -43,6 +44,12 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
   Future<void> processAndCacheServices(
     List<NormalizedServiceCategoryDto> payload,
   ) async {
+    if (payload.isNotEmpty) {
+      await _isar.writeTxn(() async {
+        await _isar.isarServiceRegistrys.clear();
+      });
+    }
+
     await _isar.writeTxn(() async {
       for (NormalizedServiceCategoryDto normalizedService in payload) {
         final linkedCategories = await _isar.isarCategoryRegistrys.getAll(
@@ -60,6 +67,7 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
           linkedCategories.whereType<IsarCategoryRegistry>(),
         );
         await serviceIsar.categories.save();
+        print("service added");
       }
     });
   }
@@ -157,6 +165,13 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
 
         await favoriteRegistry.fkServiceId.save();
       } catch (e) { /* None */ }
+    });
+  }
+
+  @override
+  Future<void> removeAllFavorites() async {
+    await _isar.writeTxn(() async {
+      await _isar.isarFavoriteRegistrys.where().deleteAll();
     });
   }
 

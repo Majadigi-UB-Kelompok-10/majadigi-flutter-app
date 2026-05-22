@@ -19,7 +19,7 @@ class IntegrationListWidget extends ConsumerWidget {
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         itemCount: data.length,
-        separatorBuilder: (context, index) => const Divider(height: 12.0),
+        separatorBuilder: (context, index) => const SizedBox(height: 12.0),
         itemBuilder: (context, index) {
           final entry = data[index];
 
@@ -48,8 +48,8 @@ class IntegrationListWidget extends ConsumerWidget {
               borderRadius: BorderRadius.circular(15),
             ),
             onTap: () async {
-              // Just for testing
-              context.push("/transjatim");
+              // TODO: Get the endpoint, then push to there
+              // context.push();
             },
           );
         },

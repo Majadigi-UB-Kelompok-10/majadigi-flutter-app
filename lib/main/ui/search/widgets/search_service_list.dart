@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/service/service_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
-import 'package:majadigi_mobile_rebuild/main/core/http.dart' show supabaseBaseUrl, supabaseImageUrl;
+import 'package:majadigi_mobile_rebuild/main/core/credentials.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/providers/search_query_provider.dart';
 
 class SearchServiceList extends ConsumerWidget {
@@ -37,7 +37,7 @@ class SearchServiceList extends ConsumerWidget {
                   child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                       child: CachedNetworkImage(
-                        imageUrl: '$supabaseBaseUrl$supabaseImageUrl${service.iconUrl!}',
+                        imageUrl: service.iconUrl!,
                         fit: BoxFit.contain,
                         cacheManager: cacheManager,
                         useOldImageOnUrlChange: true,
@@ -47,13 +47,13 @@ class SearchServiceList extends ConsumerWidget {
                   )
               ) : const Icon(Icons.link),
               title: Text(
-                service.title!,
+                service.title ?? '-',
                 softWrap: false,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               subtitle: Text(
-                service.description!,
+                service.description ?? '-',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

@@ -17,14 +17,16 @@ class IsarServiceRegistry {
 
   late String title;
 
+  late String longTitle;
+
   late String description;
 
   @Index(type: IndexType.value, caseSensitive: false)
-  List<String> get contentWords => Isar.splitWords('$title $description');
+  List<String> get contentWords => Isar.splitWords('$longTitle $description');
 
   @Index(type: IndexType.value, caseSensitive: false)
   List<String> get revContentWords {
-    return Isar.splitWords('$title $description')
+    return Isar.splitWords('$longTitle $description')
         .map((word) => word.split('')
         .reversed
         .join(''))
@@ -42,6 +44,7 @@ class IsarServiceRegistry {
     return ServiceEntity(
       id: id,
       title: title,
+      longTitle: longTitle,
       description: description,
       iconUrl: iconUrl,
       categories: categories

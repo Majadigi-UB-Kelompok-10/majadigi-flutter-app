@@ -27,11 +27,11 @@ class PolicyDto with _$PolicyDto {
 
   @override
   @JsonKey(name: 'Benefit')
-  final Map<String, dynamic>? benefit;
+  final dynamic benefit;
 
   @override
   @JsonKey(name: 'Instruction')
-  final Map<String, dynamic>? instruction;
+  final dynamic instruction;
 
   @override
   @JsonKey(name: 'CreatedAt')

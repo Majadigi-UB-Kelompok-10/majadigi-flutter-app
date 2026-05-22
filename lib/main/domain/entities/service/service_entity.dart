@@ -10,6 +10,7 @@ class ServiceEntity with _$ServiceEntity {
   const ServiceEntity({
     this.id,
     this.title,
+    this.longTitle,
     this.description,
     this.iconUrl,
     this.categories,
@@ -18,6 +19,9 @@ class ServiceEntity with _$ServiceEntity {
 
   @override
   final String? id;
+
+  @override
+  final String? longTitle;
 
   @override
   final String? title;

@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/decompression.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/dto/favorites/favorite_dto.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/dto/normalized_service_category/normalized_service_category_dto.dart';
-import 'package:majadigi_mobile_rebuild/main/data/datasources/remote_config.dart';
 import 'package:zstandard/zstandard.dart';
 
 /// Represent the Contract for Service Remote Datasource
@@ -20,16 +19,14 @@ abstract class ServiceRemoteDatasource {
 class ServiceRemoteDatasourceImpl implements ServiceRemoteDatasource {
   final Dio dio;
   final Zstandard? zstandard;
-  ServiceRemoteDatasourceImpl({required this.dio, this.zstandard}) {
-    dio.options.baseUrl = baseUrl;
-  }
+  ServiceRemoteDatasourceImpl({required this.dio, this.zstandard});
 
   @override
   Future<List<NormalizedServiceCategoryDto>?>
   fetchNormalizedServicesFromNetwork() async {
     final response = await dio.get('/services-has-categories/normalized');
 
-    if (response.statusCode == 304) return null;
+    if (response.statusCode != 200) return null;
 
     final data = await cleanupData(zstandard: zstandard, response: response);
 
@@ -90,7 +87,7 @@ class ServiceRemoteDatasourceImpl implements ServiceRemoteDatasource {
   Future<FavoriteDto?> fetchRemoteFavorite() async {
     final response = await dio.get('/user/auth/favorites');
 
-    if (response.statusCode != 200 || response.statusCode == 304) return null;
+    if (response.statusCode != 200) return null;
 
     final data = await cleanupData(zstandard: zstandard, response: response);
 

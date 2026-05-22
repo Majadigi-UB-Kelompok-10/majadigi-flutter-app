@@ -12,6 +12,7 @@ class ServiceDto with _$ServiceDto {
   const ServiceDto({
     this.id,
     this.title,
+    this.longTitle,
     this.description,
     this.iconUrl,
     this.createdAt,
@@ -24,6 +25,10 @@ class ServiceDto with _$ServiceDto {
   @override
   @JsonKey(name: 'Title')
   final String? title;
+
+  @override
+  @JsonKey(name: 'LongTitle')
+  final String? longTitle;
 
   @override
   @JsonKey(name: 'Description')
@@ -48,6 +53,7 @@ class ServiceDto with _$ServiceDto {
     return IsarServiceRegistry()
       ..id = id!
       ..title = title!
+      ..longTitle = longTitle ?? ''
       ..description = description ?? ''
       ..iconUrl = iconUrl ?? ''
       ..createdAt = createdAt!;

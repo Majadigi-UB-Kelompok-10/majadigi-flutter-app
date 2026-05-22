@@ -2,13 +2,13 @@ import 'package:majadigi_mobile_rebuild/main/domain/repositories/policy_reposito
 import 'package:majadigi_mobile_rebuild/main/domain/entities/policy/policy_entity.dart';
 
 /// Watch Policy based on ServiceId
-/// @return Stream<PolicyEntity>
+/// @return Stream<PolicyEntity?>
 class WatchPolicyForServiceUseCase {
   final PolicyRepository repository;
 
   WatchPolicyForServiceUseCase(this.repository);
 
-  Stream<PolicyEntity> execute(String serviceId) {
+  Stream<PolicyEntity?> execute(String serviceId) {
     return repository.watchPolicyForService(serviceId);
   }
 }

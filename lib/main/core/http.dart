@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
+import 'package:majadigi_mobile_rebuild/main/core/credentials.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/etag/etag_registry.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:zstandard/zstandard.dart';
 
 part 'http.g.dart';
@@ -107,9 +107,10 @@ class _AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     final token = await secureStorage.read(key: SecureStorageKeys.accessToken);
+    final tokenType = await secureStorage.read(key: SecureStorageKeys.tokenType);
 
     if (token != null) {
-      options.headers['Authorization'] = 'Bearer $token';
+      options.headers['Authorization'] = '$tokenType $token';
     }
 
     return handler.next(options);
@@ -149,6 +150,7 @@ class _AuthInterceptor extends Interceptor {
         // Verify the refresh was actually successful
         final isLoggedIn = ref.read(authProvider).value ?? false;
         final newToken = await secureStorage.read(key: SecureStorageKeys.accessToken);
+        final tokenType = await secureStorage.read(key: SecureStorageKeys.tokenType);
 
         if (!isLoggedIn || newToken == null) {
           return handler.reject(err);
@@ -156,7 +158,7 @@ class _AuthInterceptor extends Interceptor {
 
         // Increment the retry count so it doesn't get stuck in a loop if the new token is also rejected
         requestOptions.extra['retry_count'] = retryCount + 1;
-        requestOptions.headers['Authorization'] = '${SecureStorageKeys.tokenType} $newToken';
+        requestOptions.headers['Authorization'] = '$tokenType $newToken';
 
         // Retry the request
         final retryResponse = await dio.fetch(requestOptions);
@@ -181,7 +183,12 @@ class _AuthInterceptor extends Interceptor {
 /// Return the [Dio] instance for making HTTP requests.
 @Riverpod(keepAlive: true)
 Dio dio(Ref ref) {
-  return Dio(BaseOptions(connectTimeout: const Duration(seconds: 3)));
+  return Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 3),
+      baseUrl: Credentials.baseUrl
+    )
+  );
 }
 
 /// Return the [Zstandard] instance for compressing/decompressing data.
@@ -228,18 +235,10 @@ void addAuthMiddleware(Ref ref) {
   dio.interceptors.add(_AuthInterceptor(secureStorage: secureStorage, ref: ref, dio: dio));
 }
 
-/// Return the [SupabaseClient] instance for making Supabase requests.
-@riverpod
-SupabaseClient? supabase(Ref ref) {
-  if (!Supabase.instance.isInitialized) {
-    return null;
-  }
+/// Disable the [_AuthInterceptor] Middleware in [Dio]
+@Riverpod(keepAlive: true)
+void removeAuthMiddleware(Ref ref) {
+  final dio = ref.watch(dioProvider);
 
-  return Supabase.instance.client;
+  dio.interceptors.removeWhere((i) => i is _AuthInterceptor);
 }
-
-/// Base URL for Supabase
-const supabaseBaseUrl = "https://nhsdrdhzkogczngslvvh.supabase.co/storage/v1/object/public/";
-
-/// Variant URL for supabase
-const supabaseImageUrl = "image-asset/";

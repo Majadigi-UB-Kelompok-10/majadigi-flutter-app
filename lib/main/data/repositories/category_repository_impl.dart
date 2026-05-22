@@ -30,7 +30,7 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
       final categoryIsar = categories.map((category) => category.toIsar()).toList();
 
-      localDatasource.cacheCategory(categoryIsar);
+      await localDatasource.cacheCategory(categoryIsar);
     } catch (e) { /* None */ }
   }
 

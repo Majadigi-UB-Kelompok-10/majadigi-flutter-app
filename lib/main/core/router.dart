@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart' show SizedBox;
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/login/login_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_screen.dart';
@@ -61,6 +62,14 @@ final List<RouteBase> goRoutes = <RouteBase>[
   GoRoute(
     path: '/page-detail',
     builder: (context, state) {
+      if (state.extra == null) {
+        if (context.mounted) {
+          context.pop();
+        }
+        
+        return const SizedBox.shrink();
+      }
+
       final data = state.extra as Map<String, dynamic>;
 
       return ServiceDetailPage(
@@ -69,6 +78,13 @@ final List<RouteBase> goRoutes = <RouteBase>[
         description: data['description']
       );
     }
+  ),
+
+  // For now, notification will go to example page
+  // TODO: Change This or REMOVE in [dashboard_header.dart]
+  GoRoute(
+    path: '/notifications',
+    builder: (context, state) => const OverlappingHeaderPage(),
   ),
 
   // Example Page for Debugging
