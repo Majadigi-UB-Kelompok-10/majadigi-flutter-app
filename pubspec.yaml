@@ -53,6 +53,8 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   flutter_secure_storage: ^10.1.0
   intl: ^0.20.2
+  flutter_osm_plugin: ^1.4.2
+  osm_flutter_hooks: ^1.4.1
 
 dev_dependencies:
   flutter_test:

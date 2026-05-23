@@ -14,7 +14,11 @@ class TjSearchEntity with _$TjSearchEntity {
     this.originCity,
     this.originTerminal,
     this.destinationCity,
-    this.destinationTerminal
+    this.destinationTerminal,
+    this.originLatitude,
+    this.destinationLatitude,
+    this.originLongitude,
+    this.destinationLongitude
   });
 
   @override
@@ -43,4 +47,16 @@ class TjSearchEntity with _$TjSearchEntity {
 
   @override
   final String? destinationTerminal;
+
+  @override
+  final double? originLatitude;
+
+  @override
+  final double? destinationLatitude;
+
+  @override
+  final double? originLongitude;
+
+  @override
+  final double? destinationLongitude;
 }

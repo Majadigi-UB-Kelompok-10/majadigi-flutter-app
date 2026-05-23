@@ -173,7 +173,7 @@ class TjRepositoryImpl implements TjRepository {
 
     final price = ticket.harga ?? 0.0;
 
-    // Acquire city
+    // Acquire city & GPS
     final originTerminal = await localDatasource.getTerminalByTerminalName(terminalName: originTerminalName);
     final destinationTerminal = await localDatasource.getTerminalByTerminalName(terminalName: destinationTerminalName);
 
@@ -183,6 +183,11 @@ class TjRepositoryImpl implements TjRepository {
 
     final originCity = originTerminal.kota ?? 'Unidentified City';
     final destinationCity = destinationTerminal.kota ?? 'Unidentified City';
+
+    final originLatitude = originTerminal.lat ?? -7;
+    final destinationLatitude = destinationTerminal.lng ?? 112;
+    final originLongitude = originTerminal.lat ?? -7;
+    final destinationLongitude = destinationTerminal.lng ?? 112;
 
     List<TjSearchEntity> searchData = <TjSearchEntity>[];
 
@@ -196,7 +201,11 @@ class TjRepositoryImpl implements TjRepository {
         departureTime: schedule.jamBerangkat,
         busKode: schedule.busKode,
         destinationTerminal: destinationTerminalName,
-        originTerminal: originTerminalName
+        originTerminal: originTerminalName,
+        originLatitude: originLatitude,
+        originLongitude: originLongitude,
+        destinationLatitude: destinationLatitude,
+        destinationLongitude: destinationLongitude
       ));
     }
 
