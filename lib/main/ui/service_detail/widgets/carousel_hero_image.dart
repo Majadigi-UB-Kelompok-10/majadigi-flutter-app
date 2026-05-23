@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:majadigi_mobile_rebuild/main/core/credentials.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/image/image_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 

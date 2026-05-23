@@ -8,7 +8,6 @@
  * for policy list widget in generic service page
  */
 
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
