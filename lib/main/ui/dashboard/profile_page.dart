@@ -1,8 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/profile/profile_provider.dart';
 import '../../core/http.dart';
 import 'widgets/profile_information_screen.dart';
 import 'widgets/profile_setting_screen.dart';
@@ -84,41 +86,7 @@ class _MainProfileView extends StatelessWidget {
             const SizedBox(height: 10),
 
             // SECTION FOTO PROFIL
-            Center(
-              child: Stack(
-                children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color.fromARGB(255, 14, 94, 158), width: 4),
-                      image: const DecorationImage(
-                        image: NetworkImage('https://res.cloudinary.com/duxmv7lnl/image/upload/v1778351337/xgxybbitqdk8gvmkihsj.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                  // Tombol Edit Foto
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF001E60),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.edit_note,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _ProfilePhoto(),
 
             const SizedBox(height: 40),
 
@@ -177,6 +145,71 @@ class _MainProfileView extends StatelessWidget {
           top: isFirst ? const Radius.circular(20) : Radius.zero,
           bottom: isLast ? const Radius.circular(20) : Radius.zero,
         ),
+      ),
+    );
+  }
+}
+
+class _ProfilePhoto extends ConsumerWidget {
+  const _ProfilePhoto();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileData = ref.watch(profileProvider);
+    
+    return Center(
+      child: Stack(
+        children: [
+          Container(
+            width: 130,
+            height: 130,
+            alignment: AlignmentGeometry.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color.fromARGB(255, 14, 94, 158), width: 4),
+              // image: const DecorationImage(
+              //   image: NetworkImage('https://res.cloudinary.com/duxmv7lnl/image/upload/v1778351337/xgxybbitqdk8gvmkihsj.jpg'),
+              //   fit: BoxFit.cover,
+              // ),
+            ),
+            child: FittedBox(
+              child: profileData.maybeWhen(
+                  data: (data) {
+                    if (data == null) {
+                      return Text("No Name");
+                    }
+
+                    final name = "${data.firstName} ${data.lastName}";
+
+                    return Text(
+                      name.trim().split(' ').where((word) => word.isNotEmpty).map((word) => word[0]).take(3).join().toUpperCase(),
+                      style: TextStyle(fontSize: 30),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    );
+                  },
+                  orElse: () => Text("No Name")
+              ),
+            ),
+          ),
+          // Tombol Edit Foto
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: const BoxDecoration(
+                color: Color(0xFF001E60),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.edit_note,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

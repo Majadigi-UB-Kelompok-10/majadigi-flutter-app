@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_header.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/dashboard_searchbar.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/providers/search_query_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/widgets/search_service_list.dart';
+
+import '../dashboard/provider/navigation_index_provider.dart';
+import '../dashboard/widgets/dashboard_bottom_navigation_bar.dart';
 
 class SearchPage extends HookConsumerWidget {
   final String? query;
@@ -12,6 +16,8 @@ class SearchPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final navigationIndex = ref.watch(navigationIndexProvider);
+
     useEffect(() {
       if (query != null && query!.isNotEmpty) {
         Future.microtask(() {
@@ -40,12 +46,41 @@ class SearchPage extends HookConsumerWidget {
                   },
                 ),
 
+                SizedBox(height: 10.0),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    "Hasil Pencarian \"$query\"",
+                    textAlign: TextAlign.start,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+
                 // Results of Search
                 SearchServiceList(),
               ],
             ),
           ),
         )
+      ),
+
+      bottomNavigationBar: DashboardBottomNavigationBar(
+        currentIndex: -1,
+        onTap: (index) {
+          // Set Index
+          ref.read(navigationIndexProvider.notifier).setIndex(index);
+
+          // Then send to dashboard
+          context.go(
+            Uri(
+                path: '/homepage',
+                queryParameters: { 'nav' : index.toString() }
+            ).toString()
+          );
+        },
       ),
     );
   }

@@ -125,12 +125,7 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
 
   @override
   Future<void> updateRemoteProfile(ProfileEntity entity) async {
-    final response = await dio.put("/user/auth/me", data: {
-      "first_name": entity.firstName,
-      "last_name": entity.lastName,
-      "phone": entity.phone,
-      "nik": entity.nik,
-    });
+    final response = await dio.put("/user/auth/me", data: ProfileDto.fromEntity(entity).toJson());
 
     if (response.statusCode != 200) {
       throw Exception("Failed to update profile");

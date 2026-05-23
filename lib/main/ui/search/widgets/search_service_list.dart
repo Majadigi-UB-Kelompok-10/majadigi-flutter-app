@@ -17,17 +17,18 @@ class SearchServiceList extends ConsumerWidget {
     final cacheManager = ref.watch(getCustomCacheManagerProvider);
 
     return searchResult.when(
-      error: (e, s) => SizedBox.shrink(),
-      loading: () => SizedBox.shrink(),
+      error: (e, s) => Center(child: Text('Error: ${e.toString()}')),
+      loading: () => Center(child: CircularProgressIndicator()),
       data: (result) {
         if (result.isEmpty) {
-          return SizedBox.shrink();
+          return const Center(child: Text('No services found'));
         }
 
-        return ListView.builder(
+        return ListView.separated(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           itemCount: result.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final service = result[index];
             return ListTile(
@@ -54,10 +55,10 @@ class SearchServiceList extends ConsumerWidget {
               ),
               subtitle: Text(
                 service.description ?? '-',
-                maxLines: 1,
+                maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              tileColor: Colors.grey.shade100,
+              tileColor: const Color(0xFFE3F2FD),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),

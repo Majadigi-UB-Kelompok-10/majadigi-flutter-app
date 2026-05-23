@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:isar_community/isar.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/profile/profile_registry.dart';
+import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
 
 part 'profile_dto.freezed.dart';
 part 'profile_dto.g.dart';
@@ -57,6 +58,20 @@ class ProfileDto with _$ProfileDto {
       _$ProfileDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProfileDtoToJson(this);
+
+  @ignore
+  factory ProfileDto.fromEntity(ProfileEntity entity) {
+    return ProfileDto(
+      authId: entity.authId,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      phone: entity.phone,
+      email: entity.email,
+      nik: entity.nik,
+      role: entity.role,
+      isActive: entity.isActive,
+    );
+  }
 
   @ignore
   IsarProfileRegistry toIsar() {

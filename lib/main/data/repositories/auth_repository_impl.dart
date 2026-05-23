@@ -27,7 +27,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> updateProfile(ProfileEntity entity) async {
+    // Strictly need to fail on online mode
     await remoteDatasource.updateRemoteProfile(entity);
+    await localDatasource.updateLocalProfile(entity);
+  }
+
+  @override
+  Future<void> updateLocalProfileOnly(ProfileEntity entity) async {
+    // This is meant for offline guest usage ONLY
     await localDatasource.updateLocalProfile(entity);
   }
 

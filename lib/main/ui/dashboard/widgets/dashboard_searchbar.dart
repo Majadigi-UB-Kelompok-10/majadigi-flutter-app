@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/provider/navigation_index_provider.dart';
 
 /// Search Bar Widget for Home Page
-class DashboardSearchbar extends HookWidget {
+class DashboardSearchbar extends HookConsumerWidget {
   final String? initialValue;
   final ValueChanged<String>? onSearch;
   const DashboardSearchbar({super.key, this.onSearch, this.initialValue});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final searchController = useTextEditingController(text: initialValue ?? "");
 
     // Handle Search

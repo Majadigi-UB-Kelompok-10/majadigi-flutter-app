@@ -62,7 +62,7 @@ CacheManager getCustomCacheManager(Ref ref) {
   return CacheManager(
     Config(
       'Majadigi-Assets',
-      stalePeriod: const Duration(days: 30),
+      stalePeriod: const Duration(days: 120),
       maxNrOfCacheObjects: 100
     ),
   );

@@ -11,4 +11,5 @@ abstract class AuthRepository {
   // Profiles
   Future<ProfileEntity?> getProfile();
   Future<void> updateProfile(ProfileEntity entity);
+  Future<void> updateLocalProfileOnly(ProfileEntity entity);
 }
