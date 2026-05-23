@@ -1,78 +1,131 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/deferred/theme/app_theme.dart';
-import 'tj_search_screen.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/core/providers/tj_providers.dart';
+import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/terminal/tj_terminal_entity.dart';
 import '../widgets/tj_search_input.dart';
 import '../widgets/tj_tab_button.dart';
 import '../widgets/tj_price_card.dart';
 
-class TjScreen extends StatefulWidget {
+class TjScreen extends HookConsumerWidget {
   const TjScreen({super.key});
 
   @override
-  State<TjScreen> createState() => _TjScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLuxurySelected = useState(false);
+    final fromTerminal = useState<TjTerminalEntity?>(null);
+    final toTerminal = useState<TjTerminalEntity?>(null);
+    final selectedDate = useState<DateTime?>(DateTime.now());
+    final cacheStorage = ref.watch(getCustomCacheManagerProvider);
 
-class _TjScreenState extends State<TjScreen> {
-  bool _isLuxurySelected = false;
-  late TextEditingController _fromController;
-  late TextEditingController _toController;
-  DateTime? _selectedDate;
+    // Data
+    final ticketsAsync = ref.watch(tjTicketsProvider);
+    final terminalAsync = ref.watch(tjTerminalsProvider);
 
-  @override
-  void initState() {
-    super.initState();
-    _fromController = TextEditingController();
-    _toController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _fromController.dispose();
-    _toController.dispose();
-    super.dispose();
-  }
-
-  String _formatDate(DateTime d) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${d.day} ${months[d.month - 1]} ${d.year}';
-  }
-
-  void _handleSearch() {
-    if (_fromController.text.isEmpty || _toController.text.isEmpty || _selectedDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Lengkapi semua field pencarian')),
-      );
-      return;
+    String formatDate(DateTime d) {
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      return '${d.day} ${months[d.month - 1]} ${d.year}';
     }
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TjSearchScreen(
-          fromCity: _fromController.text,
-          toCity: _toController.text,
-          date: _formatDate(_selectedDate!),
-        ),
-      ),
-    );
-  }
 
-  @override
-  Widget build(BuildContext context) {
+    void showTerminalPicker(ValueNotifier<TjTerminalEntity?> selected) {
+      terminalAsync.whenData((terminals) {
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.white,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          builder: (context) {
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.5,
+              maxChildSize: 0.9,
+              minChildSize: 0.3,
+              builder: (context, scrollController) {
+                return Column(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        'Pilih Terminal',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        itemCount: terminals.length,
+                        itemBuilder: (context, index) {
+                          final terminal = terminals[index];
+                          return ListTile(
+                            title: Text(terminal.nama ?? ''),
+                            subtitle: Text(terminal.kota ?? ''),
+                            onTap: () {
+                              selected.value = terminal;
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      });
+    }
+
+    void handleSearch() {
+      if (fromTerminal.value == null || toTerminal.value == null || selectedDate.value == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Lengkapi semua field pencarian')),
+        );
+        return;
+      }
+
+      final date = selectedDate.value!;
+
+      context.push(
+        '/transjatim/search',
+        extra: {
+          'fromTerminalId': fromTerminal.value!.id.toString(),
+          'toTerminalId': toTerminal.value!.id.toString(),
+          'fromTerminal': fromTerminal.value!.nama,
+          'toTerminal': toTerminal.value!.nama,
+          'date': '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}'
+        },
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- HEADER DENGAN GAMBAR BUS ---
+            // --- HEADER DENGAN GAMBAR BUS ----
             Stack(
               children: [
                 Container(
                   height: 300,
                   width: double.infinity,
-                  decoration: const BoxDecoration(
+                  decoration:
+                  BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage('https://res.cloudinary.com/duxmv7lnl/image/upload/v1777986341/ntdp0o9wgtz8lijwigug.png'), // Ganti gambar Trans Jatim asli
+                      image: CachedNetworkImageProvider(
+                        'https://res.cloudinary.com/duxmv7lnl/image/upload/v1777986341/ntdp0o9wgtz8lijwigug.png',
+                        cacheManager: cacheStorage,
+                      ),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -83,11 +136,11 @@ class _TjScreenState extends State<TjScreen> {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
-                          Colors.black.withOpacity(0.7), // Gelap di atas buat logo/teks
-                          Colors.black.withOpacity(0.2), // Mulai transparan di tengah
-                          Colors.white.withOpacity(1.0), // Menjadi putih di paling bawah (blend ke bg)
+                          Colors.black.withValues(alpha: 0.7),
+                          Colors.black.withValues(alpha: 0.2),
+                          Colors.white.withValues(alpha: 1.0),
                         ],
-                        stops: const [0.0, 0.5, 1.0], // Titik poin perubahan warna
+                        stops: const [0.0, 0.5, 1.0],
                       ),
                     ),
                   ),
@@ -99,7 +152,12 @@ class _TjScreenState extends State<TjScreen> {
                       children: [
                         Row(
                           children: [
-                            Image.network('https://res.cloudinary.com/duxmv7lnl/image/upload/v1777986506/flurxnfaipmcjobqgane.png', height: 40), // Logo AJAIB
+                            CachedNetworkImage(
+                              imageUrl: 'https://res.cloudinary.com/duxmv7lnl/image/upload/v1777986506/flurxnfaipmcjobqgane.png',
+                              height: 40,
+                              useOldImageOnUrlChange: true,
+                              cacheManager: cacheStorage,
+                            ),
                             const SizedBox(width: 10),
                             const Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,16 +211,18 @@ class _TjScreenState extends State<TjScreen> {
                     TjSearchInput(
                       icon: Icons.location_on_outlined,
                       hint: 'Titik Penjemputan',
-                      controller: _fromController,
+                      value: fromTerminal.value?.nama,
+                      onTap: () => showTerminalPicker(fromTerminal),
                     ),
                     const SizedBox(height: 10),
                     TjSearchInput(
                       icon: Icons.directions_bus_outlined,
                       hint: 'Stasiun Tujuan',
-                      controller: _toController,
+                      value: toTerminal.value?.nama,
+                      onTap: () => showTerminalPicker(toTerminal),
                     ),
                     const SizedBox(height: 10),
-                    _buildDateInput(),
+                    _buildDateInput(context, selectedDate, formatDate),
                     const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
@@ -172,7 +232,7 @@ class _TjScreenState extends State<TjScreen> {
                           backgroundColor: AppTheme.jdihBlue,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                         ),
-                        onPressed: _handleSearch,
+                        onPressed: handleSearch,
                         child: const Text('Search', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                     )
@@ -194,64 +254,56 @@ class _TjScreenState extends State<TjScreen> {
                       Expanded(
                         child: TjTabButton(
                           label: 'Layanan Reguler',
-                          isActive: !_isLuxurySelected,
-                          onTap: () => setState(() => _isLuxurySelected = false),
+                          isActive: !isLuxurySelected.value,
+                          onTap: () => isLuxurySelected.value = false,
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: TjTabButton(
                           label: 'Layanan Luxury',
-                          isActive: _isLuxurySelected,
-                          onTap: () => setState(() => _isLuxurySelected = true),
+                          isActive: isLuxurySelected.value,
+                          onTap: () => isLuxurySelected.value = true,
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  if (_isLuxurySelected) ...[
-                    TjPriceCard(
-                      type: 'SBY-GSK Luxury',
-                      price: '20,000',
-                      description: 'Fasilitas: Kursi premium (tanpa berdiri) dan AC ekstra dingin.',
-                      color: Colors.blue,
-                    ),
-                    TjPriceCard(
-                      type: 'SBY-SDA Luxury',
-                      price: '15,000',
-                      description: 'Fasilitas: Kursi premium (tanpa berdiri) dan AC ekstra dingin.',
-                      color: Colors.blue,
-                    ),
-                    TjPriceCard(
-                      type: 'SDA-GSK Luxury',
-                      price: '30,000',
-                      description: 'Fasilitas: Kursi premium (tanpa berdiri) dan AC ekstra dingin.',
-                      color: Colors.blue,
-                    ),
-                  ] else ...[
-                    TjPriceCard(
-                      type: 'Umum',
-                      price: '5,000',
-                      description: 'Penumpang dewasa/umum.',
-                      color: Colors.blue,
-                    ),
-                    TjPriceCard(
-                      type: 'Pelajar/Santri',
-                      price: '2,500',
-                      description: 'Menunjukkan kartu pelajar atau berseragam.',
-                      color: Colors.green,
-                    ),
-                    TjPriceCard(
-                      type: 'Mahasiswa',
-                      price: '2,500',
-                      description: 'Menunjukkan Kartu Tanda Mahasiswa (KTM).',
-                      color: Colors.orange,
-                    ),
-                  ],
+                  ticketsAsync.when(
+                    data: (tickets) {
+                      // Filter tickets by layanan type
+                      final filtered = tickets.where((t) {
+                        final layanan = t.layanan?.toLowerCase() ?? '';
+                        return isLuxurySelected.value
+                            ? layanan.contains('luxury')
+                            : !layanan.contains('luxury');
+                      }).toList();
+
+                      if (filtered.isEmpty) {
+                        return Center(
+                          child: Text("No Ticket Available"),
+                        );
+                      }
+
+                      return Column(
+                        children: filtered.map((ticket) {
+                          final color = _getTicketColor(ticket.tipePenumpang);
+                          return TjPriceCard(
+                            type: ticket.tipePenumpang ?? 'Umum',
+                            price: ticket.harga?.toStringAsFixed(0) ?? '0',
+                            description: '${ticket.terminalAsal ?? ''} - ${ticket.terminalTujuan ?? ''}',
+                            color: color,
+                          );
+                        }).toList(),
+                      );
+                    },
+                    loading: () => Center(child: LinearProgressIndicator()),
+                    error: (e, st) => Text("Error: ${e.toString()}"),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 50),
           ],
         ),
       ),
@@ -260,7 +312,39 @@ class _TjScreenState extends State<TjScreen> {
 
   // --- WIDGET HELPERS ---
 
-  Widget _buildDateInput() {
+  Color _getTicketColor(String? tipePenumpang) {
+    switch (tipePenumpang?.toLowerCase()) {
+      case 'pelajar':
+      case 'pelajar/santri':
+        return Colors.green;
+      case 'mahasiswa':
+        return Colors.orange;
+      default:
+        return Colors.blue;
+    }
+  }
+
+  /// Fallback price cards when ticket data is not yet available
+  Widget _buildFallbackPriceCards(bool isLuxury) {
+    if (isLuxury) {
+      return Column(children: [
+        TjPriceCard(type: 'SBY-GSK Luxury', price: '20,000', description: 'Fasilitas: Kursi premium (tanpa berdiri) dan AC ekstra dingin.', color: Colors.blue),
+        TjPriceCard(type: 'SBY-SDA Luxury', price: '15,000', description: 'Fasilitas: Kursi premium (tanpa berdiri) dan AC ekstra dingin.', color: Colors.blue),
+        TjPriceCard(type: 'SDA-GSK Luxury', price: '30,000', description: 'Fasilitas: Kursi premium (tanpa berdiri) dan AC ekstra dingin.', color: Colors.blue),
+      ]);
+    }
+    return Column(children: [
+      TjPriceCard(type: 'Umum', price: '5,000', description: 'Penumpang dewasa/umum.', color: Colors.blue),
+      TjPriceCard(type: 'Pelajar/Santri', price: '2,500', description: 'Menunjukkan kartu pelajar atau berseragam.', color: Colors.green),
+      TjPriceCard(type: 'Mahasiswa', price: '2,500', description: 'Menunjukkan Kartu Tanda Mahasiswa (KTM).', color: Colors.orange),
+    ]);
+  }
+
+  Widget _buildDateInput(
+    BuildContext context,
+    ValueNotifier<DateTime?> selectedDate,
+    String Function(DateTime) formatDate,
+  ) {
     return Row(
       children: [
         Expanded(
@@ -269,11 +353,11 @@ class _TjScreenState extends State<TjScreen> {
               final now = DateTime.now();
               final picked = await showDatePicker(
                 context: context,
-                initialDate: _selectedDate ?? now,
+                initialDate: selectedDate.value ?? now,
                 firstDate: DateTime(now.year - 2),
                 lastDate: DateTime(now.year + 2),
               );
-              if (picked != null) setState(() => _selectedDate = picked);
+              if (picked != null) selectedDate.value = picked;
             },
             child: Container(
               padding: const EdgeInsets.all(12),
@@ -281,7 +365,7 @@ class _TjScreenState extends State<TjScreen> {
               child: Row(children: [
                 const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
                 const SizedBox(width: 10),
-                Text(_selectedDate != null ? _formatDate(_selectedDate!) : 'Sat, April 4')
+                Text(selectedDate.value != null ? formatDate(selectedDate.value!) : '01 April 2026')
               ]),
             ),
           ),

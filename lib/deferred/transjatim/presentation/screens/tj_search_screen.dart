@@ -1,118 +1,34 @@
 import 'package:flutter/material.dart';
-import '../../../../deferred/theme/app_theme.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:majadigi_mobile_rebuild/deferred/theme/app_theme.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/core/providers/tj_providers.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/search/tj_search_entity.dart';
 import '../widgets/tj_search_card.dart';
-import 'tj_detail_screen.dart';
-import '../../data/models/search_result.dart';
-import '../../data/models/bus_detail.dart';
 
-class TjSearchScreen extends StatefulWidget {
-  final String fromCity;
-  final String toCity;
+class TjSearchScreen extends ConsumerWidget {
+  final String fromTerminalId;
+  final String toTerminalId;
+  final String fromTerminal;
+  final String toTerminal;
   final String date;
 
   const TjSearchScreen({
     super.key,
-    required this.fromCity,
-    required this.toCity,
+    required this.fromTerminalId,
+    required this.toTerminalId,
+    required this.fromTerminal,
+    required this.toTerminal,
     required this.date,
   });
 
   @override
-  State<TjSearchScreen> createState() => _TjSearchScreenState();
-}
-
-class _TjSearchScreenState extends State<TjSearchScreen> {
-  late List<TjSearchResult> searchResults;
-  bool isLoading = false;
-
-  @override
-  void initState() {
-    super.initState();
-    // Mock data - Replace dengan API call nanti
-    searchResults = [
-      TjSearchResult(
-        busCode: 'BUS-V03',
-        price: '20,000',
-        departureTime: '05.00 AM',
-        arrivalTime: '07.20 AM',
-        originCity: 'Malang Kota',
-        originTerminal: 'Terminal Hamid Rusdi',
-        destinationCity: 'Kota Batu',
-        destinationTerminal: 'Terminal Batu',
-        duration: '2j 20m',
-      ),
-      TjSearchResult(
-        busCode: 'BUS-V04',
-        price: '20,000',
-        departureTime: '08.00 AM',
-        arrivalTime: '10.20 AM',
-        originCity: 'Malang Kota',
-        originTerminal: 'Terminal Hamid Rusdi',
-        destinationCity: 'Malang Kota',
-        destinationTerminal: 'Terminal Hamid Rusdi',
-        duration: '2j 20m',
-      ),
-      TjSearchResult(
-        busCode: 'BUS-V03',
-        price: '20,000',
-        departureTime: '05.00 AM',
-        arrivalTime: '07.20 AM',
-        originCity: 'Malang Kota',
-        originTerminal: 'Terminal Hamid Rusdi',
-        destinationCity: 'Kota Batu',
-        destinationTerminal: 'Terminal Batu',
-        duration: '2j 20m',
-      ),
-      TjSearchResult(
-        busCode: 'BUS-V04',
-        price: '20,000',
-        departureTime: '08.00 AM',
-        arrivalTime: '10.20 AM',
-        originCity: 'Malang Kota',
-        originTerminal: 'Terminal Hamid Rusdi',
-        destinationCity: 'Malang Kota',
-        destinationTerminal: 'Terminal Hamid Rusdi',
-        duration: '2j 20m',
-      ),
-    ];
-  }
-
-  void _goToDetail(TjSearchResult result) {
-    final routeStops = [
-      RouteStop(order: 1, name: 'Terminal Hamid Rusdi', departure: '05.00 AM'),
-      RouteStop(order: 2, name: 'Shelter GOR Ken Arok 1', arrival: '05.15 AM', departure: '05.20 AM'),
-      RouteStop(order: 3, name: 'Rambu Ki Ageng Gribig', arrival: '05.35 AM', departure: '05.40 AM'),
-      RouteStop(order: 4, name: 'Shelter Terminal Madyapuro', arrival: '06.00 AM', departure: '06.05 AM'),
-      RouteStop(order: 5, name: 'Shelter Eksisting Sawojajin 1', arrival: '06.20 AM', departure: '06.25 AM'),
-      RouteStop(order: 6, name: 'St Malang Kota Baru Barat', arrival: '06.40 AM', departure: '06.50 AM'),
-      RouteStop(order: 7, name: 'Shelter Kajoetangan', arrival: '07.05 AM', departure: '07.10 AM'),
-      RouteStop(order: 8, name: 'Rambu Kawi 1', arrival: '07.20 AM'),
-    ];
-
-    final busDetail = BusDetailData(
-      busCode: result.busCode,
-      price: result.price,
-      departureTime: result.departureTime,
-      arrivalTime: result.arrivalTime,
-      duration: result.duration,
-      originCity: result.originCity,
-      originTerminal: result.originTerminal,
-      destinationCity: result.destinationCity,
-      destinationTerminal: result.destinationTerminal,
-      routeStops: routeStops,
-      availableSeats: 12,
+  Widget build(BuildContext context, WidgetRef ref) {
+    final searchAsync = ref.watch(
+      tjSearchSchedulesProvider(fromTerminalId, toTerminalId, fromTerminal, toTerminal, date),
     );
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TjDetailScreen(busDetail: busDetail),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -120,13 +36,13 @@ class _TjSearchScreenState extends State<TjSearchScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${widget.fromCity} - ${widget.toCity}',
+              '$fromTerminal - $toTerminal',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -134,7 +50,7 @@ class _TjSearchScreenState extends State<TjSearchScreen> {
               ),
             ),
             Text(
-              widget.date,
+              date,
               style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 12,
@@ -143,55 +59,102 @@ class _TjSearchScreenState extends State<TjSearchScreen> {
           ],
         ),
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Filter & Sort Section
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${searchResults.length} Hasil ditemukan',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    
-                    // Search Results List
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: searchResults.length,
-                      itemBuilder: (context, index) {
-                        final result = searchResults[index];
-                        return TjSearchCard(
-                          busCode: result.busCode,
-                          price: result.price,
-                          departureTime: result.departureTime,
-                          arrivalTime: result.arrivalTime,
-                          originCity: result.originCity,
-                          originTerminal: result.originTerminal,
-                          destinationCity: result.destinationCity,
-                          destinationTerminal: result.destinationTerminal,
-                          duration: result.duration,
-                          onTap: () => _goToDetail(result),
-                        );
-                      },
-                    ),
-                  ],
+      body: searchAsync.when(
+        data: (results) => _buildResultsList(context, results),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => const Center(
+          child: Text('Gagal memuat data jadwal'),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultsList(
+    BuildContext context,
+    List<TjSearchEntity> results,
+  ) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Filter & Sort Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${results.length} Hasil ditemukan',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
+              ],
             ),
+            const SizedBox(height: 16),
+
+            // Search Results List
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                final result = results[index];
+                return TjSearchCard(
+                  busCode: result.busKode ?? '',
+                  price: _formatPrice(result.price),
+                  departureTime: result.departureTime ?? '',
+                  arrivalTime: result.arrivalTime ?? '',
+                  originCity: result.originCity ?? '',
+                  originTerminal: result.originTerminal ?? '',
+                  destinationCity: result.destinationCity ?? '',
+                  destinationTerminal: result.destinationTerminal ?? '',
+                  duration: _calculateDuration(result),
+                  onTap: () => _goToDetail(context, result),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatPrice(double? price) {
+    final nonNullPrice = price ?? 0;
+
+    final formatter = NumberFormat.decimalPattern('id_ID');
+    return formatter.format(nonNullPrice);
+  }
+
+  String _calculateDuration(TjSearchEntity schedule) {
+    // Format is HH:mm
+    final departureTime = schedule.departureTime ?? '00:00';
+    final arrivalTime = schedule.arrivalTime ?? '00:00';
+
+    // Parse using Intl package
+    DateFormat format = DateFormat("HH:mm");
+    DateTime departure = format.parse(departureTime);
+    DateTime arrival = format.parse(arrivalTime);
+
+    // Get Difference
+    Duration difference = arrival.difference(departure);
+    int hour = difference.inHours;
+    int minutes = difference.inMinutes % 60;
+
+    return "${hour}J ${minutes}m";
+  }
+
+  void _goToDetail(BuildContext context, TjSearchEntity schedule) {
+    context.push(
+      '/transjatim/detail',
+      extra: {
+        'schedule': schedule,
+        'fromTerminal': fromTerminal,
+        'toTerminal': toTerminal,
+      },
     );
   }
 }

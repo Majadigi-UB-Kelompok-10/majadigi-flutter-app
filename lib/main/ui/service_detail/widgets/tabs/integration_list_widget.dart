@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/endpoint/endpoint_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/integration/integration_entity.dart';
 
@@ -41,15 +42,25 @@ class IntegrationListWidget extends ConsumerWidget {
             ) : const Icon(Icons.link),
             title: Text(
                 entry.title!,
-                style: TextStyle(fontWeight: FontWeight.normal, color: Colors.blue.shade900)
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87)
             ),
-            tileColor: Colors.grey.shade100,
+            tileColor: Color(0xFFE3F0FF),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
             ),
             onTap: () async {
-              // TODO: Get the endpoint, then push to there
-              // context.push();
+              // Check first if it contains fk
+              if (entry.fkEndpointListId == null) {
+                return;
+              }
+
+              // Get endpoint entity
+              final endpointEntity = await ref.read(getEndpointForIntegrationProvider(entry.fkEndpointListId!).future);
+
+              // Check if entity have route
+              if (endpointEntity.pageUrl != null && context.mounted) {
+                context.push(endpointEntity.pageUrl!);
+              }
             },
           );
         },

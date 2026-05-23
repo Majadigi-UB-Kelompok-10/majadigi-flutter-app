@@ -20,7 +20,7 @@ class ChoiceChipWidget extends ConsumerWidget {
             label: Text(entry.value),
             selected: activeTab == entry.key,
             showCheckmark: false,
-            selectedColor: Colors.blueAccent.shade100.withValues(alpha: 0.5),
+            selectedColor: Color(0xFF0047B3),
             backgroundColor: Colors.white,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25.0),
@@ -30,8 +30,8 @@ class ChoiceChipWidget extends ConsumerWidget {
                 style: BorderStyle.none
             ),
             labelStyle: TextStyle(
-              color: activeTab == entry.key ? Colors.blueAccent.shade700 : Colors.black87,
-              fontWeight: activeTab == entry.key ? FontWeight.w500 : FontWeight.w300,
+              color: activeTab == entry.key ? Colors.white : Colors.black87,
+              fontWeight: activeTab == entry.key ? FontWeight.w500 : FontWeight.w400,
             ),
             onSelected: (selected) {
               ref.read(choiceChipProvider.notifier).setTab(entry.key);

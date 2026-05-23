@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/service/service_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
-import 'package:majadigi_mobile_rebuild/main/core/credentials.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/providers/search_query_provider.dart';
 
 class SearchServiceList extends ConsumerWidget {
@@ -58,7 +57,7 @@ class SearchServiceList extends ConsumerWidget {
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              tileColor: const Color(0xFFE3F2FD),
+              tileColor: const Color(0xFFE3F0FF),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
               ),

@@ -62,7 +62,7 @@ class _ServiceUrlListTile extends StatelessWidget {
           "Link Layanan",
           style: const TextStyle(fontWeight: FontWeight.bold)
       ),
-      tileColor: Colors.grey.shade100,
+      tileColor: Color(0xFFE3F0FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -96,7 +96,7 @@ class _AddressListTile extends StatelessWidget {
           "Alamat",
           style: const TextStyle(fontWeight: FontWeight.bold)
       ),
-      tileColor: Colors.grey.shade100,
+      tileColor: Color(0xFFE3F0FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -128,7 +128,7 @@ class _OperationalHourListTile extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold)
         ),
       ),
-      tileColor: Colors.grey.shade100,
+      tileColor: Color(0xFFE3F0FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -167,7 +167,7 @@ class _OperationalHourListTile extends StatelessWidget {
       // We add constraints so it doesn't shrink to 0 if empty, but can grow infinitely
       constraints: const BoxConstraints(minHeight: 40),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.blueAccent),
         borderRadius: BorderRadius.circular(15),
       ),
       padding: const EdgeInsets.all(8.0),
@@ -197,7 +197,7 @@ class _SocialMediaListTile extends StatelessWidget {
           "Media Sosial",
           style: const TextStyle(fontWeight: FontWeight.bold)
       ),
-      tileColor: Colors.grey.shade100,
+      tileColor: Color(0xFFE3F0FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -219,7 +219,8 @@ class _SocialMediaListTile extends StatelessWidget {
                               'instagram' => FaIcon(FontAwesomeIcons.instagram, semanticLabel: 'instagram: ${entry.value}'),
                               'tiktok' => FaIcon(FontAwesomeIcons.tiktok, semanticLabel: 'tiktok: ${entry.value}'),
                               _ => const Icon(Icons.link)
-                            }
+                            },
+                          color: Color(0xFF0047B3)
                         );
                       }
                   )

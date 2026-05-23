@@ -102,9 +102,16 @@ class TjSearchCard extends StatelessWidget {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 12),
+                    Container(
+                      width: 16,
+                      height: 2,
+                      color: const Color(0xFFBFD0FF),
+                    ),
+                    SizedBox(width: 4),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
@@ -121,9 +128,10 @@ class TjSearchCard extends StatelessWidget {
                         ),
                       ),
                     ),
+                    SizedBox(width: 4),
                     Container(
-                      width: 28,
-                      height: 1,
+                      width: 16,
+                      height: 2,
                       color: const Color(0xFFBFD0FF),
                     ),
                   ],

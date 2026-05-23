@@ -9,13 +9,14 @@ Backend implementation can be varying as long as it is able to provide the follo
 ### Caching
 
 What is needed in the backend:
+
 - Use Redis for response caching
 - ETags to indicate IF any data in an endpoint changed (304 not modified)
-- Timestamp-based delta sync to get ONLY the data that changed (updated_at & deleted_at)
 
 ### Compression
 
 What is needed in the backend:
+
 - Compress all response as zstandart/zstd (raw bytes)
 
 The application will receive and decompress fast, then process the data.

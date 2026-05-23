@@ -3,30 +3,42 @@ import 'package:flutter/material.dart';
 class TjSearchInput extends StatelessWidget {
   final IconData icon;
   final String hint;
-  final TextEditingController controller;
+  final String? value;
+  final VoidCallback? onTap;
 
   const TjSearchInput({
     super.key,
     required this.icon,
     required this.hint,
-    required this.controller,
+    this.value,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue.shade100),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          icon: Icon(icon, color: Colors.grey),
-          hintText: hint,
-          border: InputBorder.none,
-          hintStyle: const TextStyle(fontSize: 14, color: Colors.grey),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.blue.shade100),
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.white,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: Colors.grey),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                value != null && value!.isNotEmpty ? value! : hint,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: value != null && value!.isNotEmpty ? Colors.black87 : Colors.grey,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

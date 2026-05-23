@@ -51,8 +51,8 @@ class _BenefitExpansionTile extends StatelessWidget {
           "Manfaat",
           style: const TextStyle(fontWeight: FontWeight.bold)
       ),
-      backgroundColor: Colors.grey.shade200,
-      collapsedBackgroundColor: Colors.grey.shade200,
+      backgroundColor: Color(0xFFE3F0FF),
+      collapsedBackgroundColor: Color(0xFFE3F0FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),
@@ -83,8 +83,8 @@ class _InstructionExpansionTile extends StatelessWidget {
           "Sistem, Mekanisme & Prosedur",
           style: const TextStyle(fontWeight: FontWeight.bold)
       ),
-      backgroundColor: Colors.grey.shade200,
-      collapsedBackgroundColor: Colors.grey.shade200,
+      backgroundColor: Color(0xFFE3F0FF),
+      collapsedBackgroundColor: Color(0xFFE3F0FF),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
       ),

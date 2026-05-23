@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/service_detail/widgets/carousel_hero_image.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/service_detail/widgets/expandable_text_box.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/service_detail/widgets/tabbed_content.dart';
@@ -13,14 +14,14 @@ class ServiceDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          scrolledUnderElevation: 0,
-          title: Text(
-            title,
-            style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
+          title: Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+          centerTitle: true,
+          backgroundColor: const Color(0xFF0047B3),
+          elevation: 1,
+          leading: IconButton(
+            icon: const Icon(Icons.reply, color: Colors.white),
+            onPressed: () => context.pop(),
           ),
-          iconTheme: const IconThemeData(color: Colors.black87),
         ),
         backgroundColor: Colors.white,
         body: SingleChildScrollView(

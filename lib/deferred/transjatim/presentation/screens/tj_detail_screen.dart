@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:majadigi_mobile_rebuild/deferred/theme/app_theme.dart';
-import '../../data/models/bus_detail.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/core/providers/tj_providers.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/schedule/tj_schedule_entity.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/search/tj_search_entity.dart';
 import '../widgets/tj_route_info.dart';
 import '../widgets/tj_route_stop_item.dart';
 
-class TjDetailScreen extends StatefulWidget {
-  final BusDetailData busDetail;
+class TjDetailScreen extends ConsumerWidget {
+  final TjSearchEntity search;
+  final String fromTerminal;
+  final String toTerminal;
 
   const TjDetailScreen({
     super.key,
-    required this.busDetail,
+    required this.search,
+    required this.fromTerminal,
+    required this.toTerminal,
   });
 
   @override
-  State<TjDetailScreen> createState() => _TjDetailScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final detailAsync = ref.watch(tjScheduleDetailProvider(search.id!));
 
-class _TjDetailScreenState extends State<TjDetailScreen> {
-  bool _expandedRoute = true;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -28,248 +32,277 @@ class _TjDetailScreenState extends State<TjDetailScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.pop(),
         ),
         title: Text(
-          '${widget.busDetail.originCity} - ${widget.busDetail.destinationCity}',
+          '$fromTerminal - $toTerminal',
           style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Map Section
-            Container(
-              height: 280,
-              width: double.infinity,
-              color: Colors.grey[200],
-              child: Stack(
-                children: [
-                  // Placeholder Map - Replace dengan google_maps_flutter nanti
-                  Container(
-                    color: const Color(0xFFE8F5E9),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.map, size: 60, color: Colors.green),
-                          const SizedBox(height: 12),
-                          Text(
-                            'Rute: ${widget.busDetail.originCity} → ${widget.busDetail.destinationCity}',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
+      body: detailAsync.when(
+        data: (schedule) {
+          if (schedule == null) {
+            return const Center(child: Text('Data tidak ditemukan'));
+          }
+          return _buildDetailContent(context, schedule, search);
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (_, _) => const Center(
+          child: Text('Gagal memuat detail jadwal'),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailContent(BuildContext context, TjScheduleEntity schedule, TjSearchEntity search) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          // Map Section
+          Container(
+            height: 280,
+            width: double.infinity,
+            color: Colors.grey[200],
+            child: Stack(
+              children: [
+                Container(
+                  color: const Color(0xFFE8F5E9),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.map, size: 60, color: Colors.green),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Rute: $fromTerminal → $toTerminal',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                  // Location button
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    child: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8)
-                        ],
-                      ),
-                      child: const Icon(Icons.location_on, color: Color(0xFF2E7D32)),
+                ),
+                // Location button
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 8)
+                      ],
                     ),
+                    child: const Icon(Icons.location_on, color: Color(0xFF2E7D32)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Bus Info Card
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x14000000),
+                    blurRadius: 18,
+                    offset: Offset(0, 8),
                   ),
                 ],
               ),
-            ),
-
-            // Bus Info Card
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(18),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x14000000),
-                      blurRadius: 18,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEAF1FF),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.directions_bus, size: 18, color: Color(0xFF123C8C)),
-                              const SizedBox(width: 6),
-                              Text(
-                                widget.busDetail.busCode,
-                                style: const TextStyle(
-                                  color: Color(0xFF123C8C),
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xFF2E7D32)),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            'Rp. ${widget.busDetail.price}',
-                            style: const TextStyle(
-                              color: Color(0xFF2E7D32),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 18),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: TjRouteInfo(
-                            time: widget.busDetail.departureTime,
-                            city: widget.busDetail.originCity,
-                            terminal: widget.busDetail.originTerminal,
-                            alignEnd: false,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 12),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF5F8FF),
-                                  borderRadius: BorderRadius.circular(999),
-                                  border: Border.all(color: const Color(0xFF5B8CFF)),
-                                ),
-                                child: Text(
-                                  widget.busDetail.duration,
-                                  style: const TextStyle(
-                                    color: Color(0xFF5B8CFF),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                width: 28,
-                                height: 1,
-                                color: const Color(0xFFBFD0FF),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: TjRouteInfo(
-                            time: widget.busDetail.arrivalTime,
-                            city: widget.busDetail.destinationCity,
-                            terminal: widget.busDetail.destinationTerminal,
-                            alignEnd: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Detail Rute Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GestureDetector(
-                    onTap: () => setState(() => _expandedRoute = !_expandedRoute),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEAF1FF),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.route,
-                              size: 20,
-                              color: AppTheme.jdihBlue,
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Detail Rute',
-                              style: TextStyle(
-                                fontSize: 16,
+                            const Icon(Icons.directions_bus, size: 18, color: Color(0xFF123C8C)),
+                            const SizedBox(width: 6),
+                            Text(
+                              schedule.busKode ?? '',
+                              style: const TextStyle(
+                                color: Color(0xFF123C8C),
                                 fontWeight: FontWeight.w700,
-                                color: Colors.black,
+                                fontSize: 13,
                               ),
                             ),
                           ],
                         ),
-                        Icon(
-                          _expandedRoute ? Icons.expand_less : Icons.expand_more,
-                          color: AppTheme.jdihBlue,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: const Color(0xFF2E7D32)),
+                          borderRadius: BorderRadius.circular(999),
                         ),
-                      ],
-                    ),
+                        child: Text(
+                          (schedule.busLayanan ?? '').toUpperCase(),
+                          style: const TextStyle(
+                            color: Color(0xFF2E7D32),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  if (_expandedRoute)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: const Color(0xFFE0E0E0)),
-                        borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 18),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: TjRouteInfo(
+                          time: schedule.jamBerangkat ?? '',
+                          city: search.originCity ?? '',
+                          terminal: schedule.terminalAsal ?? '',
+                          alignEnd: false,
+                        ),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ...List.generate(widget.busDetail.routeStops.length, (index) {
-                            final stop = widget.busDetail.routeStops[index];
-                            final isLast = index == widget.busDetail.routeStops.length - 1;
-                            return TjRouteStopItem(
-                              name: stop.name,
-                              isLast: isLast,
-                            );
-                          }),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 16,
+                              height: 2,
+                              color: const Color(0xFFBFD0FF),
+                            ),
+                            SizedBox(width: 4),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F8FF),
+                                borderRadius: BorderRadius.circular(999),
+                                border: Border.all(color: const Color(0xFF5B8CFF)),
+                              ),
+                              child: Text(
+                                _calculateDuration(search),
+                                style: const TextStyle(
+                                  color: Color(0xFF5B8CFF),
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Container(
+                              width: 16,
+                              height: 2,
+                              color: const Color(0xFFBFD0FF),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      Expanded(
+                        child: TjRouteInfo(
+                          time: schedule.jamTiba ?? '',
+                          city: search.destinationCity ?? '',
+                          terminal: schedule.terminalTujuan ?? '',
+                          alignEnd: true,
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            
-          ],
-        ),
+          ),
+
+          // Detail Rute Section
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.route,
+                          size: 20,
+                          color: AppTheme.jdihBlue,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Detail Rute',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: const Color(0xFFE0E0E0)),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TjRouteStopItem(
+                        name: schedule.terminalAsal ?? fromTerminal,
+                        isLast: false,
+                      ),
+                      TjRouteStopItem(
+                        name: schedule.terminalTujuan ?? toTerminal,
+                        isLast: true,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+        ],
       ),
     );
+  }
+
+  String _calculateDuration(TjSearchEntity schedule) {
+    // Format is HH:mm
+    final departureTime = schedule.departureTime ?? '00:00';
+    final arrivalTime = schedule.arrivalTime ?? '00:00';
+
+    // Parse using Intl package
+    DateFormat format = DateFormat("HH:mm");
+    DateTime departure = format.parse(departureTime);
+    DateTime arrival = format.parse(arrivalTime);
+
+    // Get Difference
+    Duration difference = arrival.difference(departure);
+    int hour = difference.inHours;
+    int minutes = difference.inMinutes % 60;
+
+    return "${hour}J ${minutes}m";
   }
 }

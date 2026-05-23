@@ -37,7 +37,10 @@ Future<Isar> openIsar(Ref ref) async {
     IsarImageRegistrySchema,
     IsarEndpointRegistrySchema,
     IsarEtagRegistrySchema,
-  ], directory: dir.path);
+  ],
+    directory: dir.path,
+    name: "majadigi-main"
+  );
 }
 
 @riverpod

@@ -10,6 +10,12 @@ import 'package:zstandard/zstandard.dart';
 
 part 'http.g.dart';
 
+/// WHITELISTED ROUTES
+final _whitelist = <String>[
+  '/user/auth/favorites',
+  '/transjatim/public/jadwal/search'
+];
+
 // ---------------------------------------------------------------------------
 // Private named interceptor subclasses — each has a unique type so the
 // duplicate guard (i is _ZstdInterceptor / i is _ETagInterceptor) only
@@ -39,7 +45,7 @@ class _ETagInterceptor extends Interceptor {
     }
 
     // Whitelist ETagging from favorites
-    if (options.path.contains('/user/auth/favorites')) {
+    if (_whitelist.any((path) => options.path.contains(path))) {
       return handler.next(options);
     }
 

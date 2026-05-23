@@ -67,7 +67,6 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
           linkedCategories.whereType<IsarCategoryRegistry>(),
         );
         await serviceIsar.categories.save();
-        print("service added");
       }
     });
   }
