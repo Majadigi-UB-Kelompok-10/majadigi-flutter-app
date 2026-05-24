@@ -13,7 +13,6 @@ part 'http.g.dart';
 /// WHITELISTED ROUTES
 final _whitelist = <String>[
   '/user/auth/favorites',
-  '/transjatim/public/jadwal/search'
 ];
 
 // ---------------------------------------------------------------------------

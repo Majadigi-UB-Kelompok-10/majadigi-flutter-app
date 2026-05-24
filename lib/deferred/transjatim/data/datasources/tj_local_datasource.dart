@@ -75,9 +75,9 @@ class TjLocalDatasourceImpl implements TjLocalDatasource {
     // It's actually terminal name being passed
     return _isar.isarTjScheduleRegistrys
         .filter()
-        .terminalAsalContains(origin, caseSensitive: false)
+        .terminalAsalEqualTo(origin, caseSensitive: false)
         .and()
-        .terminalTujuanContains(destination, caseSensitive: false)
+        .terminalTujuanEqualTo(destination, caseSensitive: false)
         .findAll();
   }
 
@@ -121,9 +121,9 @@ class TjLocalDatasourceImpl implements TjLocalDatasource {
   Future<IsarTjTicketRegistry?> getTicketByOriginAndDestination({required String originTerminalName, required String destinationTerminalName}) {
     return _isar.isarTjTicketRegistrys
         .filter()
-        .terminalAsalContains(originTerminalName)
+        .terminalAsalEqualTo(originTerminalName, caseSensitive: false)
         .and()
-        .terminalTujuanContains(destinationTerminalName)
+        .terminalTujuanEqualTo(destinationTerminalName, caseSensitive: false)
         .findFirst();
   }
 
@@ -131,7 +131,7 @@ class TjLocalDatasourceImpl implements TjLocalDatasource {
   Future<IsarTjTerminalRegistry?> getTerminalByTerminalName({required String terminalName}) {
     return _isar.isarTjTerminalRegistrys
         .filter()
-        .namaContains(terminalName)
+        .namaEqualTo(terminalName, caseSensitive: false)
         .findFirst();
   }
 }

@@ -92,8 +92,7 @@ class TjRepositoryImpl implements TjRepository {
   // -- Routes --
   @override
   Future<List<TjRouteEntity>> getRoutes() async {
-    // Fire and forget
-    syncRoutes();
+    await syncRoutes();
 
     final cached = await localDatasource.getCachedRoutes();
     return cached.map((r) => r.toEntity()).toList();
@@ -113,8 +112,7 @@ class TjRepositoryImpl implements TjRepository {
   // -- Schedules --
   @override
   Future<List<TjScheduleEntity>> getSchedules() async {
-    // Fire and forget
-    syncSchedules();
+    await syncSchedules();
 
     final cached = await localDatasource.getCachedSchedules();
     return cached.map((s) => s.toEntity()).toList();
@@ -252,7 +250,6 @@ class TjRepositoryImpl implements TjRepository {
   // -- Terminals --
   @override
   Future<List<TjTerminalEntity>> getTerminals() async {
-    // Fire and forget
     await syncTerminals();
 
     final cached = await localDatasource.getCachedTerminals();
@@ -273,7 +270,6 @@ class TjRepositoryImpl implements TjRepository {
   // -- Tickets --
   @override
   Future<List<TjTicketEntity>> getTickets() async {
-    // Fire and forget
     await syncTickets();
 
     final cached = await localDatasource.getCachedTickets();
