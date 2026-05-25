@@ -6,14 +6,12 @@
 
 // TODO: Update imports to match your module
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/domain/entities/{feature}/{prefix}_{feature}_entity.dart';
-import 'package:majadigi_mobile_rebuild/main/core/http.dart';
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/core/storage.dart';
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/data/datasources/{prefix}_local_datasource.dart';
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/data/datasources/{prefix}_remote_datasource.dart';
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/data/repositories/{prefix}_repository_impl.dart';
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/domain/repositories/{prefix}_repository.dart';
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/domain/usecase/{prefix}_use_cases.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // part '{prefix}_providers.g.dart';
 

@@ -1,52 +1,43 @@
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/search/tj_search_entity.dart';
-import 'package:majadigi_mobile_rebuild/main/core/http.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/core/storage.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/datasources/tj_local_datasource.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/datasources/tj_remote_datasource.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/repositories/tj_repository_impl.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/route/tj_route_entity.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/schedule/tj_schedule_entity.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/terminal/tj_terminal_entity.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/ticket/tj_ticket_entity.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/repositories/tj_repository.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/usecase/tj_use_cases.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../../main/core/http.dart';
+import '../storage.dart';
+import '../../data/datasources/tj_local_datasource.dart';
+import '../../data/datasources/tj_remote_datasource.dart';
+import '../../data/repositories/tj_repository_impl.dart';
+import '../../domain/repositories/tj_repository.dart';
+import '../../domain/usecase/tj_use_cases.dart';
+import '../../domain/entities/terminal/tj_terminal_entity.dart';
+import '../../domain/entities/ticket/tj_ticket_entity.dart';
+import '../../domain/entities/schedule/tj_schedule_entity.dart';
 
 part 'tj_providers.g.dart';
 
 // ---------------------------------------------------------------------------
-// Datasources
+// Datasources (private)
 // ---------------------------------------------------------------------------
 
-/// Local Datasource for Trans Jatim (uses its own Isar instance)
-/// Async because tjIsar is lazily initialized on first access.
 @riverpod
-Future<TjLocalDatasource> _tjLocalDatasource(Ref ref) async {
-  final isar = await ref.watch(tjIsarProvider.future);
+TjLocalDatasource _tjLocalDatasource(Ref ref) {
+  final isar = ref.watch(tjIsarProvider).requireValue;
   return TjLocalDatasourceImpl(isar);
 }
 
-/// Remote Datasource for Trans Jatim (uses shared Dio & Zstandard from main)
 @riverpod
 TjRemoteDatasource _tjRemoteDatasource(Ref ref) {
-  return TjRemoteDatasourceImpl(
-    dio: ref.watch(dioProvider),
-    zstandard: ref.watch(zstandardProvider),
-  );
+  final dio = ref.watch(dioProvider);
+  final zstandard = ref.watch(zstandardProvider);
+  return TjRemoteDatasourceImpl(dio: dio, zstandard: zstandard);
 }
 
 // ---------------------------------------------------------------------------
-// Repository
+// Repository (private)
 // ---------------------------------------------------------------------------
 
-/// Repository for Trans Jatim
 @riverpod
-Future<TjRepository> _tjRepository(Ref ref) async {
-  final localDatasource = await ref.watch(_tjLocalDatasourceProvider.future);
-  final remoteDatasource = ref.watch(_tjRemoteDatasourceProvider);
+TjRepository _tjRepository(Ref ref) {
   return TjRepositoryImpl(
-    localDatasource: localDatasource,
-    remoteDatasource: remoteDatasource,
+    localDatasource: ref.watch(_tjLocalDatasourceProvider),
+    remoteDatasource: ref.watch(_tjRemoteDatasourceProvider),
   );
 }
 
@@ -55,121 +46,75 @@ Future<TjRepository> _tjRepository(Ref ref) async {
 // ---------------------------------------------------------------------------
 
 @riverpod
-Future<GetRoutesUseCase> _getRoutesUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return GetRoutesUseCase(repo);
+GetTerminalsUseCase _getTerminalsUseCase(Ref ref) {
+  return GetTerminalsUseCase(ref.watch(_tjRepositoryProvider));
 }
 
 @riverpod
-Future<GetSchedulesUseCase> _getSchedulesUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return GetSchedulesUseCase(repo);
+WatchTerminalsUseCase _watchTerminalsUseCase(Ref ref) {
+  return WatchTerminalsUseCase(ref.watch(_tjRepositoryProvider));
 }
 
 @riverpod
-Future<GetTerminalsUseCase> _getTerminalsUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return GetTerminalsUseCase(repo);
+GetTicketsUseCase _getTicketsUseCase(Ref ref) {
+  return GetTicketsUseCase(ref.watch(_tjRepositoryProvider));
 }
 
 @riverpod
-Future<GetTicketsUseCase> _getTicketsUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return GetTicketsUseCase(repo);
+WatchTicketsUseCase _watchTicketsUseCase(Ref ref) {
+  return WatchTicketsUseCase(ref.watch(_tjRepositoryProvider));
 }
 
 @riverpod
-Future<SearchSchedulesUseCase> _searchSchedulesUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return SearchSchedulesUseCase(repo);
+SearchSchedulesUseCase _searchSchedulesUseCase(Ref ref) {
+  return SearchSchedulesUseCase(ref.watch(_tjRepositoryProvider));
 }
 
 @riverpod
-Future<GetScheduleDetailUseCase> _getScheduleDetailUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return GetScheduleDetailUseCase(repo);
-}
-
-// Sync Use Cases
-@riverpod
-Future<SyncRoutesUseCase> syncRoutesUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return SyncRoutesUseCase(repo);
-}
-
-@riverpod
-Future<SyncSchedulesUseCase> syncSchedulesUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return SyncSchedulesUseCase(repo);
-}
-
-@riverpod
-Future<SyncTerminalsUseCase> syncTerminalsUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return SyncTerminalsUseCase(repo);
-}
-
-@riverpod
-Future<SyncTicketsUseCase> syncTicketsUseCase(Ref ref) async {
-  final repo = await ref.watch(_tjRepositoryProvider.future);
-  return SyncTicketsUseCase(repo);
+GetScheduleDetailUseCase _getScheduleDetailUseCase(Ref ref) {
+  return GetScheduleDetailUseCase(ref.watch(_tjRepositoryProvider));
 }
 
 // ---------------------------------------------------------------------------
-// Exposed Use Cases (public — consumed by UI)
+// Exposed Data Providers (public — consumed by presentation layer)
 // ---------------------------------------------------------------------------
-
-/// Get all routes
-@riverpod
-Future<List<TjRouteEntity>> tjRoutes(Ref ref) async {
-  final useCase = await ref.watch(_getRoutesUseCaseProvider.future);
-  return await useCase.execute();
-}
-
-/// Get all schedules
-@riverpod
-Future<List<TjScheduleEntity>> tjSchedules(Ref ref) async {
-  final useCase = await ref.watch(_getSchedulesUseCaseProvider.future);
-  return await useCase.execute();
-}
 
 /// Get all terminals
 @riverpod
-Future<List<TjTerminalEntity>> tjTerminals(Ref ref) async {
-  final useCase = await ref.watch(_getTerminalsUseCaseProvider.future);
-  return await useCase.execute();
+Future<List<TjTerminalEntity>> tjTerminals(Ref ref) {
+  final useCase = ref.watch(_getTerminalsUseCaseProvider);
+  return useCase.execute();
 }
 
-/// Get all tickets
+/// Get all tickets (reguler + luxury unified)
 @riverpod
-Future<List<TjTicketEntity>> tjTickets(Ref ref) async {
-  final useCase = await ref.watch(_getTicketsUseCaseProvider.future);
-  return await useCase.execute();
+Future<List<TjTicketEntity>> tjTickets(Ref ref) {
+  final useCase = ref.watch(_getTicketsUseCaseProvider);
+  return useCase.execute();
 }
 
-/// Search schedules by origin, destination, and date
+/// Search schedules by origin terminal, destination terminal, and date.
+/// Accepts string IDs and date for convenience from the presentation layer.
 @riverpod
 Future<List<TjSearchEntity>> tjSearchSchedules(
   Ref ref,
-  String originTerminalId,
-  String destinationTerminalId,
-  String originTerminalName,
-  String destinationTerminalName,
+  String fromTerminalId,
+  String toTerminalId,
+  String fromTerminal,
+  String toTerminal,
   String date,
-) async {
-  final useCase = await ref.watch(_searchSchedulesUseCaseProvider.future);
-  return await useCase.execute(
-    originTerminalId: originTerminalId,
-    destinationTerminalId: destinationTerminalId,
-    originTerminalName: originTerminalName,
-    destinationTerminalName: destinationTerminalName,
-    date: date,
+) {
+  final useCase = ref.watch(_searchSchedulesUseCaseProvider);
+  return useCase.execute(
+    asalId: int.tryParse(fromTerminalId) ?? 0,
+    tujuanId: int.tryParse(toTerminalId) ?? 0,
+    tanggal: date,
   );
 }
 
 /// Get schedule detail by ID
 @riverpod
-Future<TjScheduleEntity?> tjScheduleDetail(Ref ref, int scheduleId) async {
-  final useCase = await ref.watch(_getScheduleDetailUseCaseProvider.future);
-  return await useCase.execute(scheduleId);
+Future<TjScheduleEntity?> tjScheduleDetail(Ref ref, int id) {
+  final useCase = ref.watch(_getScheduleDetailUseCaseProvider);
+  return useCase.execute(id);
 }

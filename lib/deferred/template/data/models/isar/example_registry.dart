@@ -4,7 +4,6 @@
 // Run `dart run build_runner build` after creating to generate .g.dart
 // =============================================================================
 
-import 'package:isar_community/isar.dart';
 // TODO: Import the corresponding domain entity
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/domain/entities/{feature}/{prefix}_{feature}_entity.dart';
 

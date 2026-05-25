@@ -4,11 +4,8 @@
 // Abstract contract + implementation in the same file.
 // =============================================================================
 
-import 'package:dio/dio.dart';
-import 'package:majadigi_mobile_rebuild/main/data/datasources/decompression.dart';
 // TODO: Import DTO classes
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/data/models/dto/{feature}/{feature}_dto.dart';
-import 'package:zstandard/zstandard.dart';
 
 /// Contract for this module's remote data source.
 /// Uses the shared Dio instance from main (Public API Gateway).

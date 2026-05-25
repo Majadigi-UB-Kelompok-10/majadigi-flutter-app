@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:majadigi_mobile_rebuild/deferred/theme/app_theme.dart';
+import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 
 class BansosScreen extends HookConsumerWidget {
   const BansosScreen({super.key});
@@ -11,6 +13,7 @@ class BansosScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final nikController = useTextEditingController();
+    final customCacheManager = ref.watch(getCustomCacheManagerProvider);
 
     void checkBansos() {
       final nik = nikController.text.trim();
@@ -33,8 +36,9 @@ class BansosScreen extends HookConsumerWidget {
           // Header Biru
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(16, 10, 16, 1),
+            padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
             child: SafeArea(
+              bottom: false,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -52,10 +56,12 @@ class BansosScreen extends HookConsumerWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         padding: const EdgeInsets.all(4),
-                        child: Image.network(
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_East_Java.svg/960px-Coat_of_arms_of_East_Java.svg.png',
+                        child: CachedNetworkImage(
+                          imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_East_Java.svg/960px-Coat_of_arms_of_East_Java.svg.png',
+                          useOldImageOnUrlChange: true,
                           height: 50,
                           fit: BoxFit.contain,
+                          cacheManager: customCacheManager,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -93,7 +99,7 @@ class BansosScreen extends HookConsumerWidget {
           // Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -129,7 +135,7 @@ class BansosScreen extends HookConsumerWidget {
                       border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
+                          color: Colors.grey.withValues(alpha: 0.1),
                           blurRadius: 8,
                           offset: const Offset(0, 6),
                         ),
@@ -206,7 +212,7 @@ class BansosScreen extends HookConsumerWidget {
                               backgroundColor: AppTheme.jdihBlue,
                               foregroundColor: Colors.white,
                               elevation: 0,
-                              disabledBackgroundColor: AppTheme.jdihBlue.withOpacity(0.6),
+                              disabledBackgroundColor: AppTheme.jdihBlue.withValues(alpha: 0.6),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

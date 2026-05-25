@@ -1,38 +1,37 @@
 import 'package:isar_community/isar.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/ticket/tj_ticket_entity.dart';
+import '../../../../domain/entities/ticket/tj_ticket_entity.dart';
 
 part 'tj_ticket_registry.g.dart';
 
 @collection
 class IsarTjTicketRegistry {
-  Id get isarId => id;
+  Id id = Isar.autoIncrement;
 
-  late int id;
-
-  int? ruteId;
-
-  @Index(type: IndexType.value, caseSensitive: false)
-  String? terminalAsal;
-
-  @Index(type: IndexType.value, caseSensitive: false)
-  String? terminalTujuan;
-
+  /// 'reguler' or 'luxury'
   String? layanan;
 
+  /// Passenger type — reguler only
   String? tipePenumpang;
 
   double? harga;
 
-  @ignore
+  /// Description — reguler only
+  String? keterangan;
+
+  /// Route name — luxury only
+  String? ruteNama;
+
+  /// Facilities — luxury only
+  String? fasilitas;
+
   TjTicketEntity toEntity() {
     return TjTicketEntity(
-      id: id,
-      ruteId: ruteId,
-      terminalAsal: terminalAsal,
-      terminalTujuan: terminalTujuan,
       layanan: layanan,
       tipePenumpang: tipePenumpang,
       harga: harga,
+      keterangan: keterangan,
+      ruteNama: ruteNama,
+      fasilitas: fasilitas,
     );
   }
 }

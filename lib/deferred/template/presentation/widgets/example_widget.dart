@@ -4,7 +4,6 @@
 // Reusable widget — receives data via constructor, not providers.
 // =============================================================================
 
-import 'package:flutter/material.dart';
 
 /// A reusable widget for the module.
 /// Accepts data and callbacks via constructor — no direct Riverpod access.

@@ -4,7 +4,6 @@
 // Abstract contract + implementation in the same file.
 // =============================================================================
 
-import 'package:isar_community/isar.dart';
 // TODO: Import Isar registry classes
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/data/models/isar/{feature}/{prefix}_{feature}_registry.dart';
 

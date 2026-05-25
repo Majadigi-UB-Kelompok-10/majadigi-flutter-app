@@ -4,12 +4,8 @@
 // Register ALL Isar schemas from data/models/isar/ in the schema list.
 // =============================================================================
 
-import 'dart:io';
-import 'package:isar_community/isar.dart';
 // TODO: Import all Isar registry schemas from data/models/isar/{feature}/
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/data/models/isar/{feature}/{prefix}_{feature}_registry.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // part 'storage.g.dart';
 

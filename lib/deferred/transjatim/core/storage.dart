@@ -1,11 +1,10 @@
 import 'dart:io';
 import 'package:isar_community/isar.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/isar/route/tj_route_registry.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/isar/schedule/tj_schedule_registry.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/isar/terminal/tj_terminal_registry.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/isar/ticket/tj_ticket_registry.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../data/models/isar/terminal/tj_terminal_registry.dart';
+import '../data/models/isar/ticket/tj_ticket_registry.dart';
 
 part 'storage.g.dart';
 
@@ -24,8 +23,6 @@ Future<Isar> tjIsar(Ref ref) async {
 
   return await Isar.open(
     [
-      IsarTjRouteRegistrySchema,
-      IsarTjScheduleRegistrySchema,
       IsarTjTerminalRegistrySchema,
       IsarTjTicketRegistrySchema,
     ],

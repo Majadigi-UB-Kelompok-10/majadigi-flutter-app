@@ -10,7 +10,6 @@
 // Run `dart run build_runner build` after creating to generate .freezed.dart + .g.dart
 // =============================================================================
 
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 // part '{feature}_dto.freezed.dart';
 // part '{feature}_dto.g.dart';

@@ -2,11 +2,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tj_terminal_entity.freezed.dart';
 
-/// Represent a Trans Jatim Terminal Entity
+/// Represents a bus terminal in the Trans Jatim network.
 @freezed
 class TjTerminalEntity with _$TjTerminalEntity {
   const TjTerminalEntity({
-    this.id,
+    required this.id,
     this.nama,
     this.kota,
     this.slug,
@@ -16,7 +16,7 @@ class TjTerminalEntity with _$TjTerminalEntity {
   });
 
   @override
-  final int? id;
+  final int id;
 
   @override
   final String? nama;

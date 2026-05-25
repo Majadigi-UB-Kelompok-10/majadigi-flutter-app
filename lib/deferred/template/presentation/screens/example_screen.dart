@@ -3,9 +3,6 @@
 // Replace {prefix}, {Prefix}, {module_name} with your module values.
 // =============================================================================
 
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 // TODO: Import providers and widgets
 // import 'package:majadigi_mobile_rebuild/deferred/{module_name}/core/providers/{prefix}_providers.dart';
 

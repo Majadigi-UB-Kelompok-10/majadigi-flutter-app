@@ -1,119 +1,102 @@
 import 'package:dio/dio.dart';
-import 'package:majadigi_mobile_rebuild/main/data/datasources/decompression.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/dto/route/route_dto.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/dto/schedule/schedule_dto.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/dto/terminal/terminal_dto.dart';
-import 'package:majadigi_mobile_rebuild/deferred/transjatim/data/models/dto/ticket/ticket_dto.dart';
 import 'package:zstandard/zstandard.dart';
+import '../../../../main/data/datasources/decompression.dart';
+import '../models/dto/terminal/terminal_dto.dart';
+import '../models/dto/ticket/ticket_dto.dart';
+import '../models/dto/schedule/schedule_dto.dart';
 
-/// Represent the Contract for Trans Jatim Remote Datasource.
-/// Uses Public API Gateway (shared Dio instance from main).
+/// Contract for Trans Jatim's remote data source.
 abstract class TjRemoteDatasource {
-  Future<List<RouteDto>?> fetchRoutes();
-  Future<List<ScheduleDto>?> fetchSchedules();
   Future<List<TerminalDto>?> fetchTerminals();
-  Future<List<TicketDto>?> fetchTickets();
-  Future<List<ScheduleDto>?> searchSchedules({
-    required String origin,
-    required String destination,
-    required String date,
+  Future<TicketDto?> fetchTickets();
+  Future<List<SearchScheduleDto>?> searchSchedules({
+    required int asalId,
+    required int tujuanId,
+    required String tanggal,
   });
-  Future<ScheduleDto?> fetchScheduleDetail(int scheduleId);
+  Future<DetailScheduleDto?> fetchScheduleDetail(int id);
 }
 
-/// Represent the Trans Jatim Remote Datasource Implementation
+/// Implementation using Dio + Zstandard decompression.
 class TjRemoteDatasourceImpl implements TjRemoteDatasource {
   final Dio dio;
   final Zstandard? zstandard;
   TjRemoteDatasourceImpl({required this.dio, this.zstandard});
 
-  // TODO: Replace placeholder endpoints with actual Trans Jatim API endpoints
   static const String _basePrefix = '/transjatim';
 
   @override
-  Future<List<RouteDto>?> fetchRoutes() async {
-    final response = await dio.get('$_basePrefix/admin/rute');
-
-    if (response.statusCode != 200) return null;
-
-    final data = await cleanupData(zstandard: zstandard, response: response);
-
-    return (data["data"] as List)
-        .map((json) => RouteDto.fromJson(json))
-        .toList();
-  }
-
-  @override
-  Future<List<ScheduleDto>?> fetchSchedules() async {
-    final response = await dio.get('$_basePrefix/admin/jadwal');
-
-    if (response.statusCode != 200) return null;
-
-    final data = await cleanupData(zstandard: zstandard, response: response);
-
-    return (data["data"] as List)
-        .map((json) => ScheduleDto.fromJson(json))
-        .toList();
-  }
-
-  @override
   Future<List<TerminalDto>?> fetchTerminals() async {
-    final response = await dio.get('$_basePrefix/public/terminals');
+    try {
+      final response = await dio.get('$_basePrefix/public/terminals');
+      if (response.statusCode != 200) return null;
 
-    if (response.statusCode != 200) return null;
+      final data = await cleanupData(zstandard: zstandard, response: response);
+      if (data["data"] == null) return null;
 
-    final data = await cleanupData(zstandard: zstandard, response: response);
-
-    return (data["data"] as List)
-        .map((json) => TerminalDto.fromJson(json))
-        .toList();
+      return (data["data"] as List)
+          .map((json) => TerminalDto.fromJson(json))
+          .toList();
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
-  Future<List<TicketDto>?> fetchTickets() async {
-    final response = await dio.get('$_basePrefix/admin/harga');
+  Future<TicketDto?> fetchTickets() async {
+    try {
+      final response = await dio.get('$_basePrefix/public/harga');
+      if (response.statusCode != 200) return null;
 
-    if (response.statusCode != 200) return null;
+      final data = await cleanupData(zstandard: zstandard, response: response);
+      if (data["data"] == null) return null;
 
-    final data = await cleanupData(zstandard: zstandard, response: response);
-
-    return (data["data"] as List)
-        .map((json) => TicketDto.fromJson(json))
-        .toList();
+      return TicketDto.fromJson(data["data"]);
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
-  Future<List<ScheduleDto>?> searchSchedules({
-    required String origin,
-    required String destination,
-    required String date,
+  Future<List<SearchScheduleDto>?> searchSchedules({
+    required int asalId,
+    required int tujuanId,
+    required String tanggal,
   }) async {
-    final response = await dio.get(
-      '$_basePrefix/public/jadwal/search',
-      queryParameters: {
-        'asal_id': origin,
-        'tujuan_id': destination,
-        'tanggal': date,
-      },
-    );
+    try {
+      final response = await dio.get(
+        '$_basePrefix/public/jadwal/search',
+        queryParameters: {
+          'asal_id': asalId,
+          'tujuan_id': tujuanId,
+          'tanggal': tanggal,
+        },
+      );
+      if (response.statusCode != 200) return null;
 
-    if (response.statusCode != 200) return null;
+      final data = await cleanupData(zstandard: zstandard, response: response);
+      if (data["data"] == null) return null;
 
-    final data = await cleanupData(zstandard: zstandard, response: response);
-
-    return (data["data"] as List)
-        .map((json) => ScheduleDto.fromJson(json))
-        .toList();
+      return (data["data"] as List)
+          .map((json) => SearchScheduleDto.fromJson(json))
+          .toList();
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
-  Future<ScheduleDto?> fetchScheduleDetail(int scheduleId) async {
-    final response = await dio.get('$_basePrefix/public/jadwal/$scheduleId');
+  Future<DetailScheduleDto?> fetchScheduleDetail(int id) async {
+    try {
+      final response = await dio.get('$_basePrefix/public/jadwal/$id');
+      if (response.statusCode != 200) return null;
 
-    if (response.statusCode != 200) return null;
+      final data = await cleanupData(zstandard: zstandard, response: response);
+      if (data["data"] == null) return null;
 
-    final data = await cleanupData(zstandard: zstandard, response: response);
-
-    return ScheduleDto.fromJson(data["data"] as Map<String, dynamic>);
+      return DetailScheduleDto.fromJson(data["data"]);
+    } catch (e) {
+      return null;
+    }
   }
 }

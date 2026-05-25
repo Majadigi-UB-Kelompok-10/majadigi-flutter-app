@@ -12,6 +12,7 @@ class RouterShell extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Majadigi Mobile App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: Colors.white,

@@ -55,6 +55,7 @@ dependencies:
   intl: ^0.20.2
   flutter_osm_plugin: ^1.4.2
   osm_flutter_hooks: ^1.4.1
+  fl_chart: ^1.2.0
 
 dev_dependencies:
   flutter_test:

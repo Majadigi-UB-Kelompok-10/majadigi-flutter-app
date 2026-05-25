@@ -4,7 +4,6 @@
 // Run `dart run build_runner build` after creating to generate .freezed.dart
 // =============================================================================
 
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 // part '{prefix}_{feature}_entity.freezed.dart';
 

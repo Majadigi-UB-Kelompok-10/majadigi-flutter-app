@@ -2,24 +2,30 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tj_schedule_entity.freezed.dart';
 
-/// Represent a Trans Jatim Schedule Entity
+/// Entity for schedule search results.
+/// Includes geo coordinates resolved from the cached terminal list.
 @freezed
-class TjScheduleEntity with _$TjScheduleEntity {
-  const TjScheduleEntity({
-    this.id,
+class TjSearchEntity with _$TjSearchEntity {
+  const TjSearchEntity({
+    required this.id,
     this.busKode,
     this.busLayanan,
-    this.terminalAsal,
-    this.terminalTujuan,
-    this.ruteSlug,
-    this.jamBerangkat,
-    this.jamTiba,
-    this.hariOperasi,
-    this.aktif,
+    this.departureTime,
+    this.arrivalTime,
+    this.durasiMenit,
+    this.originTerminal,
+    this.destinationTerminal,
+    this.originCity,
+    this.destinationCity,
+    this.price,
+    this.originLatitude,
+    this.originLongitude,
+    this.destinationLatitude,
+    this.destinationLongitude,
   });
 
   @override
-  final int? id;
+  final int id;
 
   @override
   final String? busKode;
@@ -28,13 +34,67 @@ class TjScheduleEntity with _$TjScheduleEntity {
   final String? busLayanan;
 
   @override
-  final String? terminalAsal;
+  final String? departureTime;
 
   @override
-  final String? terminalTujuan;
+  final String? arrivalTime;
 
   @override
-  final String? ruteSlug;
+  final double? durasiMenit;
+
+  @override
+  final String? originTerminal;
+
+  @override
+  final String? destinationTerminal;
+
+  @override
+  final String? originCity;
+
+  @override
+  final String? destinationCity;
+
+  @override
+  final double? price;
+
+  @override
+  final double? originLatitude;
+
+  @override
+  final double? originLongitude;
+
+  @override
+  final double? destinationLatitude;
+
+  @override
+  final double? destinationLongitude;
+}
+
+/// Entity for schedule detail view.
+@freezed
+class TjScheduleEntity with _$TjScheduleEntity {
+  const TjScheduleEntity({
+    required this.id,
+    this.busKode,
+    this.busLayanan,
+    this.jamBerangkat,
+    this.jamTiba,
+    this.durasiMenit,
+    this.terminalAsal,
+    this.terminalTujuan,
+    this.ruteId,
+    this.stops,
+    this.semuaHarga,
+  });
+
+  @override
+  final int id;
+
+  @override
+  final String? busKode;
+
+  @override
+  final String? busLayanan;
 
   @override
   final String? jamBerangkat;
@@ -43,8 +103,35 @@ class TjScheduleEntity with _$TjScheduleEntity {
   final String? jamTiba;
 
   @override
-  final int? hariOperasi;
+  final double? durasiMenit;
 
   @override
-  final bool? aktif;
+  final String? terminalAsal;
+
+  @override
+  final String? terminalTujuan;
+
+  @override
+  final int? ruteId;
+
+  @override
+  final List<String>? stops;
+
+  @override
+  final List<TjHargaEntity>? semuaHarga;
+}
+
+/// Sub-entity for price info within a schedule detail.
+@freezed
+class TjHargaEntity with _$TjHargaEntity {
+  const TjHargaEntity({
+    this.tipePenumpang,
+    this.harga,
+  });
+
+  @override
+  final String? tipePenumpang;
+
+  @override
+  final double? harga;
 }

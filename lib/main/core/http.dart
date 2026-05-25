@@ -13,6 +13,7 @@ part 'http.g.dart';
 /// WHITELISTED ROUTES
 final _whitelist = <String>[
   '/user/auth/favorites',
+  // '/siskaperbapo/public/bahan-pokok', // Due to how searching use query parameter and without gets the same etag
 ];
 
 // ---------------------------------------------------------------------------

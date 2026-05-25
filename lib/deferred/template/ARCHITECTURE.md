@@ -46,11 +46,13 @@ lib/deferred/{module_name}/
 │   └── repositories/
 │       └── {prefix}_repository_impl.dart         # Implements domain contract, DTO→Isar extensions
 │
-└── presentation/
-    ├── screens/
-    │   └── {prefix}_screen.dart                  # HookConsumerWidget (full page)
-    └── widgets/
-        └── {prefix}_{widget_name}.dart           # Reusable StatelessWidget / HookWidget
+├── presentation/
+│   ├── screens/
+│   │   └── {prefix}_screen.dart                  # HookConsumerWidget (full page)
+│   └── widgets/
+│       └── {prefix}_{widget_name}.dart           # Reusable StatelessWidget / HookWidget
+│       
+└── {feature}_routes.dart                         # Contains Routes with Go Router
 ```
 
 ---
@@ -68,6 +70,7 @@ lib/deferred/{module_name}/
 | `go_router` | Navigation | Routes defined in `main/core/router.dart` |
 | `cached_network_image` | Image caching | Use shared `getCustomCacheManagerProvider` from `main/core/storage.dart` |
 
+* There is also helpful minor packages like intl for formatting and fl_chart for charts
 ---
 
 ## Data Flow Rules

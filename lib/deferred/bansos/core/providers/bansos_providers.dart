@@ -48,7 +48,7 @@ Future<BansosEntity?> bansosInfo(Ref ref, String nik) {
 }
 
 @riverpod
-Stream<List<BansosEntity>> watchBansosInfo(Ref ref, String nik) {
+Stream<List<BansosEntity>> watchBansosInfo(Ref ref, String nik) async* {
   final useCase = ref.watch(_watchBansosUseCaseProvider);
-  return useCase.execute(nik);
+  yield* useCase.execute(nik);
 }

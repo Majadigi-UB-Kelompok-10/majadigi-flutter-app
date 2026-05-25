@@ -2,37 +2,40 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'tj_ticket_entity.freezed.dart';
 
-/// Represent a Trans Jatim Ticket Entity
+/// Unified ticket entity for both reguler and luxury services.
+/// The [layanan] field discriminates between 'reguler' and 'luxury'.
 @freezed
 class TjTicketEntity with _$TjTicketEntity {
   const TjTicketEntity({
-    this.id,
-    this.ruteId,
-    this.terminalAsal,
-    this.terminalTujuan,
     this.layanan,
     this.tipePenumpang,
     this.harga,
+    this.keterangan,
+    this.ruteNama,
+    this.fasilitas,
   });
 
-  @override
-  final int? id;
-
-  @override
-  final int? ruteId;
-
-  @override
-  final String? terminalAsal;
-
-  @override
-  final String? terminalTujuan;
-
+  /// 'reguler' or 'luxury'
   @override
   final String? layanan;
 
+  /// Passenger type (e.g. 'umum', 'pelajar_santri', 'mahasiswa') — reguler only
   @override
   final String? tipePenumpang;
 
+  /// Ticket price
   @override
   final double? harga;
+
+  /// Description — reguler only
+  @override
+  final String? keterangan;
+
+  /// Route name (e.g. 'Malang - Batu') — luxury only
+  @override
+  final String? ruteNama;
+
+  /// Facilities — luxury only
+  @override
+  final String? fasilitas;
 }
