@@ -100,10 +100,14 @@ class _DetailContent extends StatelessWidget {
         children: [
           // Map
           TjMapPreview(
-            initialLatitude: search.originLatitude ?? -7,
-            initialLongitude: search.originLongitude ?? 112,
-            destinationLatitude: search.destinationLatitude ?? -8,
-            destinationLongitude: search.destinationLongitude ?? 113,
+            stops: schedule.stops ?? [
+              schedule.terminalAsal ?? fromTerminal,
+              schedule.terminalTujuan ?? toTerminal,
+            ],
+            originLatitude: search.originLatitude,
+            originLongitude: search.originLongitude,
+            destinationLatitude: search.destinationLatitude,
+            destinationLongitude: search.destinationLongitude,
           ),
 
           // Bus info card

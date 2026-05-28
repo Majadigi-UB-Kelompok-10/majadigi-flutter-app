@@ -7,8 +7,21 @@
   - [X] Finish Entities
   - [X] Finish Repositories
   - [X] Finish Use Cases
-- [ ] UI Layer
-  - [ ] Finish Recreate Pages
+- [X] UI Layer
+  - [X] Finish Recreate Pages
   - [ ] Finish Deferred Build
-  - [ ] Finish SDUI Build
  
+
+### Deferred Package To-Do List
+- [X] Bansos
+- [X] Klinik Hoaks
+- [X] RSSA
+- [X] Siskaperbapo
+- [X] Nomor Darurat
+- [ ] Transjatim
+  - Require Map with Routing Engine to render road
+- [ ] Sidita
+  - Require Multi-Marker Map, No road needed
+- [ ] Jdih
+- [ ] Bapenda
+- [ ] Sinaker

@@ -36,7 +36,7 @@
 //   Future<void> cache{Feature}(List<Isar{Prefix}{Feature}Registry> items) async {
 //     await _isar.writeTxn(() async {
 //       await _isar.isar{Prefix}{Feature}Registrys.clear();
-//       await _isar.isar{Prefix}{Feature}Registrys.putAll(items);
+//       await _isar.isar{Prefix}{Feature}Registrys.putAllBy{Index}(items);
 //     });
 //   }
 //

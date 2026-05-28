@@ -15,6 +15,7 @@ class IsarBansosRegistry {
   
   List<IsarRiwayat>? riwayat;
 
+  @ignore
   BansosEntity toEntity() {
     return BansosEntity(
       profil: ProfilEntity(

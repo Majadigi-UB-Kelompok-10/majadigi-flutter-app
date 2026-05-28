@@ -16,7 +16,7 @@ import 'endpoint/endpoint_provider.dart';
 
 part 'sync_provider.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class StartupSyncAll extends _$StartupSyncAll {
 
   // Required by Generator
@@ -34,14 +34,24 @@ class StartupSyncAll extends _$StartupSyncAll {
       final syncFavorite = ref.read(syncFavoritesUseCaseProvider);
       final syncEndpoints = ref.read(syncEndpointsUseCaseProvider);
 
-      await syncCategory.execute().timeout(const Duration(seconds: 20));
-      await syncServices.execute().timeout(const Duration(seconds: 20));
-      syncFavorite.execute().timeout(const Duration(seconds: 20));
-      await syncIntegration.execute().timeout(const Duration(seconds: 20));
-      await syncOperational.execute().timeout(const Duration(seconds: 20));
-      await syncPolicy.execute().timeout(const Duration(seconds: 20));
-      await syncImage.execute().timeout(const Duration(seconds: 20));
-      await syncEndpoints.execute().timeout(const Duration(seconds: 20));
+      Future<void> syncDependentChain() async {
+        // These MUST happen in order
+        await syncCategory.execute().timeout(const Duration(seconds: 20));
+        await syncServices.execute().timeout(const Duration(seconds: 20));
+        await syncFavorite.execute().timeout(const Duration(seconds: 20));
+      }
+
+      // 2. Run the chain in parallel with all independent tasks
+      await Future.wait([
+        syncDependentChain(), // This sequence takes up to 60s max
+        syncIntegration.execute().timeout(const Duration(seconds: 20)),
+        syncOperational.execute().timeout(const Duration(seconds: 20)),
+        syncPolicy.execute().timeout(const Duration(seconds: 20)),
+        syncImage.execute().timeout(const Duration(seconds: 20)),
+        syncEndpoints.execute().timeout(const Duration(seconds: 20)),
+      ]);
+
+      debugPrint("Silent sync completed successfully.");
     } catch (e) {
       debugPrint("Silent sync failed or timed out: $e");
     }

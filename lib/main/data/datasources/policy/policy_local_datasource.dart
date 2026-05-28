@@ -24,7 +24,7 @@ class PolicyLocalDatasourceImpl implements PolicyLocalDatasource {
   @override
   Future<void> cachePolicies(List<IsarPolicyRegistry> policies) async {
     await _isar.writeTxn(() async {
-      await _isar.isarPolicyRegistrys.putAll(policies);
+      await _isar.isarPolicyRegistrys.putAllById(policies);
     });
   }
 

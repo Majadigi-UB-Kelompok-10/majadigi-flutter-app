@@ -40,6 +40,9 @@ class SplashScreen extends HookConsumerWidget {
           final isDataEmpty = await ref.read(isarDatabaseIsEmptyProvider.future);
 
           if (!isDataEmpty) {
+            // Fire and forget a sync
+            ref.read(startupSyncAllProvider.notifier).syncSilently();
+
             // If ALL data exists, fill the bar to 100% and proceed
             syncProgress.value = 1.0;
             await Future.delayed(const Duration(milliseconds: 500)); // Brief pause for visual Polish
@@ -87,7 +90,9 @@ class SplashScreen extends HookConsumerWidget {
       initializeApp();
 
       // Cleanup
-      return () {};
+      return () {
+        syncSubscription?.cancel();
+      };
     }, const []);
 
     return Scaffold(

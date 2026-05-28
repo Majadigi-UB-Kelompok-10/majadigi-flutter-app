@@ -23,7 +23,7 @@ class EndpointLocalDatasourceImpl implements EndpointLocalDatasource {
   @override
   Future<void> cacheEndpoint(List<IsarEndpointRegistry> endpoint) async {
     await _isar.writeTxn(() async {
-      await _isar.isarEndpointRegistrys.putAll(endpoint);
+      await _isar.isarEndpointRegistrys.putAllById(endpoint);
     });
   }
 

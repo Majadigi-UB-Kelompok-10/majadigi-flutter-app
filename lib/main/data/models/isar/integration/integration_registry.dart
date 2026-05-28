@@ -8,12 +8,12 @@ part 'integration_registry.g.dart';
 class IsarIntegrationRegistry {
   Id get isarId => fastHash(id);
 
+  @Index(unique: true, replace: true)
   late String id;
 
-  @Index()
+  @Index(composite: [CompositeIndex('fkEndpointListId')])
   late String fkServiceListId;
 
-  @Index()
   late String fkEndpointListId;
 
   late String title;

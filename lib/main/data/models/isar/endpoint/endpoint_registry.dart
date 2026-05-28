@@ -8,6 +8,7 @@ part 'endpoint_registry.g.dart';
 class IsarEndpointRegistry {
   Id get isarId => fastHash(id);
 
+  @Index(unique: true, replace: true)
   late String id;
 
   late String slugName;

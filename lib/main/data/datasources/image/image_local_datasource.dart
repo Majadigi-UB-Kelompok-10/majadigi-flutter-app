@@ -19,7 +19,7 @@ class ImageLocalDatasourceImpl implements ImageLocalDatasource {
   @override
   Future<void> cacheImage(List<IsarImageRegistry> image) async {
     await _isar.writeTxn(() async {
-      await _isar.isarImageRegistrys.putAll(image);
+      await _isar.isarImageRegistrys.putAllById(image);
     });
   }
 

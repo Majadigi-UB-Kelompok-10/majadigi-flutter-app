@@ -19,7 +19,7 @@ class OperationalLocalDatasourceImpl implements OperationalLocalDatasource {
   @override
   Future<void> cacheOperational(List<IsarOperationalRegistry> operational) async {
     await _isar.writeTxn(() async {
-      await _isar.isarOperationalRegistrys.putAll(operational);
+      await _isar.isarOperationalRegistrys.putAllById(operational);
     });
   }
 

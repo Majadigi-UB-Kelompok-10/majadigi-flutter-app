@@ -73,7 +73,7 @@ class SkpLocalDatasourceImpl implements SkpLocalDatasource {
   @override
   Future<void> saveDetailBahanPokok(IsarSkpDetailBahanPokokRegistry detail) async {
     await isar.writeTxn(() async {
-      await isar.isarSkpDetailBahanPokokRegistrys.put(detail);
+      await isar.isarSkpDetailBahanPokokRegistrys.putBySlugId(detail);
     });
   }
 }

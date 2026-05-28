@@ -10,9 +10,10 @@ part 'policy_registry.g.dart';
 class IsarPolicyRegistry {
   Id get isarId => fastHash(id);
 
+  @Index(unique: true, replace: true)
   late String id;
 
-  @Index(unique: true)
+  @Index()
   late String fkServiceListId;
 
   late String rawBenefit;

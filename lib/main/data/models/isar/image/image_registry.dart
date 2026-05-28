@@ -8,6 +8,7 @@ part 'image_registry.g.dart';
 class IsarImageRegistry {
   Id get isarId => fastHash(id);
 
+  @Index(unique: true, replace: true)
   late String id;
 
   @Index()

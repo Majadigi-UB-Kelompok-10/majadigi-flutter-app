@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show debugPrint;
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
@@ -68,7 +69,7 @@ class _ETagInterceptor extends Interceptor {
       final endpointUrl = response.requestOptions.uri.toString();
 
       await isar.writeTxn(() async {
-        await isar.isarEtagRegistrys.put(
+        await isar.isarEtagRegistrys.putByEndpointUrl(
           IsarEtagRegistry()
             ..endpointUrl = endpointUrl
             ..etag = etag,

@@ -21,7 +21,7 @@ class CategoryLocalDatasourceImpl implements CategoryLocalDatasource {
   @override
   Future<void> cacheCategory(List<IsarCategoryRegistry> category) async {
     await _isar.writeTxn(() async {
-      await _isar.isarCategoryRegistrys.putAll(category);
+      await _isar.isarCategoryRegistrys.putAllById(category);
     });
   }
 

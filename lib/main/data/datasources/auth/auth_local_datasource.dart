@@ -90,6 +90,7 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
       ..isActive = entity.isActive!;
       
     await _isar.writeTxn(() async {
+      await _isar.isarProfileRegistrys.clear();
       await _isar.isarProfileRegistrys.put(isarObj);
     });
   }

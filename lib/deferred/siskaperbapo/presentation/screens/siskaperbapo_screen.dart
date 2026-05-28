@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:go_router/go_router.dart';
-import 'package:majadigi_mobile_rebuild/deferred/siskaperbapo/core/storage.dart';
 import '../../../theme/app_theme.dart';
 import '../../../../main/core/storage.dart';
 import '../widgets/siskaperbapo_widgets.dart';
@@ -19,11 +18,11 @@ class SiskaperbapoScreen extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedBahanPokok = useState<String>('Semua Bahan Pokok');
     final selectedArea = useState<String>('Semua Area');
-    final selectedDate = useState<DateTime>(DateTime.now());
+    final selectedDate = useState<String>('Terbaru');
 
     final appliedBahanPokok = useState<String>('');
     final appliedArea = useState<String>('');
-    final appliedDate = useState<DateTime>(DateTime.now());
+    final appliedDate = useState<String>('');
 
     final allBahanPokokAsync = ref.watch(skpBahanPokokListProvider(
       tanggal: '',
@@ -32,7 +31,7 @@ class SiskaperbapoScreen extends HookConsumerWidget {
     ));
 
     final bahanPokokAsync = ref.watch(skpBahanPokokListProvider(
-      tanggal: DateFormat('yyyy-MM-dd').format(appliedDate.value),
+      tanggal: appliedDate.value,
       bahanPokok: appliedBahanPokok.value,
       area: appliedArea.value,
     ));
@@ -87,12 +86,6 @@ class SiskaperbapoScreen extends HookConsumerWidget {
             children: [
               _buildDescriptionCard(),
               const SizedBox(height: 16),
-              OutlinedButton(
-                  onPressed: () async {
-                    await ref.read(skpClearIsarDbProvider.future);
-                  },
-                  child: Text("Reset ISAR")
-              ),
               _buildFilterSection(
                 context, 
                 selectedBahanPokok, 
@@ -103,7 +96,7 @@ class SiskaperbapoScreen extends HookConsumerWidget {
                 () {
                   appliedBahanPokok.value = selectedBahanPokok.value == 'Semua Bahan Pokok' ? '' : selectedBahanPokok.value;
                   appliedArea.value = selectedArea.value == 'Semua Area' ? '' : selectedArea.value;
-                  appliedDate.value = selectedDate.value;
+                  appliedDate.value = selectedDate.value == 'Terbaru' ? '' : selectedDate.value;
                 }
               ),
               const SizedBox(height: 24),
@@ -143,7 +136,7 @@ class SiskaperbapoScreen extends HookConsumerWidget {
       BuildContext context, 
       ValueNotifier<String> selectedBahanPokok, 
       ValueNotifier<String> selectedArea, 
-      ValueNotifier<DateTime> selectedDate, 
+      ValueNotifier<String> selectedDate,
       AsyncValue<List<SkpBahanPokokEntity>> allBahanPokokAsync, 
       AsyncValue<List<SkpAreaEntity>> areasAsync,
       VoidCallback onTampilkan) {
@@ -214,12 +207,11 @@ class SiskaperbapoScreen extends HookConsumerWidget {
             onTap: () async {
               final DateTime? picked = await showDatePicker(
                 context: context,
-                initialDate: selectedDate.value,
                 firstDate: DateTime(2020),
                 lastDate: DateTime(2030),
               );
-              if (picked != null && picked != selectedDate.value) {
-                selectedDate.value = picked;
+              if (picked != null && DateFormat('yyyy-MM-dd').format(picked) != selectedDate.value) {
+                selectedDate.value = DateFormat('yyyy-MM-dd').format(picked);
               }
             },
           ),

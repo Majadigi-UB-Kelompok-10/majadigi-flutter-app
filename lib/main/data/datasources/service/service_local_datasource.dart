@@ -60,7 +60,7 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
         final serviceIsar = normalizedService.toIsar();
 
         // Save Service to Isar first (makes it managed by Isar)
-        await _isar.isarServiceRegistrys.put(serviceIsar);
+        await _isar.isarServiceRegistrys.putById(serviceIsar);
 
         // Now link categories using the same managed object
         serviceIsar.categories.addAll(

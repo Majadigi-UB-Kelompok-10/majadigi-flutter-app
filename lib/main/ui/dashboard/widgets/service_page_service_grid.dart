@@ -150,7 +150,7 @@ class _ServiceGridCreator extends ConsumerWidget {
         '/page-detail',
         extra: {
           'serviceId': service.id,
-          'title': service.title,
+          'title': service.longTitle,
           'description': service.description
         }
       );

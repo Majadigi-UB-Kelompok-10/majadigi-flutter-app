@@ -12,7 +12,7 @@ part 'service_registry.g.dart';
 class IsarServiceRegistry {
   Id get isarId => fastHash(id);
 
-  @Index(type: IndexType.value, unique: true)
+  @Index(type: IndexType.value, unique: true, replace: true)
   late String id;
 
   late String title;

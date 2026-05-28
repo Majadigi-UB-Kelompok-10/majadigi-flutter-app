@@ -26,7 +26,9 @@ class OperationalListWidget extends StatelessWidget {
             spacing: 12.0,
             children: [
               // Link Layanan
-              _ServiceUrlListTile(serviceUrl: entry.serviceUrl!),
+              if (entry.serviceUrl != null && entry.serviceUrl!.isNotEmpty) ...{
+                _ServiceUrlListTile(serviceUrl: entry.serviceUrl!),
+              },
 
               // Alamat
               if (entry.address != null && entry.address!.isNotEmpty) ...{

@@ -21,7 +21,7 @@ class BansosLocalDatasourceImpl implements BansosLocalDatasource {
   @override
   Future<void> cacheBansos(IsarBansosRegistry bansos) async {
     await _isar.writeTxn(() async {
-      await _isar.isarBansosRegistrys.put(bansos);
+      await _isar.isarBansosRegistrys.putByNik(bansos);
     });
   }
 

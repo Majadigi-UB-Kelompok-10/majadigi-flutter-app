@@ -53,9 +53,11 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   flutter_secure_storage: ^10.1.0
   intl: ^0.20.2
-  flutter_osm_plugin: ^1.4.2
-  osm_flutter_hooks: ^1.4.1
   fl_chart: ^1.2.0
+  flutter_map: ^8.3.0
+  flutter_map_location_marker: ^10.2.0
+  latlong2: ^0.9.1
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:

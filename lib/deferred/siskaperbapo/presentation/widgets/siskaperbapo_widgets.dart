@@ -104,7 +104,7 @@ class SiskaperbapoDropdown extends StatelessWidget {
 
 class SiskaperbapoDatePicker extends StatelessWidget {
   final String label;
-  final DateTime date;
+  final String date;
   final VoidCallback onTap;
 
   const SiskaperbapoDatePicker({
@@ -141,7 +141,7 @@ class SiskaperbapoDatePicker extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  DateFormat('yyyy-MM-dd').format(date),
+                  date,
                   style: const TextStyle(fontSize: 14, color: Colors.black54),
                 ),
                 const Icon(Icons.calendar_today_outlined, color: Colors.grey, size: 18),

@@ -10,6 +10,7 @@ part 'category_registry.g.dart';
 class IsarCategoryRegistry {
   Id get isarId => fastHash(id);
 
+  @Index(unique: true, replace: true)
   late String id;
 
   late String name;

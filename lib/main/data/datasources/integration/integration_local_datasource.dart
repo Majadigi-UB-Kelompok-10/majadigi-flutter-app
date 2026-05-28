@@ -25,7 +25,7 @@ class IntegrationLocalDatasourceImpl implements IntegrationLocalDatasource {
     List<IsarIntegrationRegistry> integration,
   ) async {
     await _isar.writeTxn(() async {
-      await _isar.isarIntegrationRegistrys.putAll(integration);
+      await _isar.isarIntegrationRegistrys.putAllById(integration);
     });
   }
 
