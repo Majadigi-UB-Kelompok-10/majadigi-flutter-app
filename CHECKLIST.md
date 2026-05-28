@@ -18,10 +18,10 @@
 - [X] RSSA
 - [X] Siskaperbapo
 - [X] Nomor Darurat
+- [X] Bapenda
 - [ ] Transjatim
   - Require Map with Routing Engine to render road
 - [ ] Sidita
   - Require Multi-Marker Map, No road needed
-- [ ] Jdih
-- [X] Bapenda
+- [X] Jdih
 - [ ] Sinaker

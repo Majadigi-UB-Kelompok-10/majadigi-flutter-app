@@ -22,7 +22,22 @@ Future<dynamic> cleanupData({
   // ...
 
   // If it's not compressed, convert data from Json
-  final jsonData = await Isolate.run(() => json.decode(response.data));
+  final rawData = response.data;
+
+  final jsonData = await Isolate.run(() {
+    if (rawData is List<int>) {
+      // Dio returned raw bytes (because of ResponseType.bytes)
+      // Decode bytes to UTF-8 String, then to JSON
+      return jsonDecode(utf8.decode(rawData));
+    } else if (rawData is String) {
+      // Dio returned a raw String
+      return jsonDecode(rawData);
+    } else {
+      // Dio already parsed it into a Map or List behind the scenes
+      return rawData;
+    }
+  });
+
   return jsonData;
 }
 

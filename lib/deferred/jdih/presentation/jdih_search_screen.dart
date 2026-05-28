@@ -1,117 +1,121 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../theme/app_theme.dart';
-import '../data/models/jdih_search_result_item.dart';
-import 'jdih_detail_screen.dart';
+import '../core/providers/jd_providers.dart';
 import 'widgets/jdih_card.dart';
 import 'widgets/jdih_header.dart';
 
-class JdihSearchScreen extends StatelessWidget {
-  const JdihSearchScreen({super.key});
+class JdihSearchScreen extends HookConsumerWidget {
+  final String? initialKeyword;
+  final String? initialNomor;
+  final String? initialTahun;
+  final String? initialJenis;
 
-  static const List<String> _yearFilters = ['Terbaru', 'Populer', 'Tahun 2025'];
-
-  static const List<JdihSearchResultItem> _results = [
-    JdihSearchResultItem(
-      category: 'PERDA',
-      nomor: '5',
-      tahun: '2023',
-      title: 'Peraturan daerah nomor 5 tahun 2023 tentang penyelenggaraan ketertiban umum dan ketentraman masyarakat',
-      status: 'Terbaru',
-      description:
-          'Peraturan Daerah tentang Pengelolaan Keuangan Daerah Provinsi Jawa Timur Tahun Anggaran 2023',
-      date: '15 Jan 2023',
-      views: '1.2k',
-      pdfSize: '1.2 MB',
-      tglPenetapan: '15 Jan 2023',
-    ),
-    JdihSearchResultItem(
-      category: 'PERDA',
-      nomor: '5',
-      tahun: '2023',
-      title: 'No. 5 Tahun 2023',
-      status: 'Terbaru',  
-      description:
-          'Penyelenggaraan Ketentraman, Ketertiban Umum, dan Perlindungan Masyarakat di Lingkungan Kabupaten/Kota',
-      date: '22 Mar 2023',
-      views: '856',
-      pdfSize: '980 KB',
-      tglPenetapan: '22 Mar 2023',
-    ),
-    JdihSearchResultItem(
-      category: 'PERDA',
-      nomor: '8',
-      tahun: '2023',
-      title: 'No. 8 Tahun 2023',
-      status: 'Terbaru',
-      description:
-          'Pajak Daerah dan Retribusi Daerah Sebagai Upaya Optimalisasi Pendapatan Asli Daerah',
-      date: '10 Jun 2023',
-      views: '432',
-      pdfSize: '764 KB',
-      tglPenetapan: '10 Jun 2023',
-    ),
-  ];
+  const JdihSearchScreen({
+    super.key,
+    this.initialKeyword,
+    this.initialNomor,
+    this.initialTahun,
+    this.initialJenis,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Submitted search params (triggers API call)
+    final keyword = useState<String?>(initialKeyword);
+    final nomor = useState<String?>(initialNomor);
+    final tahun = useState<String?>(initialTahun);
+    final jenis = useState<String?>(initialJenis);
+    final sort = useState<String?>(null);
+    final page = useState<int>(1);
+
+    // Text controller for the search bar
+    final searchCtrl = useTextEditingController(
+      text: initialKeyword ?? '',
+    );
+
+    // Watch search results
+    final searchAsync = ref.watch(jdSearchDokumenProvider(
+      keyword: keyword.value,
+      nomor: nomor.value,
+      tahun: tahun.value,
+      jenis: jenis.value,
+      sort: sort.value,
+      page: page.value,
+      limit: 10,
+    ));
+
+    // Build the display title
+    final searchTitle = keyword.value != null && keyword.value!.isNotEmpty
+        ? 'Hasil Pencarian: ${keyword.value}'
+        : 'Hasil Pencarian';
+
+    // Sort filter options
+    final sortFilters = [
+      ('Terbaru', null),
+      ('Populer', 'populer'),
+    ];
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F3F6),
       body: Column(
         children: [
           JdihHeader(
-  height: 220, // Sesuaikan tinggi agar tidak terlalu kosong
-  child: Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const SizedBox(height: 10),
-      // BARIS ICON BACK DAN JUDUL HASIL PENCARIAN
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Container(
-              width: 44, // Sesuaikan ukuran lingkaran agar pas
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.18),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 18,
-              ),
+            height: 220,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => context.pop(),
+                      child: Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_back_ios_new,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        searchTitle,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w700,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                _SearchBar(
+                  controller: searchCtrl,
+                  onSubmitted: (value) {
+                    keyword.value = value.isNotEmpty ? value : null;
+                    page.value = 1;
+                  },
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 16),
-          // JUDUL HASIL PENCARIAN (Sejajar lurus dengan icon)
-          const Expanded(
-            child: Text(
-              'Hasil Pencarian: Ketertiban Umum',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20, // Ukuran font diturunkan agar proporsional
-                fontWeight: FontWeight.w700,
-                height: 1.2,
-              ),
-            ),
-          ),
-        ],
-      ),
-      
-      const SizedBox(height: 24),
-      
-      // SEARCH BAR PUTIH (Sesuai Gambar)
-      _HeaderField(
-        hintText: 'Cari nomor atau judul Perda...',
-        prefixIcon: Icons.search,
-      ),
-    ],
-  ),
-),
           const SizedBox(height: 12),
+
+          // Sort filter chips
           SizedBox(
             height: 36,
             child: ListView(
@@ -124,77 +128,144 @@ class JdihSearchScreen extends StatelessWidget {
                   icon: Icons.tune,
                 ),
                 const SizedBox(width: 10),
-                ..._yearFilters.map(
-                  (label) => Padding(
+                ...sortFilters.map((entry) {
+                  final isSelected = sort.value == entry.$2;
+                  return Padding(
                     padding: const EdgeInsets.only(right: 10),
-                    child: _FilterChipButton(label: label),
-                  ),
-                ),
+                    child: GestureDetector(
+                      onTap: () {
+                        sort.value = entry.$2;
+                        page.value = 1;
+                      },
+                      child: _FilterChipButton(
+                        label: entry.$1,
+                        selected: isSelected,
+                      ),
+                    ),
+                  );
+                }),
               ],
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+
+          // Pagination progress indicator
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: SizedBox(
-                width: 122,
-                child: LinearProgressIndicator(
-                  value: 1,
-                  minHeight: 6,
-                  backgroundColor: Color(0xFFC7CCD3),
-                  color: Color(0xFF8D939C),
-                  borderRadius: BorderRadius.all(Radius.circular(999)),
+              child: searchAsync.when(
+                data: (result) {
+                  final pagination = result.pagination;
+                  if (pagination?.total != null && pagination!.total! > 0) {
+                    final totalPages = (pagination.total! / (pagination.limit ?? 10)).ceil();
+                    final progress = page.value / totalPages;
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: 122,
+                          child: LinearProgressIndicator(
+                            value: progress.clamp(0.0, 1.0),
+                            minHeight: 6,
+                            backgroundColor: const Color(0xFFC7CCD3),
+                            color: const Color(0xFF8D939C),
+                            borderRadius: const BorderRadius.all(Radius.circular(999)),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${pagination.total} dokumen',
+                          style: const TextStyle(
+                            color: Color(0xFF8D939C),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                },
+                loading: () => const SizedBox(
+                  width: 122,
+                  child: LinearProgressIndicator(
+                    minHeight: 6,
+                    backgroundColor: Color(0xFFC7CCD3),
+                    borderRadius: BorderRadius.all(Radius.circular(999)),
+                  ),
                 ),
+                error: (_, __) => const SizedBox(),
               ),
             ),
           ),
+
+          // Results list
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 20),
-              itemCount: _results.length + 1,
-              itemBuilder: (context, index) {
-                if (index == _results.length) {
-                  return const Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: _SourceDataPanel(),
+            child: searchAsync.when(
+              data: (result) {
+                final items = result.results;
+                if (items.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'Tidak ada hasil ditemukan',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
                   );
                 }
-
-                final item = _results[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: JdihCard(
-                    layout: CardLayout.vertical,
-                    status: item.status,
-                    title: item.title,
-                    description: item.description,
-                    category: item.category,
-                    views: item.views,
-                    date: item.date,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => JdihDetailScreen(document: item.toDocument()),
-                        ),
+                return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 20),
+                  itemCount: items.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == items.length) {
+                      return const Padding(
+                        padding: EdgeInsets.only(top: 16),
+                        child: _SourceDataPanel(),
                       );
-                    },
-                  ),
+                    }
+
+                    final item = items[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: JdihCard(
+                        layout: CardLayout.vertical,
+                        status: item.status,
+                        title: item.judul ?? '',
+                        description: item.ringkasan,
+                        category: item.jenis?.toUpperCase(),
+                        views: item.jumlahView != null
+                            ? _formatViews(item.jumlahView!)
+                            : null,
+                        date: item.tanggal,
+                        onTap: () {
+                          context.push("/jdih/detail", extra: {
+                            "documentId": item.id
+                          });
+                        },
+                      ),
+                    );
+                  },
                 );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),
         ],
       ),
     );
   }
+
+  String _formatViews(int views) {
+    if (views >= 1000) {
+      return '${(views / 1000).toStringAsFixed(1)}k';
+    }
+    return views.toString();
+  }
 }
 
-class _HeaderField extends StatelessWidget {
-  final String hintText;
-  final IconData? prefixIcon;
+class _SearchBar extends StatelessWidget {
+  final TextEditingController controller;
+  final ValueChanged<String> onSubmitted;
 
-  const _HeaderField({required this.hintText, this.prefixIcon});
+  const _SearchBar({required this.controller, required this.onSubmitted});
 
   @override
   Widget build(BuildContext context) {
@@ -207,15 +278,15 @@ class _HeaderField extends StatelessWidget {
       ),
       child: Row(
         children: [
-          if (prefixIcon != null) ...[
-            Icon(prefixIcon, color: Colors.grey, size: 25),
-            const SizedBox(width: 6),
-          ],
+          const Icon(Icons.search, color: Colors.grey, size: 25),
+          const SizedBox(width: 6),
           Expanded(
             child: TextField(
-              decoration: InputDecoration(
-                hintText: hintText,
-                hintStyle: const TextStyle(fontSize: 16, color: Colors.grey),
+              controller: controller,
+              onSubmitted: onSubmitted,
+              decoration: const InputDecoration(
+                hintText: 'Cari dokumen...',
+                hintStyle: TextStyle(fontSize: 16, color: Colors.grey),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,

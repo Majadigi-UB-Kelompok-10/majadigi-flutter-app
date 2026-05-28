@@ -1,63 +1,43 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import '../../theme/app_theme.dart';
-import '../data/jdih_document.dart';
-import '../data/models/jdih_quick_access_item.dart';
-import 'jdih_detail_screen.dart';
-import 'jdih_search_screen.dart';
-import 'jdih_category_screen.dart';
+import '../core/providers/jd_providers.dart';
 import 'widgets/jdih_card.dart';
 import 'widgets/jdih_header.dart';
 import 'widgets/jdih_menu_item.dart';
 
-class JdihScreen extends StatelessWidget {
+class JdihScreen extends HookConsumerWidget {
   const JdihScreen({super.key});
 
-  static const List<JdihDocument> _newsItems = [
-    JdihDocument(
-      category: 'Surat Edaran',
-      title: 'Layanan Digital Baru Kini Tersedia Untuk Publik',
-      nomor: '800/76/200.1.1/2026',
-      tahun: '2026',
-      tglPenetapan: '24 Okt 2026',
-      status: 'Berlaku',
-      pdfUrl: 'https://jdih.jatimprov.go.id/dokumen-1.pdf',
-      pdfSize: '1.2 MB',
-    ),
-    JdihDocument(
-      category: 'Surat Edaran',
-      title: 'Sosialisasi Perda Dilaksanakan Serentak di Seluruh Kecamatan',
-      nomor: '188/12/013/2026',
-      tahun: '2026',
-      tglPenetapan: '22 Okt 2026',
-      status: 'Berlaku',
-      pdfUrl: 'https://jdih.jatimprov.go.id/dokumen-2.pdf',
-      pdfSize: '980 KB',
-    ),
-    JdihDocument(
-      category: 'Surat Edaran',
-      title: 'Pembaruan Data Produk Hukum Daerah Kini Lebih Cepat',
-      nomor: '100.3.2/54/2026',
-      tahun: '2026',
-      tglPenetapan: '20 Okt 2026',
-      status: 'Berlaku',
-      pdfUrl: 'https://jdih.jatimprov.go.id/dokumen-3.pdf',
-      pdfSize: '1.1 MB',
-    ),
-  ];
-
-  static const List<JdihQuickAccessItem> _quickAccessItems = [
-    JdihQuickAccessItem(label: 'Perda', icon: Icons.grid_view_rounded),
-    JdihQuickAccessItem(label: 'Pergub', icon: Icons.book),
-    JdihQuickAccessItem(label: 'Peraturan', icon: Icons.menu_book),
-    JdihQuickAccessItem(label: 'Perdes', icon: Icons.inventory_2),
-    JdihQuickAccessItem(label: 'SK Gub', icon: Icons.balance),
-    JdihQuickAccessItem(label: 'Interuksi', icon: Icons.back_hand),
-    JdihQuickAccessItem(label: 'SE', icon: Icons.lightbulb_outline),
-    JdihQuickAccessItem(label: 'Keputusan', icon: Icons.description),
-  ];
+  /// Maps jenis value to an icon for the quick access grid.
+  static const Map<String, IconData> _jenisIcons = {
+    'perda': Icons.grid_view_rounded,
+    'pergub': Icons.book,
+    'peraturan': Icons.menu_book,
+    'perdes': Icons.inventory_2,
+    'sk_gub': Icons.balance,
+    'instruksi': Icons.back_hand,
+    'se': Icons.lightbulb_outline,
+    'keputusan': Icons.description,
+  };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Form state for the search header
+    final keywordCtrl = useTextEditingController();
+    final nomorCtrl = useTextEditingController();
+    final selectedTahun = useState<String?>(null);
+    final selectedJenis = useState<String?>(null);
+
+    // Data providers
+    final pengumumanAsync = ref.watch(jdPengumumanProvider);
+    final jenisAsync = ref.watch(jdJenisFiltersProvider);
+    final tahunAsync = ref.watch(jdTahunFiltersProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -68,12 +48,15 @@ class JdihScreen extends StatelessWidget {
                 child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 6),
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.white,
-                      size: 20,
+                  GestureDetector(
+                    onTap: () => Navigator.of(context).pop(),
+                    child: const Padding(
+                      padding: EdgeInsets.only(top: 6),
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -87,9 +70,10 @@ class JdihScreen extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Image.network(
-                              'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_East_Java.svg/960px-Coat_of_arms_of_East_Java.svg.png',
+                            CachedNetworkImage(
+                              imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Coat_of_arms_of_East_Java.svg/960px-Coat_of_arms_of_East_Java.svg.png',
                               height: 34,
+                              cacheManager: ref.watch(getCustomCacheManagerProvider),
                             ),
                             const SizedBox(width: 10),
                             const Text(
@@ -120,6 +104,7 @@ class JdihScreen extends StatelessWidget {
                         _HeaderField(
                           hintText: 'Keywords atau Nama Dokumen',
                           prefixIcon: Icons.search,
+                          controller: keywordCtrl,
                         ),
                         const SizedBox(height: 8),
                         Row(
@@ -128,18 +113,47 @@ class JdihScreen extends StatelessWidget {
                               child: _HeaderField(
                                 hintText: 'Nomor',
                                 prefixIcon: Icons.numbers,
+                                controller: nomorCtrl,
                               ),
                             ),
                             const SizedBox(width: 10),
                             Expanded(
-                              child: _HeaderDropdownField(
+                              child: _HeaderDropdownField<String>(
                                 hintText: 'Tahun Terbit',
+                                value: selectedTahun.value,
+                                items: tahunAsync.when(
+                                  data: (years) => years
+                                      .map((y) => DropdownMenuItem(
+                                            value: y.toString(),
+                                            child: Text(y.toString(),
+                                                style: const TextStyle(fontSize: 11)),
+                                          ))
+                                      .toList(),
+                                  loading: () => [],
+                                  error: (_, __) => [],
+                                ),
+                                onChanged: (v) => selectedTahun.value = v,
                               ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 8),
-                        _HeaderDropdownField(hintText: 'Jenis Produk Hukum'),
+                        _HeaderDropdownField<String>(
+                          hintText: 'Jenis Produk Hukum',
+                          value: selectedJenis.value,
+                          items: jenisAsync.when(
+                            data: (filters) => filters
+                                .map((f) => DropdownMenuItem(
+                                      value: f.value,
+                                      child: Text(f.label ?? f.value,
+                                          style: const TextStyle(fontSize: 11)),
+                                    ))
+                                .toList(),
+                            loading: () => [],
+                            error: (_, __) => [],
+                          ),
+                          onChanged: (v) => selectedJenis.value = v,
+                        ),
                         const SizedBox(height: 12),
                         SizedBox(
                           width: double.infinity,
@@ -153,12 +167,16 @@ class JdihScreen extends StatelessWidget {
                               elevation: 0,
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const JdihSearchScreen(),
-                                ),
-                              );
+                              context.push("/jdih/search", extra: {
+                                "initialKeyword": keywordCtrl.text.isNotEmpty
+                                    ? keywordCtrl.text
+                                    : null,
+                                "initialNomor": nomorCtrl.text.isNotEmpty
+                                    ? nomorCtrl.text
+                                    : null,
+                                "initialTahun": selectedTahun.value,
+                                "initialJenis": selectedJenis.value
+                              });
                             },
                             child: const Text(
                               'Cari Sekarang',
@@ -182,39 +200,57 @@ class JdihScreen extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Perda Terbaru',
+                  'Pengumuman Terbaru',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.w700),
                 ),
               ),
             ),
             const SizedBox(height: 8),
+
+            // Pengumuman list from API
             SizedBox(
               height: 180,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: _newsItems.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 14),
-                itemBuilder: (context, index) {
-                  final item = _newsItems[index];
-                  return JdihCard(
-                    layout: CardLayout.horizontal,
-                    category: item.category,
-                    status: item.status,
-                    title: item.title,
-                    date: item.tglPenetapan,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => JdihDetailScreen(document: item),
-                        ),
+              child: pengumumanAsync.when(
+                data: (items) {
+                  if (items.isEmpty) {
+                    return const Center(
+                      child: Text('Belum ada pengumuman',
+                          style: TextStyle(color: Colors.grey)),
+                    );
+                  }
+                  return ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: items.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 14),
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return JdihCard(
+                        layout: CardLayout.horizontal,
+                        category: 'Pengumuman',
+                        title: item.judul ?? '',
+                        date: item.tanggal,
+                        onTap: () {
+                          // Welp there is no detail page for pengumuman in figma so..
+                          // Navigate to detail with the pengumuman ID
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (_) =>
+                          //         JdihDetailScreen(documentId: item.id),
+                          //   ),
+                          // );
+                        },
                       );
                     },
                   );
                 },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Error: $e')),
               ),
             ),
+
+            // Quick access grid from API jenis filters
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 8, 20, 15),
               child: Container(
@@ -224,64 +260,94 @@ class JdihScreen extends StatelessWidget {
                   border: Border.all(color: Colors.grey, width: 0.5),
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.shadowGray.withOpacity(0.5),
+                      color: AppTheme.shadowGray.withValues(alpha: 0.5),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.fromLTRB(10, 18, 10, 16),
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 16),
                 child: Column(
+                  spacing: 12.0,
                   children: [
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Akses Cepat',
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Text(
-                            'Lihat Semua',
-                            style: TextStyle(
-                              color: AppTheme.jdihBlue,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
-                    GridView.builder(
-                      itemCount: _quickAccessItems.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 10,
-                            childAspectRatio: 0.89,
-                          ),
-                      itemBuilder: (context, index) {
-                        final item = _quickAccessItems[index];
-                        return JdihMenuItem(
-                          label: item.label,
-                          ikon: item.icon,
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => JdihCategoryScreen(categoryName: item.label),
-                              ),
-                            );
-                          },
-                        );
-                      },
+                    jenisAsync.when(
+                      data: (filters) => LayoutBuilder(
+                        builder: (context, constraints) {
+                          // 1. Calculate the width of each item.
+                          // 4 columns means there are 3 gaps between items.
+                          // Gap size is 5 pixels, so total gap width is 15.
+                          final itemWidth = (constraints.maxWidth - 15) / 4;
+
+                          return Wrap(
+                            spacing: 5, // Equivalent to crossAxisSpacing
+                            runSpacing: 10, // Equivalent to mainAxisSpacing
+                            alignment: WrapAlignment.start,
+
+                            // 2. Map your filters list into the Wrap children
+                            children: filters.map((item) {
+                              return SizedBox(
+                                width: itemWidth, // Lock the width to force 4 columns
+                                // Leave height unconstrained so it naturally fits the content!
+                                child: JdihMenuItem(
+                                  label: item.label ?? item.value,
+                                  ikon: _jenisIcons[item.value] ?? Icons.description,
+                                  onTap: () {
+                                    context.push("/jdih/category", extra: {
+                                      "jenisValue": item.value,
+                                      "jenisLabel": item.label ?? item.value
+                                    });
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                      // GridView.builder(
+                      //   itemCount: filters.length,
+                      //   shrinkWrap: true,
+                      //   physics: const NeverScrollableScrollPhysics(),
+                      //   gridDelegate:
+                      //       const SliverGridDelegateWithFixedCrossAxisCount(
+                      //         crossAxisCount: 4,
+                      //         crossAxisSpacing: 5,
+                      //         mainAxisSpacing: 10,
+                      //         childAspectRatio: 0.89,
+                      //       ),
+                      //   itemBuilder: (context, index) {
+                      //     final item = filters[index];
+                      //     return JdihMenuItem(
+                      //       label: item.label ?? item.value,
+                      //       ikon: _jenisIcons[item.value] ?? Icons.description,
+                      //       onTap: () {
+                      //         context.push("/jdih/category", extra: {
+                      //           "jenisValue": item.value,
+                      //           "jenisLabel": item.label ?? item.value
+                      //         });
+                      //       },
+                      //     );
+                      //   },
+                      // ),
+                      loading: () => const Padding(
+                        padding: EdgeInsets.all(24),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                      error: (e, _) => Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text('Error: $e'),
+                      ),
                     ),
                   ],
                 ),
@@ -351,8 +417,9 @@ class JdihScreen extends StatelessWidget {
 class _HeaderField extends StatelessWidget {
   final String hintText;
   final IconData? prefixIcon;
+  final TextEditingController? controller;
 
-  const _HeaderField({required this.hintText, this.prefixIcon});
+  const _HeaderField({required this.hintText, this.prefixIcon, this.controller});
 
   @override
   Widget build(BuildContext context) {
@@ -371,6 +438,7 @@ class _HeaderField extends StatelessWidget {
           ],
           Expanded(
             child: TextField(
+              controller: controller,
               decoration: InputDecoration(
                 hintText: hintText,
                 hintStyle: const TextStyle(fontSize: 11, color: Colors.grey),
@@ -387,10 +455,18 @@ class _HeaderField extends StatelessWidget {
   }
 }
 
-class _HeaderDropdownField extends StatelessWidget {
+class _HeaderDropdownField<T> extends StatelessWidget {
   final String hintText;
+  final T? value;
+  final List<DropdownMenuItem<T>> items;
+  final ValueChanged<T?>? onChanged;
 
-  const _HeaderDropdownField({required this.hintText});
+  const _HeaderDropdownField({
+    required this.hintText,
+    this.value,
+    this.items = const [],
+    this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -401,17 +477,20 @@ class _HeaderDropdownField extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(5),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              hintText,
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
-              overflow: TextOverflow.ellipsis,
-            ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<T>(
+          value: value,
+          hint: Text(
+            hintText,
+            style: const TextStyle(fontSize: 11, color: Colors.grey),
+            overflow: TextOverflow.ellipsis,
           ),
-          const Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 18),
-        ],
+          isExpanded: true,
+          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey, size: 18),
+          items: items,
+          onChanged: onChanged,
+          style: const TextStyle(fontSize: 11, color: Colors.black),
+        ),
       ),
     );
   }

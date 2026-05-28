@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/auth/auth_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/dto/profile/profile_dto.dart';
+import 'package:majadigi_mobile_rebuild/main/domain/entities/register/register_entity.dart';
 import 'package:zstandard/zstandard.dart';
 
 import '../../../core/storage.dart' show SecureStorageKeys;
@@ -16,6 +17,7 @@ abstract class AuthRemoteDatasource {
   Future<void> logout();
   Future<ProfileEntity?> getRemoteProfile();
   Future<void> updateRemoteProfile(ProfileEntity entity);
+  Future<(bool, String)> register(RegisterEntity entity);
 }
 
 /// Represent the Auth Remote Datasource Implementation
@@ -130,5 +132,36 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
     if (response.statusCode != 200) {
       throw Exception("Failed to update profile");
     }
+  }
+
+  @override
+  Future<(bool, String)> register(RegisterEntity entity) async {
+    final response = await dio.put("/user/auth/register", data: {
+      "first_name": entity.firstName,
+      "last_name": entity.lastName,
+      "phone": entity.phone,
+      "nik": entity.nik,
+      "email": entity.email,
+      "address": entity.address,
+      "birth_date": entity.birthDate,
+      "gender": entity.gender,
+      "password": entity.password,
+      "confirm_password": entity.confirmPassword
+    });
+
+    final processedData = await cleanupData(response: response, zstandard: zstandard);
+
+    if (processedData == null) {
+      return (false, "No Response From Backend");
+    }
+
+    if (response.statusCode != 201) {
+      final statusCode = response.statusCode.toString();
+      final message = processedData["message"];
+
+      return (false, "Failed to register [$statusCode]: $message");
+    }
+
+    return (true, "${entity.email} is Successfully registered");
   }
 }

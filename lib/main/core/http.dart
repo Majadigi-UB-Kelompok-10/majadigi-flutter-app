@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart' show debugPrint;
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:isar_community/isar.dart';
@@ -12,8 +11,19 @@ import 'package:zstandard/zstandard.dart';
 part 'http.g.dart';
 
 /// WHITELISTED ROUTES
+/// All deferred routes are whitelisted cause some use online only endpoint
+/// and i am too sick of whitelisting specifics so no ETAGS
 final _whitelist = <String>[
   '/user/auth/favorites',
+  '/jdih',
+  '/siskaperbapo',
+  '/bansos',
+  '/transjatim',
+  '/rssa',
+  '/sinaker',
+  '/sidita',
+  '/klinik',
+  '/bapenda'
   // '/siskaperbapo/public/bahan-pokok', // Due to how searching use query parameter and without gets the same etag
 ];
 

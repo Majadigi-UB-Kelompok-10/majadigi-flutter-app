@@ -21,7 +21,7 @@ class JdihMenuItem extends StatelessWidget {
           },
           child: CircleAvatar(
             radius: 30,
-            backgroundColor: AppTheme.jdihBlue.withOpacity(0.1),
+            backgroundColor: AppTheme.jdihBlue.withValues(alpha: 0.1),
             child: Icon(ikon, color: AppTheme.jdihBlue, size: 24),
           ),
         ),

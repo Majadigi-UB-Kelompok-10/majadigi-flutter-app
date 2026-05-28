@@ -2,6 +2,7 @@ import 'package:majadigi_mobile_rebuild/main/data/datasources/auth/auth_local_da
 import 'package:majadigi_mobile_rebuild/main/data/datasources/auth/auth_remote_datasource.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/auth/auth_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
+import 'package:majadigi_mobile_rebuild/main/domain/entities/register/register_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -97,5 +98,10 @@ class AuthRepositoryImpl implements AuthRepository {
       // If token refresh failed or unable to reach network
       return false;
     }
+  }
+
+  @override
+  Future<(bool, String)> register(RegisterEntity entity) async {
+    return await remoteDatasource.register(entity);
   }
 }

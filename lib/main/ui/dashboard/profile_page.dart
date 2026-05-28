@@ -222,7 +222,7 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Divider(color: Colors.grey.withOpacity(0.1), height: 1),
+      child: Divider(color: Colors.grey.withValues(alpha: 0.1), height: 1),
     );
   }
 }
@@ -238,12 +238,15 @@ class _LogoutButton extends ConsumerWidget {
         onPressed: () async {
           await ref.read(authProvider.notifier).logout();
 
+          // Disable Guest Mode
+          ref.read(guestStatusProvider.notifier).disableGuest();
+
           // Ensure Auth Middleware is on and toggled
           ref.read(addAuthMiddlewareProvider);
           ref.read(authFeatureToggleProvider.notifier).enableAuth();
 
-          // Disable Guest Mode
-          ref.read(guestStatusProvider.notifier).disableGuest();
+          // At this point, the router would've intercept and redirect user to onboarding
+          // but if fail, below will force redirect anyway
 
           if (context.mounted) {
             context.go("/onboarding");

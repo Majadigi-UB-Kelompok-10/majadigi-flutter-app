@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' show SizedBox;
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/login/login_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_screen.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_verification_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/example/example.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/onboarding/onboarding_screen.dart';
@@ -32,6 +33,12 @@ final List<RouteBase> goRoutes = <RouteBase>[
   GoRoute(
     path: '/register',
     builder: (context, state) => const RegisterScreen(),
+  ),
+
+  // Register Verify
+  GoRoute(
+    path: '/verify-email',
+    builder: (context, state) => const RegisterVerificationScreen(),
   ),
 
   // Onboarding

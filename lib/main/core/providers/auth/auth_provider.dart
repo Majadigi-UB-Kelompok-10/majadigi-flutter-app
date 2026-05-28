@@ -125,15 +125,15 @@ class RouterNotifier extends ChangeNotifier {
 
     // Safely unwrap the boolean. Defaults to false (logged out) if something goes wrong.
     final isLoggedIn = authState.value ?? false;
-    final isLoggingIn = state.matchedLocation == '/login';
+    final isLoggingIn = state.matchedLocation == '/onboarding';
 
     // Page Exclusion from redirect to Login Page
-    final List<String> excludedPage = ['/', '/example'];
+    final List<String> excludedPage = ['/', '/onboarding', '/login', '/register', '/example'];
     final isExcluded = excludedPage.contains(state.matchedLocation);
 
     if (!isLoggedIn && !isExcluded) {
-      // If the user isn't logged in, redirect to login unless they are already there
-      return isLoggingIn ? null : '/login';
+      // If the user isn't logged in, redirect to onboarding unless they are already there
+      return isLoggingIn ? null : '/onboarding';
     }
 
     if (isLoggedIn && isLoggingIn) {

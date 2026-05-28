@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/register/provider/register_nav_index_provider.dart';
 
-class RegisterProgress extends StatelessWidget {
-  const RegisterProgress({super.key, this.step = 1, this.total = 2});
-
-  final int step;
+class RegisterProgress extends ConsumerWidget {
   final int total;
+  const RegisterProgress({super.key, this.total = 2});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final index = ref.watch(registerNavIndexProvider);
+    final step = index + 1;
+    
     final double fraction = (step / total).clamp(0.0, 1.0);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

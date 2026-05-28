@@ -142,3 +142,68 @@ Response for "/jdih/public/dokumen/detail/1":
   }
 }
 ```
+
+### [GET] Tahun Filters (for Dropdown)
+
+Endpoint: /jdih/public/tahun
+
+Response:
+```json
+{
+  "pesan": "Filter Tahun",
+  "data": [
+    2026,
+    2025,
+    2024,
+    2023,
+    2022,
+    2021,
+    2020
+  ]
+}
+```
+
+### [GET] Jenis Filters (for Dropdown)
+
+Endpoint: /jdih/public/jenis
+
+Response:
+```json
+{
+  "pesan": "Daftar Jenis Dokumen",
+  "data": [
+    {
+      "value": "perda",
+      "label": "Peraturan Daerah"
+    },
+    {
+      "value": "pergub",
+      "label": "Peraturan Gubernur"
+    },
+    {
+      "value": "peraturan",
+      "label": "Peraturan"
+    },
+    {
+      "value": "perdes",
+      "label": "Peraturan Desa"
+    },
+    {
+      "value": "sk_gub",
+      "label": "Surat Keputusan Gubernur"
+    },
+    {
+      "value": "instruksi",
+      "label": "Instruksi"
+    },
+    {
+      "value": "se",
+      "label": "Surat Edaran"
+    },
+    {
+      "value": "keputusan",
+      "label": "Keputusan"
+    }
+  ]
+}
+```

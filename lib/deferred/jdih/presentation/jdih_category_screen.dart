@@ -1,45 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import '../../theme/app_theme.dart';
-import '../data/models/jdih_category_item.dart';
-import 'jdih_detail_screen.dart';
+import '../core/providers/jd_providers.dart';
 import 'widgets/jdih_card.dart';
 import 'widgets/jdih_header.dart';
 
-class JdihCategoryScreen extends StatelessWidget {
-  final String categoryName;
+class JdihCategoryScreen extends HookConsumerWidget {
+  final String jenisValue;
+  final String jenisLabel;
 
-  const JdihCategoryScreen({super.key, required this.categoryName});
-
-  static const List<JdihCategoryItem> _items = [
-    JdihCategoryItem(
-      category: 'PERDA',
-      status: 'Berlaku',
-      nomor: '5',
-      tahun: '2023',
-      title: 'Peraturan Daerah Nomor 5 Tahun 2023 tentang Penyelenggaraan Ketertiban Umum dan Ketentraman Masyarakat.',
-      date: '12 Nov 2023',
-      views: '1.2k',
-      description: 'Ringkasan singkat tentang isi Perda nomor 5 tahun 2023...',
-      pdfSize: '1.2 MB',
-      tglPenetapan: '12 Nov 2023',
-    ),
-    JdihCategoryItem(
-      category: 'PERDA',
-      status: 'Berlaku',
-      nomor: '2',
-      tahun: '2022',
-      title: 'Peraturan Daerah Nomor 2 Tahun 2022 tentang Pengelolaan Sampah',
-      date: '05 Mei 2022',
-      views: '856',
-      description: 'Ringkasan singkat tentang pengelolaan sampah...',
-      pdfSize: '980 KB',
-      tglPenetapan: '05 Mei 2022',
-    ),
-  ];
+  const JdihCategoryScreen({
+    super.key,
+    required this.jenisValue,
+    required this.jenisLabel,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final selectedTahun = useState<String?>(null);
+    final searchKeyword = useState<String?>(null);
+    final searchCtrl = useTextEditingController();
+    final currentPage = useState<int>(1);
+
+    // Fetch available years for this jenis
+    final tahunAsync = ref.watch(jdTahunByJenisProvider(jenisValue));
+
+    // Fetch documents for this jenis with filters
+    final dokumenAsync = ref.watch(jdDokumenByJenisProvider(
+      jenis: jenisValue,
+      keyword: searchKeyword.value,
+      tahun: selectedTahun.value,
+      page: currentPage.value,
+      limit: 10,
+    ));
+
     return Scaffold(
       backgroundColor: const Color(0xFFF1F3F6),
       body: Column(
@@ -53,12 +50,12 @@ class JdihCategoryScreen extends StatelessWidget {
                 Row(
                   children: [
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => context.pop(),
                       child: Container(
                         width: 34,
                         height: 34,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.18),
+                          color: Colors.white.withValues(alpha: 0.18),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -74,7 +71,7 @@ class JdihCategoryScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Produk Hukum: ${categoryName}',
+                            'Produk Hukum: $jenisLabel',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -82,9 +79,9 @@ class JdihCategoryScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
-                            'PERATURAN DAERAH PROVINSI',
-                            style: TextStyle(
+                          Text(
+                            jenisLabel.toUpperCase(),
+                            style: const TextStyle(
                               color: Color(0xFFB9D1EE),
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -105,13 +102,27 @@ class JdihCategoryScreen extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Row(
-                    children: const [
-                      Icon(Icons.search, color: Color(0xFF9AA5B4)),
-                      SizedBox(width: 8),
+                    children: [
+                      const Icon(Icons.search, color: Color(0xFF9AA5B4)),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
-                          'Cari nomor atau judul Perda...',
-                          style: TextStyle(color: Color(0xFF9AA5B4), fontSize: 14),
+                        child: TextField(
+                          controller: searchCtrl,
+                          onSubmitted: (value) {
+                            searchKeyword.value =
+                                value.isNotEmpty ? value : null;
+                            currentPage.value = 1;
+                          },
+                          decoration: InputDecoration(
+                            hintText:
+                                'Cari nomor atau judul $jenisLabel...',
+                            hintStyle: const TextStyle(
+                                color: Color(0xFF9AA5B4), fontSize: 14),
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: const TextStyle(fontSize: 14),
                         ),
                       ),
                     ],
@@ -122,66 +133,139 @@ class JdihCategoryScreen extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
-          // chips
+
+          // Year filter chips from API
           SizedBox(
             height: 46,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: const [
-                _SmallChip(label: 'Semua Tahun', selected: true),
-                SizedBox(width: 10),
-                _SmallChip(label: '2024'),
-                SizedBox(width: 10),
-                _SmallChip(label: '2023'),
-                SizedBox(width: 10),
-                _SmallChip(label: '2022'),
-              ],
+            child: tahunAsync.when(
+              data: (years) {
+                return ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        selectedTahun.value = null;
+                        currentPage.value = 1;
+                      },
+                      child: _SmallChip(
+                        label: 'Semua Tahun',
+                        selected: selectedTahun.value == null,
+                      ),
+                    ),
+                    ...years.map((year) {
+                      final yearStr = year.toString();
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: GestureDetector(
+                          onTap: () {
+                            selectedTahun.value = yearStr;
+                            currentPage.value = 1;
+                          },
+                          child: _SmallChip(
+                            label: yearStr,
+                            selected: selectedTahun.value == yearStr,
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (_, __) => const SizedBox(),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
+
+          // Progress indicator
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: SizedBox(
-                width: 122,
-                child: LinearProgressIndicator(
-                  value: 1,
-                  minHeight: 6,
-                  backgroundColor: Color(0xFFC7CCD3),
-                  color: Color(0xFF8D939C),
-                  borderRadius: BorderRadius.all(Radius.circular(999)),
+              child: dokumenAsync.when(
+                data: (result) {
+                  final pagination = result.pagination;
+                  if (pagination?.total != null && pagination!.total! > 0) {
+                    final totalPages =
+                        (pagination.total! / (pagination.limit ?? 10)).ceil();
+                    final progress = currentPage.value / totalPages;
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: 122,
+                          child: LinearProgressIndicator(
+                            value: progress.clamp(0.0, 1.0),
+                            minHeight: 6,
+                            backgroundColor: const Color(0xFFC7CCD3),
+                            color: const Color(0xFF8D939C),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(999)),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          '${pagination.total} dokumen',
+                          style: const TextStyle(
+                            color: Color(0xFF8D939C),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return const SizedBox();
+                },
+                loading: () => const SizedBox(
+                  width: 122,
+                  child: LinearProgressIndicator(
+                    minHeight: 6,
+                    backgroundColor: Color(0xFFC7CCD3),
+                    borderRadius: BorderRadius.all(Radius.circular(999)),
+                  ),
                 ),
+                error: (_, __) => const SizedBox(),
               ),
             ),
           ),
 
+          // Document list
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 20),
-              itemCount: _items.length,
-              itemBuilder: (context, index) {
-                final it = _items[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: JdihCard(
-                    layout: CardLayout.vertical,
-                    status: it.status,
-                    category: it.category,
-                    title: it.title,
-                    description: it.description,
-                    views: it.views,
-                    date: it.date,
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => JdihDetailScreen(document: it.toDocument()),
-                        ),
-                      );
-                    },
-                  ),
+            child: dokumenAsync.when(
+              data: (result) {
+                final items = result.results;
+                if (items.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'Tidak ada dokumen ditemukan',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
+                  );
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 20),
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    final it = items[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: JdihCard(
+                        layout: CardLayout.vertical,
+                        status: it.status,
+                        category: it.jenis?.toUpperCase(),
+                        title: it.judul ?? '',
+                        date: it.tanggal,
+                        onTap: () {
+                          context.push("/jdih/detail", extra: {
+                            "documentId": it.id
+                          });
+                        },
+                      ),
+                    );
+                  },
                 );
               },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (e, _) => Center(child: Text('Error: $e')),
             ),
           ),
         ],

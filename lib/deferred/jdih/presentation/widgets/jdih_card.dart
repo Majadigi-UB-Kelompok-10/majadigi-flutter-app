@@ -84,7 +84,7 @@ class JdihCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: badgeColor ?? AppTheme.accentGreen.withOpacity(0.18),
+                    color: badgeColor ?? AppTheme.accentGreen.withValues(alpha: 0.18),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -122,13 +122,13 @@ class JdihCard extends StatelessWidget {
                 Icon(
                   Icons.calendar_today_outlined,
                   size: 16,
-                  color: Colors.black.withOpacity(0.25),
+                  color: Colors.black.withValues(alpha: 0.25),
                 ),
                 const SizedBox(width: 10),
                 Text(
                   date!,
                   style: TextStyle(
-                    color: Colors.black.withOpacity(0.23),
+                    color: Colors.black.withValues(alpha: 0.23),
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),

@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:majadigi_mobile_rebuild/deferred/bapenda/bapenda_routes.dart';
+import 'package:majadigi_mobile_rebuild/deferred/jdih/jdih_routes.dart';
 import 'package:majadigi_mobile_rebuild/deferred/nomor_darurat/nomor_darurat_routes.dart';
 import 'package:majadigi_mobile_rebuild/deferred/siskaperbapo/siskaperbapo_routes.dart';
 import 'package:majadigi_mobile_rebuild/deferred/transjatim/transjatim_routes.dart';
@@ -15,5 +16,6 @@ List<RouteBase> deferredRoutes = [
   ...rssaRoutes,
   ...klinikHoaksRoutes,
   ...nomorDaruratRoutes,
-  ...bapendaRoutes
+  ...bapendaRoutes,
+  ...jdihRoutes
 ];

@@ -1,13 +1,182 @@
+import 'package:expandable_page_view/expandable_page_view.dart';
 import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart' hide routerProvider;
 import 'package:majadigi_mobile_rebuild/main/core/router.dart';
-import 'register_input_field.dart';
+import 'package:majadigi_mobile_rebuild/main/domain/entities/register/register_entity.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/register/provider/register_nav_index_provider.dart';
+
+import 'form_widget/register_first_form.dart';
+import 'form_widget/register_second_form.dart';
 
 class RegisterForm extends HookConsumerWidget {
   const RegisterForm({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Form Controller
+    final firstNameController = useTextEditingController();
+    final lastNameController = useTextEditingController();
+    final phoneController = useTextEditingController();
+    final emailController = useTextEditingController();
+    final nikController = useTextEditingController();
+    final addressController = useTextEditingController();
+    final birthController = useTextEditingController();
+    final genderController = useTextEditingController();
+    final passwordController = useTextEditingController();
+    final confirmPasswordController = useTextEditingController();
+
+    // Page Controller
+    final pageController = usePageController();
+
+    (bool, String?) validateForm() {
+      final fields = {
+        'Nama Depan': firstNameController,
+        'Nama Belakang': lastNameController,
+        'Nomor HP': phoneController,
+        'Email': emailController,
+        'NIK': nikController,
+        'Alamat': addressController,
+        'Tanggal Lahir': birthController,
+        'Jenis Kelamin': genderController,
+        'Kata Sandi': passwordController,
+        'Konfirmasi Kata Sandi': confirmPasswordController
+      };
+
+      // Check for empty fields
+      for (final entry in fields.entries) {
+        if (entry.value.text.trim().isEmpty) {
+          return (false, '${entry.key} tidak boleh kosong');
+        }
+      }
+
+      // Email Check
+      final emailRegExp = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+      if (!emailRegExp.hasMatch(emailController.text)) {
+        return (false, 'Email invalid!');
+      }
+
+      // NIK Check
+      if (nikController.text.trim().length != 16) {
+        return (false, 'NIK harus 16 digit!');
+      }
+
+      // Password Minimum Digit Check
+      if (passwordController.text.length < 8) {
+        return (false, 'Kata Sandi harus minimal 8 karakter!');
+      }
+
+      // Password Confirm = Password
+      if (passwordController.text != confirmPasswordController.text) {
+        return (false, 'Kata Sandi tidak sesuai dengan ulangi kata sandi!');
+      }
+
+      return (true, null);
+    }
+
+    void sendRegistration() async {
+      // Package it into an entity since it's a pain to send the whole thing
+      final RegisterEntity entity = RegisterEntity(
+        firstName: firstNameController.text,
+        lastName: lastNameController.text,
+        address: addressController.text,
+        nik: nikController.text,
+        email: emailController.text,
+        phone: phoneController.text,
+        birthDate: birthController.text,
+        gender: genderController.text,
+        password: passwordController.text,
+        confirmPassword: confirmPasswordController.text
+      );
+
+      final (isSuccess, message) = await ref.read(authRepositoryProvider).register(entity);
+
+      // If registration fail
+      if (!isSuccess && context.mounted) {
+        ScaffoldMessenger.of(context).showMaterialBanner(
+          MaterialBanner(
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  final (isValid, errMessage) = validateForm();
+
+                  if (isValid && context.mounted) {
+                    sendRegistration();
+                  }
+
+                  if (!isValid && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(errMessage ?? "Something Went Wrong"))
+                    );
+                  }
+                },
+                child: const Text("Retry"),
+              ),
+              TextButton(
+                onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
+                child: const Text('Dismiss'),
+              ),
+            ],
+          )
+        );
+      }
+
+      // Only redirect if register is successful
+      if (isSuccess) {
+        context.pushReplacement('/verify-email', extra: {});
+      }
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // PageView of first and second form
+        ExpandablePageView(
+          controller: pageController,
+          onPageChanged: (newIndex) => ref.read(registerNavIndexProvider.notifier).setIndex(newIndex),
+          children: [
+            RegisterFirstForm(
+              firstNameController: firstNameController,
+              lastNameController: lastNameController,
+              phoneController: phoneController,
+              emailController: emailController,
+            ),
+            RegisterSecondForm(
+              nikController: nikController,
+              addressController: addressController,
+              birthController: birthController,
+              genderController: genderController,
+              passwordController: passwordController,
+              confirmPasswordController: confirmPasswordController,
+            ),
+          ]
+        ),
+
+        const SizedBox(height: 24),
+
+        // Span button to redirect to login
+        _RedirectToLoginWidget(),
+
+        const SizedBox(height: 18),
+
+        // Button to continue in the registration progress
+        _ContinueButton(pageController: pageController, validateForm: validateForm, sendRegistration: sendRegistration),
+
+        const SizedBox(height: 10),
+
+        // Hidden Button only visible in index 2 to go back
+        _BackButton(pageController: pageController),
+      ],
+    );
+  }
+}
+
+class _RedirectToLoginWidget extends HookConsumerWidget {
+  const _RedirectToLoginWidget();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,79 +205,104 @@ class RegisterForm extends HookConsumerWidget {
       return loginRecognizer.dispose;
     }, [loginRecognizer]);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Row(
-          children: const [
-            Expanded(
-              child: RegisterInputField(hintText: 'Nama depan'),
-            ),
-            SizedBox(width: 12),
-            Expanded(
-              child: RegisterInputField(hintText: 'Nama belakang'),
+    return Center(
+      child: Text.rich(
+        TextSpan(
+          text: 'Sudah punya akun? ',
+          style: const TextStyle(color: Color(0xFF59697F)),
+          children: [
+            TextSpan(
+              recognizer: loginRecognizer,
+              text: 'Masuk',
+              style: const TextStyle(color: Color(0xFF0A63D2), fontWeight: FontWeight.w700),
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        const RegisterInputField(
-          hintText: 'No HP',
-          keyboardType: TextInputType.phone,
-          prefix: Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 6.0),
-            child: Icon(Icons.phone_android, color: Color(0xFF5E6B80)),
-          ),
-        ),
-        const SizedBox(height: 12),
-        const RegisterInputField(
-          hintText: 'Email',
-          keyboardType: TextInputType.emailAddress,
-          prefix: Padding(
-            padding: EdgeInsets.only(left: 8.0, right: 6.0),
-            child: Icon(Icons.email_outlined, color: Color(0xFF5E6B80)),
-          ),
-        ),
-        const SizedBox(height: 24),
-        Center(
-          child: Text.rich(
-            TextSpan(
-              text: 'Sudah punya akun? ',
-              style: const TextStyle(color: Color(0xFF59697F)),
-              children: [
-                TextSpan(
-                  recognizer: loginRecognizer,
-                  text: 'Masuk',
-                  style: const TextStyle(color: Color(0xFF0A63D2), fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 18),
-        SizedBox(
-          height: 52,
-          child: ElevatedButton(
-            onPressed: () {},
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2146E4),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    'Selanjutnya',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
-                  ),
-                ),
-                Icon(Icons.arrow_forward, size: 18),
-              ],
-            ),
-          ),
-        ),
-      ],
+      ),
     );
+  }
+}
+
+class _ContinueButton extends ConsumerWidget {
+  final PageController pageController;
+  final Function validateForm;
+  final VoidCallback sendRegistration;
+  const _ContinueButton({required this.pageController, required this.validateForm, required this.sendRegistration});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final index = ref.watch(registerNavIndexProvider);
+
+    return SizedBox(
+      height: 52,
+      child: ElevatedButton(
+        onPressed: () {
+          if (index == 0) {
+            pageController.nextPage(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut
+            );
+          }
+
+          if (index == 1) {
+            final (isValid, message) = validateForm();
+
+            if (isValid && context.mounted) {
+              sendRegistration();
+            }
+
+            if (!isValid && context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message ?? "Something Went Wrong"))
+              );
+            }
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF2146E4),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                ((index == 0) ? 'Selanjutnya' : "Daftar"),
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+              ),
+            ),
+            const Icon(Icons.arrow_forward, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BackButton extends ConsumerWidget {
+  final PageController pageController;
+  const _BackButton({required this.pageController});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final index = ref.watch(registerNavIndexProvider);
+
+    if (index == 1) {
+      return TextButton.icon(
+        onPressed: () => pageController.previousPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut
+        ),
+        icon: const Icon(Icons.arrow_back, size: 18),
+        label: const Text('Kembali'),
+        style: TextButton.styleFrom(
+          foregroundColor: const Color(0xFF2146E4),
+          textStyle: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+      );
+    }
+
+    return SizedBox.shrink();
   }
 }
