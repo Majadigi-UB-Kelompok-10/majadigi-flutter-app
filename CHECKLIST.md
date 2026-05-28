@@ -23,5 +23,5 @@
 - [ ] Sidita
   - Require Multi-Marker Map, No road needed
 - [ ] Jdih
-- [ ] Bapenda
+- [X] Bapenda
 - [ ] Sinaker
