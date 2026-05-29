@@ -19,9 +19,10 @@
 - [X] Siskaperbapo
 - [X] Nomor Darurat
 - [X] Bapenda
-- [ ] Transjatim
+- [1/2] Transjatim
   - Require Map with Routing Engine to render road
 - [ ] Sidita
   - Require Multi-Marker Map, No road needed
 - [X] Jdih
-- [ ] Sinaker
+- [1/2] Sinaker
+  - Require further fix awaiting endpoint

@@ -146,3 +146,19 @@ extension {Feature}DtoToIsar on {Feature}Dto {
 ```
 
 Isar Registry → Entity conversion is done via a `toEntity()` method **inside** the registry class.
+
+## Contextual Helper
+
+Deferred package most often taken from another developer's existing work and most of the time uses a mock data. If an endpoint exist, remove the old model and mock data and replace with actual endpoint.
+
+Cache whenever possible, especially if it is not something related to search or require query parameter or body in the endpoint. If it is however, you may choose to not cache.
+
+A great example would be an endpoint that provide dropdown list of data but does not require query parameter or body. You must always cache this. But an endpoint that provide dropdown based on an input may not be wise to be cached.
+
+## Rule Exemption
+
+If you are explicitly tasked to create DTO, which is forbidden in the rules above, you may ignore the rule above and create the DTO. The DTO must be efficient and if there is overlapping between endpoint, use base DTO as interface for extended DTO. A great example is in [bahan_pokok_dto.dart](../siskaperbapo/data/models/dto/bahan_pokok/bahan_pokok_dto.dart) where it utilized a base DTO to then be extended by another DTO to add additional field.
+
+## Isar Registry Rule
+
+If you have a field that is indexed to be unique and set to replace if conflicted, you must later use it inside datasource to upsert instead of put by using `db.collection.putBy{index_name}()` instead of standard put to ensure data is replaced if conflicted, not duplicated nor fail silently.
