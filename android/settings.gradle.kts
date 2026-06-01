@@ -24,4 +24,4 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
 }
 
-include(":app", ":transjatim_screen")
+include(":app", ":transjatim_module", ":siskaperbapo_module", ":sinaker_module", ":sidita_module", ":rssa_module", ":nomor_darurat_module", ":klinik_hoaks_module", ":jdih_module", ":bapenda_module", ":bansos_module")

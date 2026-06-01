@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <string name="transjatim_screenName">transjatim_screen</string>
+    <string name="transjatim_moduleName">transjatim_module</string>
+    <string name="siskaperbapo_moduleName">siskaperbapo_module</string>
+    <string name="sinaker_moduleName">sinaker_module</string>
+    <string name="sidita_moduleName">sidita_module</string>
+    <string name="rssa_moduleName">rssa_module</string>
+    <string name="nomor_darurat_moduleName">nomor_darurat_module</string>
+    <string name="klinik_hoaks_moduleName">klinik_hoaks_module</string>
+    <string name="jdih_moduleName">jdih_module</string>
+    <string name="bapenda_moduleName">bapenda_module</string>
+    <string name="bansos_moduleName">bansos_module</string>
 </resources>
-

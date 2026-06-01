@@ -98,9 +98,55 @@ flutter:
   #   - images/a_dot_ham.jpeg
 
   deferred-components:
-    - name: transjatim_screen
+    - name: transjatim_module
       libraries:
         - package:majadigi_mobile_rebuild/deferred/transjatim/presentation/screens/tj_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/transjatim/presentation/screens/tj_search_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/transjatim/presentation/screens/tj_detail_screen.dart
+    - name: siskaperbapo_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/siskaperbapo/presentation/screens/siskaperbapo_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/siskaperbapo/presentation/screens/siskaperbapo_detail_screen.dart
+    - name: sinaker_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/sinaker/presentation/screens/sinaker_main_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sinaker/presentation/screens/sinaker_register_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sinaker/presentation/screens/sinaker_status_screen.dart
+    - name: sidita_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_main_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_destination_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_destination_detail_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_hotel_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_hotel_detail_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_event_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/sidita/presentation/screens/sidita_event_detail_screen.dart
+    - name: rssa_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/rssa/presentation/screens/rssa_screen.dart
+    - name: nomor_darurat_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/nomor_darurat/presentations/screens/noda_screen.dart
+    - name: klinik_hoaks_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/klinik_hoaks/presentation/screens/klinik_hoaks_main_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/klinik_hoaks/presentation/screens/klinik_hoaks_detail_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/klinik_hoaks/presentation/screens/klinik_hoaks_report_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/klinik_hoaks/presentation/screens/klinik_hoaks_track_screen.dart
+    - name: jdih_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/jdih/presentation/jdih_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/jdih/presentation/jdih_search_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/jdih/presentation/jdih_detail_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/jdih/presentation/jdih_category_screen.dart
+    - name: bapenda_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/bapenda/presentation/screens/bapenda_screen.dart
+    - name: bansos_module
+      libraries:
+        - package:majadigi_mobile_rebuild/deferred/bansos/presentation/screens/bansos_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/bansos/presentation/screens/bansos_info_screen.dart
+        - package:majadigi_mobile_rebuild/deferred/bansos/presentation/screens/bansos_detail_screen.dart
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 

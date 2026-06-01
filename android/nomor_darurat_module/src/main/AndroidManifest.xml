@@ -3,7 +3,7 @@
 
     <dist:module
         dist:instant="false"
-        dist:title="@string/transjatim_screenName">
+        dist:title="@string/nomor_darurat_moduleName">
         <dist:delivery>
             <dist:on-demand />
         </dist:delivery>

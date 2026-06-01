@@ -16,8 +16,6 @@ class SearchPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final navigationIndex = ref.watch(navigationIndexProvider);
-
     useEffect(() {
       if (query != null && query!.isNotEmpty) {
         Future.microtask(() {
@@ -51,7 +49,7 @@ class SearchPage extends HookConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    "Hasil Pencarian \"$query\"",
+                    "Hasil Pencarian \"${ref.watch(searchQueryProvider)}\"",
                     textAlign: TextAlign.start,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,

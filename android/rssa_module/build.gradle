@@ -19,7 +19,7 @@ if (flutterVersionName == null) {
 apply plugin: "com.android.dynamic-feature"
 
 android {
-    namespace = "com.example.majadigi_mobile_rebuild.transjatim_screen"
+    namespace = "com.example.majadigi_mobile_rebuild.rssa_module"
     compileSdk = 36
 
     compileOptions {
