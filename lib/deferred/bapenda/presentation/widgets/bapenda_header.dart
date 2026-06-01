@@ -81,7 +81,7 @@ class _BapendaHeaderState extends State<BapendaHeader> {
             child: Text(
               title,
               style: TextStyle(
-                color: Colors.white.withOpacity(isActive ? 1.0 : 0.6),
+                color: Colors.white.withValues(alpha: isActive ? 1.0 : 0.6),
                 fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
               ),
             ),

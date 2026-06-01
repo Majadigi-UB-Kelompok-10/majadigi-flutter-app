@@ -3,11 +3,13 @@ import 'dart:async';
 
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import '../shared/auth_header.dart';
 
-// TODO: Pass actual data in router later
 class RegisterVerificationScreen extends HookWidget {
-  const RegisterVerificationScreen({super.key});
+  final String email;
+  const RegisterVerificationScreen({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +59,18 @@ class RegisterVerificationScreen extends HookWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             child: ConstrainedBox(
                               constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                              child: const Padding(
+                              child: Padding(
                                 padding: EdgeInsets.fromLTRB(16, 18, 16, 24),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
-                                    OnboardingHeader(showLanguageChip: false),
-                                    SizedBox(height: 64),
-                                    Center(
+                                    const OnboardingHeader(showLanguageChip: false),
+                                    const SizedBox(height: 64),
+                                    const Center(
                                       child: _EmailIconCircle(),
                                     ),
-                                    SizedBox(height: 28),
-                                    Text(
+                                    const SizedBox(height: 28),
+                                    const Text(
                                       'Verifikasi Terkirim!',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -78,8 +80,8 @@ class RegisterVerificationScreen extends HookWidget {
                                         color: Color(0xFF13253E),
                                       ),
                                     ),
-                                    SizedBox(height: 10),
-                                    Text(
+                                    const SizedBox(height: 10),
+                                    const Text(
                                       'Tautan verifikasi telah dikirim ke email\nAnda. Silakan periksa kotak masuk atau\nfolder spam.',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -89,13 +91,13 @@ class RegisterVerificationScreen extends HookWidget {
                                         color: Color(0xFF4A596D),
                                       ),
                                     ),
-                                    SizedBox(height: 54),
-                                    SizedBox(
+                                    const SizedBox(height: 54),
+                                    const SizedBox(
                                       height: 52,
                                       child: _GoToDashboardButton(),
                                     ),
-                                    SizedBox(height: 14),
-                                    Text(
+                                    const SizedBox(height: 14),
+                                    const Text(
                                       'Belum menerima Tautan?',
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
@@ -103,7 +105,7 @@ class RegisterVerificationScreen extends HookWidget {
                                         color: Color(0xFF5B6678),
                                       ),
                                     ),
-                                    _ResendLinkButton(),
+                                    _ResendLinkButton(email: email),
                                   ],
                                 ),
                               ),
@@ -201,17 +203,28 @@ class _GoToDashboardButton extends StatelessWidget {
   }
 }
 
-class _ResendLinkButton extends StatelessWidget {
-  const _ResendLinkButton();
+class _ResendLinkButton extends ConsumerWidget {
+  final String email;
+  const _ResendLinkButton({required this.email});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return TextButton(
-      onPressed: () {
-        // TODO: Add actual re-send
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Tautan verifikasi telah dikirim ulang.')),
-        );
+      onPressed: () async {
+        final success = await ref.read(authRepositoryProvider).resendEmailVerification(email);
+
+        if (context.mounted) {
+          if (success) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Tautan verifikasi telah dikirim ulang.')),
+            );
+            return;
+          }
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Tautan verifikasi gagal dikirim.')),
+          );
+        }
       },
       style: TextButton.styleFrom(
         foregroundColor: const Color(0xFF0A63D2),

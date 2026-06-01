@@ -29,6 +29,7 @@ abstract class SnkRemoteDatasource {
     required String provinsi,
     required String kabKota,
     required String kecamatan,
+    required String kelurahan,
     required String rt,
     required String rw,
     required String alamatLengkap,
@@ -37,6 +38,8 @@ abstract class SnkRemoteDatasource {
     required String pendidikanTerakhir,
     required String pendidikanSekarang,
     required bool penyandangDisabilitas,
+    required String asalSekolah,
+    required String jurusan,
     required File foto,
   });
   Future<List<StatusPendaftaranDto>?> cekStatus({
@@ -202,6 +205,7 @@ class SnkRemoteDatasourceImpl implements SnkRemoteDatasource {
     required String provinsi,
     required String kabKota,
     required String kecamatan,
+    required String kelurahan,
     required String rt,
     required String rw,
     required String alamatLengkap,
@@ -210,6 +214,8 @@ class SnkRemoteDatasourceImpl implements SnkRemoteDatasource {
     required String pendidikanTerakhir,
     required String pendidikanSekarang,
     required bool penyandangDisabilitas,
+    required String asalSekolah,
+    required String jurusan,
     required File foto,
   }) async {
     try {
@@ -229,6 +235,7 @@ class SnkRemoteDatasourceImpl implements SnkRemoteDatasource {
         'provinsi': provinsi,
         'kab_kota': kabKota,
         'kecamatan': kecamatan,
+        'kelurahan': kelurahan,
         'rt': rt,
         'rw': rw,
         'alamat_lengkap': alamatLengkap,
@@ -237,6 +244,8 @@ class SnkRemoteDatasourceImpl implements SnkRemoteDatasource {
         'pendidikan_terakhir': pendidikanTerakhir,
         'pendidikan_sekarang': pendidikanSekarang,
         'penyandang_disabilitas': penyandangDisabilitas,
+        'asal_sekolah': asalSekolah,
+        'jurusan': jurusan,
         'foto': await MultipartFile.fromFile(
           foto.path,
           filename: fileName,

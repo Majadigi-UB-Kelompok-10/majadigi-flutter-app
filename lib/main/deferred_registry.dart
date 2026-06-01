@@ -8,6 +8,7 @@ import 'package:majadigi_mobile_rebuild/deferred/transjatim/transjatim_routes.da
 import 'package:majadigi_mobile_rebuild/deferred/bansos/bansos_routes.dart';
 import 'package:majadigi_mobile_rebuild/deferred/rssa/rssa_routes.dart';
 import 'package:majadigi_mobile_rebuild/deferred/klinik_hoaks/klinik_hoaks_routes.dart';
+import 'package:majadigi_mobile_rebuild/deferred/sidita/sidita_routes.dart';
 
 /// List of Routes for Deferred Pages and Assets
 List<RouteBase> deferredRoutes = [
@@ -19,5 +20,6 @@ List<RouteBase> deferredRoutes = [
   ...nomorDaruratRoutes,
   ...bapendaRoutes,
   ...jdihRoutes,
-  ...sinakerRoutes
+  ...sinakerRoutes,
+  ...siditaRoutes,
 ];

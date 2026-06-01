@@ -192,7 +192,7 @@ class JdihSearchScreen extends HookConsumerWidget {
                     borderRadius: BorderRadius.all(Radius.circular(999)),
                   ),
                 ),
-                error: (_, __) => const SizedBox(),
+                error: (_, _) => const SizedBox(),
               ),
             ),
           ),

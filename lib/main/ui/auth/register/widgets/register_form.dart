@@ -127,7 +127,9 @@ class RegisterForm extends HookConsumerWidget {
 
       // Only redirect if register is successful
       if (isSuccess) {
-        context.pushReplacement('/verify-email', extra: {});
+        context.pushReplacement('/verify-email', extra: {
+          "email": emailController.text
+        });
       }
     }
 

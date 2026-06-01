@@ -104,4 +104,19 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<(bool, String)> register(RegisterEntity entity) async {
     return await remoteDatasource.register(entity);
   }
+
+  @override
+  Future<bool> resendEmailVerification(String email) async {
+    return await remoteDatasource.resendEmailVerification(email);
+  }
+
+  @override
+  Future<bool> resetPassword(String email) async {
+    return await remoteDatasource.resetPassword(email);
+  }
+
+  @override
+  Future<(bool, String)> setNewPassword(String token, String newPassword, String confirmNewPassword) async {
+    return await remoteDatasource.setNewPassword(token, newPassword, confirmNewPassword);
+  }
 }

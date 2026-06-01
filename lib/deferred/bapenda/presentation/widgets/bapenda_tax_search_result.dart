@@ -55,12 +55,12 @@ class BapendaTaxSearchResult extends StatelessWidget {
             color: Colors.white,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: Colors.blue.withOpacity(0.1),
+              color: Colors.blue.withValues(alpha: 0.1),
               width: 2,
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.03),
+                color: Colors.black.withValues(alpha: 0.03),
                 blurRadius: 20,
                 offset: const Offset(0, 15),
               ),
@@ -117,7 +117,7 @@ class BapendaTaxSearchResult extends StatelessWidget {
                   border: Border.all(color: const Color(0xFFE7E7E7)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
+                      color: Colors.black.withValues(alpha: 0.03),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),

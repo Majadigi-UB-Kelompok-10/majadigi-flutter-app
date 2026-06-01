@@ -24,5 +24,4 @@
 - [ ] Sidita
   - Require Multi-Marker Map, No road needed
 - [X] Jdih
-- [1/2] Sinaker
-  - Require further fix awaiting endpoint
+- [X] Sinaker

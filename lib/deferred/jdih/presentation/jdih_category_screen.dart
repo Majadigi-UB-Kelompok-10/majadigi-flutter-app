@@ -173,7 +173,7 @@ class JdihCategoryScreen extends HookConsumerWidget {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (_, __) => const SizedBox(),
+              error: (_, _) => const SizedBox(),
             ),
           ),
 
@@ -223,7 +223,7 @@ class JdihCategoryScreen extends HookConsumerWidget {
                     borderRadius: BorderRadius.all(Radius.circular(999)),
                   ),
                 ),
-                error: (_, __) => const SizedBox(),
+                error: (_, _) => const SizedBox(),
               ),
             ),
           ),

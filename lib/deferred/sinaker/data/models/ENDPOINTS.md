@@ -97,6 +97,7 @@ Mandatory Body (Multipart Form):
 - provinsi: {take from get provinsi endpoint}
 - kab_kota: {take from get kab_kota endpoint}
 - kecamatan: {take from get kecamatan endpoint}
+- kelurahan: {take from get kelurahan endpoint}
 - rt: {number}
 - rw: {number}
 - alamat_lengkap: {String}
@@ -105,6 +106,8 @@ Mandatory Body (Multipart Form):
 - pendidikan_terakhir: {tidak_sekolah, sd, smp, sma_smk, d3, s1, s2, s3}
 - pendidikan_sekarang: {tidak_sekolah, sd, smp, sma_smk, d3, s1, s2, s3}
 - penyandang_disabilitas: {boolean}
+- asal_sekolah: {String}
+- jurusan: {String}
 - foto: {File, mimetype should be .png, .jpg, or jpeg only. Max file size is 2MB}
 
 Example Body:

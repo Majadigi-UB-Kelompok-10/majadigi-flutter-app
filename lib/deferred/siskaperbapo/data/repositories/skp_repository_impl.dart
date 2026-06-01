@@ -22,7 +22,7 @@ extension AreaDtoToIsar on AreaDto {
 extension BahanPokokDtoToIsar on BahanPokokDto {
   IsarSkpBahanPokokRegistry toIsar({required String qTanggal, required String qBahanPokok, required String qArea}) {
     return IsarSkpBahanPokokRegistry()
-      ..compositeId = '${id}_${qTanggal}_${qBahanPokok}_${qArea}'
+      ..compositeId = '${id}_${qTanggal}_${qBahanPokok}_$qArea'
       ..bahanPokokId = id
       ..komoditas = komoditas ?? ''
       ..slug = slug ?? ''

@@ -17,7 +17,6 @@ class OperationalRemoteDatasourceImpl implements OperationalRemoteDatasource {
 
   @override
   Future<List<OperationalDto>?> fetchOperationalFromNetwork() async {
-    // TODO: CHANGE THIS TO REAL API GATEWAY
     final response = await dio.get('/operational');
 
     if (response.statusCode != 200) return null;

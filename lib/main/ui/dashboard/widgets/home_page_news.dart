@@ -40,7 +40,7 @@ class HomePageNews extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24), // Sudut membulat luar
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.09), // Bayangan lembut
+                      color: Colors.black.withValues(alpha: 0.09), // Bayangan lembut
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),

@@ -57,6 +57,7 @@ class DetailBahanPokokDto extends BaseBahanPokokDto {
   factory DetailBahanPokokDto.fromJson(Map<String, dynamic> json) =>
       _$DetailBahanPokokDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$DetailBahanPokokDtoToJson(this);
 }
 
@@ -82,6 +83,7 @@ class BahanPokokDto extends BaseBahanPokokDto {
   factory BahanPokokDto.fromJson(Map<String, dynamic> json) =>
       _$BahanPokokDtoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$BahanPokokDtoToJson(this);
 }
 

@@ -9,6 +9,9 @@ abstract class AuthRepository {
   Future<void> logout();
   Future<bool> isLoggedIn();
   Future<(bool, String)> register(RegisterEntity entity);
+  Future<bool> resendEmailVerification(String email);
+  Future<bool> resetPassword(String email);
+  Future<(bool, String)> setNewPassword(String token, String newPassword, String confirmNewPassword);
 
   // Profiles
   Future<ProfileEntity?> getProfile();

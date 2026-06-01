@@ -1,11 +1,12 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart' show SizedBox;
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/forget_password/password_reset_new_screen.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/auth/forget_password/password_reset_request_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/login/login_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_verification_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
-import 'package:majadigi_mobile_rebuild/main/ui/example/example.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/onboarding/onboarding_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/search_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/service_detail/service_detail_page.dart';
@@ -38,7 +39,46 @@ final List<RouteBase> goRoutes = <RouteBase>[
   // Register Verify
   GoRoute(
     path: '/verify-email',
-    builder: (context, state) => const RegisterVerificationScreen(),
+    builder: (context, state) {
+      if (state.extra == null) {
+        if (context.mounted) {
+          context.pop();
+        }
+      }
+
+      final data = state.extra as Map<String, String>;
+      final email = data["email"];
+
+      if (email == null || email.isEmpty) {
+        if (context.mounted) {
+          context.pop();
+        }
+      }
+
+      return RegisterVerificationScreen(
+        email: email!,
+      );
+    },
+  ),
+
+  // Reset Password Request
+  GoRoute(
+    path: '/request-password-reset',
+    builder: (context, state) => const PasswordResetRequestScreen(),
+  ),
+
+  // New Password Request Screen (ONLY AVAIlABLE IN DEEP LINK)
+  GoRoute(
+    path: '/reset-password',
+    builder: (context, state) {
+      final token = state.uri.queryParameters['token'];
+
+      if (token == null || token.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      return PasswordResetNewScreen(token: token);
+    },
   ),
 
   // Onboarding
@@ -87,19 +127,7 @@ final List<RouteBase> goRoutes = <RouteBase>[
     }
   ),
 
-  // For now, notification will go to example page
-  // TODO: Change This or REMOVE in [dashboard_header.dart]
-  GoRoute(
-    path: '/notifications',
-    builder: (context, state) => const OverlappingHeaderPage(),
-  ),
-
-  // Example Page for Debugging
-  // TODO: Remove This
-  GoRoute(
-    path: '/example',
-    builder: (context, state) => const OverlappingHeaderPage(),
-  ),
+  // No Notification Page yet
 
   // Add Deferred Routes
   ...deferredRoutes,

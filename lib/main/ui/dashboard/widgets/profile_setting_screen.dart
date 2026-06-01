@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:geolocator/geolocator.dart';
 
 class AccountSettingScreen extends HookWidget {
   final VoidCallback onBack;
@@ -8,9 +9,87 @@ class AccountSettingScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gpsEnabled = useState(true);
+    final gpsEnabled = useState(false);
     final selectedLanguage = useState('English (US)');
     final notificationSetting = useState('Do not Disturb');
+
+    useEffect(() {
+      Future<void> initSettings() async {
+        // Check for GPS Permission
+        final gpsPermission = await Geolocator.checkPermission();
+
+        if (gpsPermission == LocationPermission.whileInUse || gpsPermission == LocationPermission.always) {
+          gpsEnabled.value = true;
+        }
+      }
+
+      initSettings();
+
+      return null;
+    }, const []);
+
+    Future<void> handleGpsToggle(bool activateGps) async {
+      if (activateGps == true) {
+        // Check for GPS first
+        final isGpsEnabled = await Geolocator.isLocationServiceEnabled();
+        if (!isGpsEnabled) {
+          if(context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please enable GPS location services. Opening Location Setting in 3...')),
+            );
+          }
+
+          await Future.delayed(Duration(seconds: 3), () async {
+            await Geolocator.openLocationSettings();
+          });
+          return;
+        }
+
+        // Check Permission
+        final permission = await Geolocator.checkPermission();
+
+        if (permission == LocationPermission.deniedForever) {
+          if(context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location permissions are permanently denied. Please enable them in settings. Opening in 3...'),
+              ),
+            );
+          }
+
+          await Future.delayed(Duration(seconds: 3), () async {
+            await Geolocator.openAppSettings();
+          });
+          return;
+        }
+
+        // Request Permission if Denied
+        if (permission == LocationPermission.denied || permission == LocationPermission.unableToDetermine) {
+          final requestStatus = await Geolocator.requestPermission();
+
+          if (requestStatus == LocationPermission.denied) {
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Location permission is required to enable GPS.')),
+              );
+            }
+          }
+
+          if (requestStatus == LocationPermission.whileInUse || requestStatus == LocationPermission.always) {
+            gpsEnabled.value = true;
+          }
+        }
+        return;
+      }
+
+      // If false, update state and optionally open settings
+      gpsEnabled.value = false;
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('GPS functionality disabled in app. To revoke permissions, please use System Settings.')),
+        );
+      }
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -46,8 +125,8 @@ class AccountSettingScreen extends HookWidget {
                       subtitle: gpsEnabled.value ? 'On' : 'Off',
                       isToggle: true,
                       value: gpsEnabled.value,
-                      onChanged: (value) {
-                        gpsEnabled.value = value;
+                      onChanged: (value) async {
+                        await handleGpsToggle(value);
                       },
                     ),
                     _buildDivider(),
@@ -144,7 +223,7 @@ class AccountSettingScreen extends HookWidget {
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0),
-      child: Divider(color: Colors.grey.withOpacity(0.2), height: 1),
+      child: Divider(color: Colors.grey.withValues(alpha: 0.2), height: 1),
     );
   }
 

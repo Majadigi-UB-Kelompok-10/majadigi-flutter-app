@@ -236,7 +236,7 @@ class RssaScreen extends HookConsumerWidget {
                 ),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

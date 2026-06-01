@@ -33,6 +33,8 @@ class SinakerRegisterScreen extends HookConsumerWidget {
     final alamatController = useTextEditingController();
     final noWaController = useTextEditingController();
     final noWaDaruratController = useTextEditingController();
+    final asalSekolahController = useTextEditingController();
+    final jurusanController = useTextEditingController();
 
     // State hooks
     final gender = useState('laki_laki');
@@ -60,6 +62,10 @@ class SinakerRegisterScreen extends HookConsumerWidget {
 
     final kecamatanListAsync = selectedKabKota.value != null
         ? ref.watch(snkKecamatanListProvider(idKabKota: selectedKabKota.value!.id))
+        : null;
+
+    final kelurahanListAsync = selectedKecamatan.value != null
+        ? ref.watch(snkDesaListProvider(idKecamatan: selectedKecamatan.value!.id))
         : null;
 
     return Scaffold(
@@ -176,7 +182,7 @@ class SinakerRegisterScreen extends HookConsumerWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.black54,
                 ),
-              ),//
+              ),
               SizedBox(
                 width: double.infinity,
                 child: SegmentedButton<String>(
@@ -213,6 +219,7 @@ class SinakerRegisterScreen extends HookConsumerWidget {
                         selectedProvinsi.value = val;
                         selectedKabKota.value = null;
                         selectedKecamatan.value = null;
+                        selectedKelurahan.value = null;
                       },
                     ),
                   ),
@@ -225,6 +232,7 @@ class SinakerRegisterScreen extends HookConsumerWidget {
                       onChanged: (val) {
                         selectedKabKota.value = val;
                         selectedKecamatan.value = null;
+                        selectedKelurahan.value = null;
                       },
                       enabled: selectedProvinsi.value != null,
                     ),
@@ -247,11 +255,10 @@ class SinakerRegisterScreen extends HookConsumerWidget {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // TODO: Add Kelurahan //
                   Expanded(
                     child: _buildWilayahDropdown(
                       label: 'Kelurahan',
-                      asyncValue: kabKotaListAsync,
+                      asyncValue: kelurahanListAsync,
                       selectedValue: selectedKelurahan.value,
                       onChanged: (val) {
                         selectedKelurahan.value = val;
@@ -352,15 +359,16 @@ class SinakerRegisterScreen extends HookConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              // TODO: Add Integration here
-              const SinakerTextField(
+              SinakerTextField(
                 label: 'Asal Sekolah/Universitas',
                 hintText: 'Nama Instansi Pendidikan',
+                controller: asalSekolahController,
               ),
               const SizedBox(height: 16),
-              const SinakerTextField(
+              SinakerTextField(
                 label: 'Jurusan',
                 hintText: 'Contoh: Multimedia, Akuntansi',
+                controller: jurusanController,
               ),
               const SizedBox(height: 16),
 
@@ -451,6 +459,9 @@ class SinakerRegisterScreen extends HookConsumerWidget {
                     selectedProvinsi: selectedProvinsi.value,
                     selectedKabKota: selectedKabKota.value,
                     selectedKecamatan: selectedKecamatan.value,
+                    selectedKelurahan: selectedKelurahan.value,
+                    asalSekolahController: asalSekolahController,
+                    jurusanController: jurusanController,
                     rtController: rtController,
                     rwController: rwController,
                     alamatController: alamatController,
@@ -583,7 +594,7 @@ class SinakerRegisterScreen extends HookConsumerWidget {
           ),
         ],
       ),
-      error: (_, __) => const SinakerTextField(
+      error: (_, _) => const SinakerTextField(
         label: 'Kejuruan Pelatihan',
         hintText: 'Gagal memuat kejuruan',
         readOnly: true,
@@ -664,7 +675,7 @@ class SinakerRegisterScreen extends HookConsumerWidget {
           ),
         ],
       ),
-      error: (_, __) => SinakerDropdownField(
+      error: (_, _) => SinakerDropdownField(
         label: label,
         value: 'Gagal memuat',
         items: const ['Gagal memuat'],
@@ -701,6 +712,7 @@ class SinakerRegisterScreen extends HookConsumerWidget {
     required SnkWilayahEntity? selectedProvinsi,
     required SnkWilayahEntity? selectedKabKota,
     required SnkWilayahEntity? selectedKecamatan,
+    required SnkWilayahEntity? selectedKelurahan,
     required TextEditingController rtController,
     required TextEditingController rwController,
     required TextEditingController alamatController,
@@ -709,6 +721,8 @@ class SinakerRegisterScreen extends HookConsumerWidget {
     required String pendidikanTerakhir,
     required String pendidikanSekarang,
     required bool penyandangDisabilitas,
+    required TextEditingController asalSekolahController,
+    required TextEditingController jurusanController,
     required File? fotoFile,
     required ValueNotifier<bool> isSubmitting,
   }) async {
@@ -722,11 +736,14 @@ class SinakerRegisterScreen extends HookConsumerWidget {
         selectedProvinsi == null ||
         selectedKabKota == null ||
         selectedKecamatan == null ||
+        selectedKelurahan == null ||
         rtController.text.isEmpty ||
         rwController.text.isEmpty ||
         alamatController.text.isEmpty ||
         noWaController.text.isEmpty ||
         noWaDaruratController.text.isEmpty ||
+        asalSekolahController.text.isEmpty ||
+        jurusanController.text.isEmpty ||
         fotoFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Mohon lengkapi semua field yang wajib diisi')),
@@ -750,6 +767,9 @@ class SinakerRegisterScreen extends HookConsumerWidget {
           provinsi: selectedProvinsi.nama,
           kabKota: selectedKabKota.nama,
           kecamatan: selectedKecamatan.nama,
+          kelurahan: selectedKelurahan.nama,
+          asalSekolah: asalSekolahController.text,
+          jurusan: jurusanController.text,
           rt: rtController.text,
           rw: rwController.text,
           alamatLengkap: alamatController.text,

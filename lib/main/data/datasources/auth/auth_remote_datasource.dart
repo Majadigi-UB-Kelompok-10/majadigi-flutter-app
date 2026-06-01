@@ -15,9 +15,12 @@ abstract class AuthRemoteDatasource {
   Future<AuthEntity?> getRemoteAuth(String email, String password);
   Future<AuthEntity?> refreshRemoteAuth();
   Future<void> logout();
+  Future<(bool, String)> register(RegisterEntity entity);
+  Future<bool> resendEmailVerification(String email);
+  Future<bool> resetPassword(String email);
+  Future<(bool, String)> setNewPassword(String token, String newPassword, String confirmNewPassword);
   Future<ProfileEntity?> getRemoteProfile();
   Future<void> updateRemoteProfile(ProfileEntity entity);
-  Future<(bool, String)> register(RegisterEntity entity);
 }
 
 /// Represent the Auth Remote Datasource Implementation
@@ -163,5 +166,50 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
     }
 
     return (true, "${entity.email} is Successfully registered");
+  }
+
+  @override
+  Future<bool> resendEmailVerification(String email) async {
+    final response = await dio.post("/user/auth/resend-verification", data: {
+      "email": email
+    });
+
+    if (response.statusCode != 200) return false;
+
+    return true;
+  }
+
+  @override
+  Future<bool> resetPassword(String email) async {
+    final response = await dio.post("/user/auth/forgot-password", data: {
+      "email": email
+    });
+    
+    if (response.statusCode != 200) return false;
+    
+    return true;
+  }
+
+  @override
+  Future<(bool, String)> setNewPassword(String token, String newPassword, String confirmNewPassword) async {
+    final response = await dio.post("/user/auth/reset-password", data: {
+      "token": token,
+      "new_password": newPassword,
+      "confirm_new_password": confirmNewPassword
+    });
+
+    if (response.statusCode != 200) {
+      final data = await cleanupData(response: response, zstandard: zstandard);
+
+      final message = data["message"] as String?;
+
+      if (message == null || message.isEmpty) {
+        return (false, "Something Went Wrong");
+      }
+
+      return (false, message);
+    }
+
+    return (true, "Success");
   }
 }
