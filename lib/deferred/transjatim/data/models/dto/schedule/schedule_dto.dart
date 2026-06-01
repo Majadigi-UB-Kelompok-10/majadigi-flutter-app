@@ -19,6 +19,7 @@ class DetailScheduleDto extends BaseScheduleDto {
     this.ruteId,
     this.stops,
     this.semuaHarga,
+    this.koordinatRute,
   });
 
   @override
@@ -27,11 +28,14 @@ class DetailScheduleDto extends BaseScheduleDto {
 
   @override
   @JsonKey(name: "stops")
-  final List<String>? stops;
+  final List<StopScheduleDto>? stops;
 
   @override
   @JsonKey(name: "semua_harga")
   final List<SubHargaScheduleDto>? semuaHarga;
+
+  @JsonKey(name: "koordinat_rute")
+  final List<List<double>>? koordinatRute;
 
   // Json Serializable
   factory DetailScheduleDto.fromJson(Map<String, dynamic> json) =>
@@ -63,6 +67,45 @@ class SubHargaScheduleDto with _$SubHargaScheduleDto {
       _$SubHargaScheduleDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$SubHargaScheduleDtoToJson(this);
+}
+
+/// Sub-Model for Schedule Stops
+@freezed
+@JsonSerializable(explicitToJson: true)
+class StopScheduleDto with _$StopScheduleDto {
+  const StopScheduleDto({
+    this.urutan,
+    this.nama,
+    this.kota,
+    this.lat,
+    this.lng,
+  });
+
+  @override
+  @JsonKey(name: "urutan")
+  final int? urutan;
+
+  @override
+  @JsonKey(name: "nama")
+  final String? nama;
+
+  @override
+  @JsonKey(name: "kota")
+  final String? kota;
+
+  @override
+  @JsonKey(name: "lat")
+  final double? lat;
+
+  @override
+  @JsonKey(name: "lng")
+  final double? lng;
+
+  // Json Serializable
+  factory StopScheduleDto.fromJson(Map<String, dynamic> json) =>
+      _$StopScheduleDtoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StopScheduleDtoToJson(this);
 }
 
 /// Model for Search Schedule

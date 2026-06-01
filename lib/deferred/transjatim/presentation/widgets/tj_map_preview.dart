@@ -5,12 +5,14 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:majadigi_mobile_rebuild/deferred/transjatim/domain/entities/schedule/tj_schedule_entity.dart';
 
 /// Map preview widget
-/// Render Based on Stops
+/// Render Based on Stops and Route Coordinates
 /// Uses Flutter_Map with caching built-in (since 8.2.0)
 class TjMapPreview extends HookConsumerWidget {
-  final List<String>? stops;
+  final List<TjStopEntity>? stops;
+  final List<List<double>>? routeCoordinates;
   final double? originLatitude;
   final double? originLongitude;
   final double? destinationLatitude;
@@ -19,6 +21,7 @@ class TjMapPreview extends HookConsumerWidget {
   const TjMapPreview({
     super.key,
     this.stops,
+    this.routeCoordinates,
     this.originLatitude,
     this.originLongitude,
     this.destinationLatitude,
@@ -29,10 +32,26 @@ class TjMapPreview extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Map Controller
     final mapController = useMemoized(() => MapController());
+    final selectedMarkerIndex = useState<int?>(null);
 
-    // Coordinate
-    final startPoint = useMemoized(() => LatLng(originLatitude ?? -7.9826, originLongitude ?? 112.6308));
-    final endPoint = useMemoized(() => LatLng(destinationLatitude ?? -7.8718, destinationLongitude ?? 112.5255));
+    // Determine initial center
+    final initialCenter = useMemoized(() {
+      if (originLatitude != null && originLongitude != null) {
+        return LatLng(originLatitude!, originLongitude!);
+      } else if (stops != null && stops!.isNotEmpty && stops!.first.lat != null && stops!.first.lng != null) {
+        return LatLng(stops!.first.lat!, stops!.first.lng!);
+      }
+      return const LatLng(-7.9826, 112.6308); // Fallback: Malang center
+    });
+
+    // Parse Polyline Points
+    final polylinePoints = useMemoized(() {
+      if (routeCoordinates == null) return <LatLng>[];
+      return routeCoordinates!
+          .where((coord) => coord.length == 2)
+          .map((coord) => LatLng(coord[1], coord[0])) // JSON usually [lng, lat]
+          .toList();
+    }, [routeCoordinates]);
 
     return Stack(
       children: [
@@ -40,44 +59,70 @@ class TjMapPreview extends HookConsumerWidget {
         FlutterMap(
           mapController: mapController,
           options: MapOptions(
-            initialCenter: startPoint,
+            initialCenter: initialCenter,
             initialZoom: 13.0,
+            onTap: (_, __) {
+              if (selectedMarkerIndex.value != null) {
+                selectedMarkerIndex.value = null;
+              }
+            },
           ),
           children: [
-            // 1. The Map Tiles (With Caching enabled)
+            // 1. The Map Tiles
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.majadigi.mobile.rebuild.app',
             ),
 
             // 2. Draw the Route Path (If available)
-            // routeAsync.when(
-            //   data: (routePoints) => PolylineLayer(
-            //     polylines: [
-            //       Polyline(
-            //         points: routePoints,
-            //         color: Colors.blueAccent,
-            //         strokeWidth: 5.0,
-            //       ),
-            //     ],
-            //   ),
-            //   loading: () => const SizedBox.shrink(), // Or a loading indicator overlay
-            //   error: (err, stack) => const SizedBox.shrink(),
-            // ),
+            if (polylinePoints.isNotEmpty)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: polylinePoints,
+                    color: Colors.blueAccent,
+                    strokeWidth: 5.0,
+                  ),
+                ],
+              ),
 
-            // 3. Draw the Place Markers
-            MarkerLayer(
-              markers: [
-                Marker(
-                  point: startPoint,
-                  child: const Icon(Icons.location_on, color: Colors.red, size: 40),
-                ),
-                Marker(
-                  point: endPoint,
-                  child: const Icon(Icons.flag, color: Colors.green, size: 40),
-                ),
-              ],
-            ),
+            // 3. Draw the Place Markers (Stops)
+            if (stops != null)
+              MarkerLayer(
+                markers: stops!.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final stop = entry.value;
+                  final isSelected = selectedMarkerIndex.value == index;
+
+                  if (stop.lat == null || stop.lng == null) {
+                    // Fallback to empty marker if coordinates are invalid
+                    return Marker(
+                      point: const LatLng(0, 0),
+                      width: 0,
+                      height: 0,
+                      child: const SizedBox(),
+                    );
+                  }
+
+                  return Marker(
+                    point: LatLng(stop.lat!, stop.lng!),
+                    width: isSelected ? 200 : 40,
+                    height: isSelected ? 80 : 40,
+                    child: GestureDetector(
+                      onTap: () {
+                        selectedMarkerIndex.value = isSelected ? null : index;
+                      },
+                      child: isSelected
+                          ? _buildPopupMarker(stop)
+                          : const Icon(
+                              Icons.location_on,
+                              color: Color(0xFF0F3B8C), // AppTheme.jdihBlue approximation
+                              size: 36,
+                            ),
+                    ),
+                  );
+                }).where((m) => m.width > 0).toList(),
+              ),
 
             // 4. GPS Capability (Tracks user's live location seamlessly)
             CurrentLocationLayer(
@@ -86,7 +131,9 @@ class TjMapPreview extends HookConsumerWidget {
             ),
             
             // Attribution
-            SimpleAttributionWidget(source: Text("flutter_map | OpenStreetMap Contributors")),
+            const SimpleAttributionWidget(
+              source: Text("flutter_map | OpenStreetMap Contributors"),
+            ),
           ],
         ),
 
@@ -95,13 +142,13 @@ class TjMapPreview extends HookConsumerWidget {
           bottom: 16,
           left: 16,
           child: FloatingActionButton(
-            heroTag: 'location_btn',
+            heroTag: 'tj_location_btn',
             backgroundColor: Colors.white,
             onPressed: () async {
               try {
                 // Fetch the current physical location
                 final position = await Geolocator.getCurrentPosition(
-                  locationSettings: LocationSettings(
+                  locationSettings: const LocationSettings(
                     accuracy: LocationAccuracy.high,
                   ),
                 );
@@ -112,7 +159,7 @@ class TjMapPreview extends HookConsumerWidget {
                 );
               } catch (e) {
                 // Handle location permissions denied scenario
-                debugPrint("Location access denied: $e");
+                debugPrint("Location access denied: \$e");
               }
             },
             child: const Icon(Icons.my_location, color: Colors.blue),
@@ -127,7 +174,7 @@ class TjMapPreview extends HookConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               FloatingActionButton(
-                heroTag: 'zoom_in_btn',
+                heroTag: 'tj_zoom_in_btn',
                 backgroundColor: Colors.white,
                 mini: true,
                 onPressed: () {
@@ -139,7 +186,7 @@ class TjMapPreview extends HookConsumerWidget {
               ),
               const SizedBox(height: 8),
               FloatingActionButton(
-                heroTag: 'zoom_out_btn',
+                heroTag: 'tj_zoom_out_btn',
                 backgroundColor: Colors.white,
                 mini: true,
                 onPressed: () {
@@ -151,6 +198,45 @@ class TjMapPreview extends HookConsumerWidget {
               ),
             ],
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPopupMarker(TjStopEntity stop) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Flexible(
+            child: Text(
+              stop.nama ?? 'Halte',
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0F3B8C),
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ),
+        const Icon(
+          Icons.location_on,
+          color: Color(0xFF0F3B8C),
+          size: 28,
         ),
       ],
     );

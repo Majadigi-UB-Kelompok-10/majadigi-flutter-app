@@ -92,13 +92,22 @@ extension DetailScheduleDtoToEntity on DetailScheduleDto {
       terminalAsal: terminalAsal,
       terminalTujuan: terminalTujuan,
       ruteId: ruteId,
-      stops: stops,
+      stops: stops
+          ?.map((s) => TjStopEntity(
+                urutan: s.urutan,
+                nama: s.nama,
+                kota: s.kota,
+                lat: s.lat,
+                lng: s.lng,
+              ))
+          .toList(),
       semuaHarga: semuaHarga
           ?.map((h) => TjHargaEntity(
                 tipePenumpang: h.tipePenumpang,
                 harga: h.harga,
               ))
           .toList(),
+      koordinatRute: koordinatRute,
     );
   }
 }

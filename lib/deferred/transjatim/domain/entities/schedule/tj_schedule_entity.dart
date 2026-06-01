@@ -85,6 +85,7 @@ class TjScheduleEntity with _$TjScheduleEntity {
     this.ruteId,
     this.stops,
     this.semuaHarga,
+    this.koordinatRute,
   });
 
   @override
@@ -115,10 +116,13 @@ class TjScheduleEntity with _$TjScheduleEntity {
   final int? ruteId;
 
   @override
-  final List<String>? stops;
+  final List<TjStopEntity>? stops;
 
   @override
   final List<TjHargaEntity>? semuaHarga;
+
+  @override
+  final List<List<double>>? koordinatRute;
 }
 
 /// Sub-entity for price info within a schedule detail.
@@ -134,4 +138,31 @@ class TjHargaEntity with _$TjHargaEntity {
 
   @override
   final double? harga;
+}
+
+/// Sub-entity for stop info within a schedule detail.
+@freezed
+class TjStopEntity with _$TjStopEntity {
+  const TjStopEntity({
+    this.urutan,
+    this.nama,
+    this.kota,
+    this.lat,
+    this.lng,
+  });
+
+  @override
+  final int? urutan;
+
+  @override
+  final String? nama;
+
+  @override
+  final String? kota;
+
+  @override
+  final double? lat;
+
+  @override
+  final double? lng;
 }

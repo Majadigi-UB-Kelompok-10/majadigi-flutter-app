@@ -101,9 +101,10 @@ class _DetailContent extends StatelessWidget {
           // Map
           TjMapPreview(
             stops: schedule.stops ?? [
-              schedule.terminalAsal ?? fromTerminal,
-              schedule.terminalTujuan ?? toTerminal,
+              TjStopEntity(nama: schedule.terminalAsal ?? fromTerminal),
+              TjStopEntity(nama: schedule.terminalTujuan ?? toTerminal),
             ],
+            routeCoordinates: schedule.koordinatRute,
             originLatitude: search.originLatitude,
             originLongitude: search.originLongitude,
             destinationLatitude: search.destinationLatitude,
@@ -159,8 +160,8 @@ class _RouteDetailSection extends StatelessWidget {
   Widget build(BuildContext context) {
     // Build stop list from schedule.stops, fallback to origin/destination
     final stops = schedule.stops ?? [
-      schedule.terminalAsal ?? fromTerminal,
-      schedule.terminalTujuan ?? toTerminal,
+      TjStopEntity(nama: schedule.terminalAsal ?? fromTerminal),
+      TjStopEntity(nama: schedule.terminalTujuan ?? toTerminal),
     ];
 
     return Padding(
@@ -191,7 +192,7 @@ class _RouteDetailSection extends StatelessWidget {
               children: [
                 for (int i = 0; i < stops.length; i++)
                   TjRouteStopItem(
-                    name: stops[i],
+                    name: stops[i].nama ?? '',
                     isLast: i == stops.length - 1,
                   ),
               ],
