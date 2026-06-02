@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "186977414537",
+    "project_id": "fcm-majadigi",
+    "storage_bucket": "fcm-majadigi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186977414537:android:48af478201d49494d4c558",
+        "android_client_info": {
+          "package_name": "com.example.majadigi_mobile_rebuild"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL9WqVGiveyNXFLr6caARhRe_CFUxD6Gw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

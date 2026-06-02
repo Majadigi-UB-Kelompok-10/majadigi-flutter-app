@@ -1,0 +1,1 @@
+{"flutter":{"platforms":{"android":{"default":{"projectId":"fcm-majadigi","appId":"1:186977414537:android:48af478201d49494d4c558","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"fcm-majadigi","configurations":{"android":"1:186977414537:android:48af478201d49494d4c558","ios":"1:186977414537:ios:210fcaeb882b7e2cd4c558"}}}}}}

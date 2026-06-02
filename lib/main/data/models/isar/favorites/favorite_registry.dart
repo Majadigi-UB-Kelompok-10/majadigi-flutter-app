@@ -1,12 +1,11 @@
 import 'package:isar_community/isar.dart';
-import 'package:majadigi_mobile_rebuild/main/data/models/isar/fast_hash.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/service/service_registry.dart';
 
 part 'favorite_registry.g.dart';
 
 @collection
 class IsarFavoriteRegistry {
-  Id get isarId => fastHash(id);
+  Id isarId = Isar.autoIncrement;
 
   String id = "favorites";
 

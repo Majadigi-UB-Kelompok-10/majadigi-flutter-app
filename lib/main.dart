@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/sync_provider.dart';
@@ -7,6 +9,7 @@ import 'package:majadigi_mobile_rebuild/main/ui/router_shell.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 
+import 'firebase_options.dart';
 import 'main/core/providers/auth/auth_provider.dart';
 
 /// Entrypoint of the App
@@ -26,7 +29,12 @@ Future<void> main() async {
   });
 }
 
-/// Initialize stac with custom parser, custom dio, and Supabase
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+}
+
+/// Initialize custom dio, and firebase
 Future<ProviderContainer> init() async {
   final container = ProviderContainer();
 
@@ -59,6 +67,13 @@ Future<ProviderContainer> init() async {
 
   // Sync in background silently
   newContainer.read(startupSyncAllProvider.notifier).syncSilently();
+
+  // Start Firebase Initialization
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   // Return a NEW container with isar provider override
   return newContainer;

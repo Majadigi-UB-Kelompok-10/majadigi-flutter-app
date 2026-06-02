@@ -1,6 +1,5 @@
 import 'package:isar_community/isar.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/category_registry.dart';
-import 'package:majadigi_mobile_rebuild/main/data/models/isar/fast_hash.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/service/service_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/category/category_entity.dart';
 
@@ -10,7 +9,8 @@ part 'service_registry.g.dart';
 /// Connected with Category (SQL to NoSQL)
 @collection
 class IsarServiceRegistry {
-  Id get isarId => fastHash(id);
+  // Due to unique replace index, getter will not work
+  Id isarId = Isar.autoIncrement;
 
   @Index(type: IndexType.value, unique: true, replace: true)
   late String id;

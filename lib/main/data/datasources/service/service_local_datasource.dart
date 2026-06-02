@@ -3,7 +3,6 @@ import 'package:majadigi_mobile_rebuild/main/data/models/dto/normalized_service_
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/category_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/favorites/favorite_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/service/service_registry.dart';
-import 'package:majadigi_mobile_rebuild/main/data/models/isar/fast_hash.dart';
 
 /// Represent the Contract for Service Local Datasource.
 /// Uses Isar Database.
@@ -52,20 +51,26 @@ class ServiceLocalDatasourceImpl implements ServiceLocalDatasource {
 
     await _isar.writeTxn(() async {
       for (NormalizedServiceCategoryDto normalizedService in payload) {
-        final linkedCategories = await _isar.isarCategoryRegistrys.getAll(
-          normalizedService.categoryIds!.map((id) => fastHash(id)).toList(),
-        );
+        final linkedCategories = await _isar.isarCategoryRegistrys
+            .where()
+            .anyOf(
+              normalizedService.categoryIds!,
+              (q, String categoryId) => q.idEqualTo(categoryId)
+            )
+            .findAll();
 
         // Create the Isar object once
         final serviceIsar = normalizedService.toIsar();
+
+        // To ensure clean object
+        serviceIsar.categories.clear();
 
         // Save Service to Isar first (makes it managed by Isar)
         await _isar.isarServiceRegistrys.putById(serviceIsar);
 
         // Now link categories using the same managed object
-        serviceIsar.categories.addAll(
-          linkedCategories.whereType<IsarCategoryRegistry>(),
-        );
+        serviceIsar.categories.addAll(linkedCategories);
+
         await serviceIsar.categories.save();
       }
     });

@@ -4,7 +4,9 @@
 	<dict>
 	    <key>LSApplicationQueriesSchemes</key>
         <array>
-          <string>tel</string>
+            <string>https</string>
+            <string>tel</string>
+            <string>mailto</string>
         </array>
         <key>CFBundleURLTypes</key>
         <array>

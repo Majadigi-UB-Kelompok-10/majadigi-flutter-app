@@ -31,7 +31,7 @@ class ServiceRepositoryImpl implements ServiceRepository {
       if (normalizedPayload == null) return;
 
       await localDatasource.processAndCacheServices(normalizedPayload);
-    } catch (e) { /* None */ }
+    } catch (e) {/* None */ }
   }
 
   @override

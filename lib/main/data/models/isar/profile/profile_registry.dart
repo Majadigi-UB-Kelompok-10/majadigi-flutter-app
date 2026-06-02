@@ -1,12 +1,11 @@
 import 'package:isar_community/isar.dart';
-import 'package:majadigi_mobile_rebuild/main/data/models/isar/fast_hash.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
 
 part 'profile_registry.g.dart';
 
 @collection
 class IsarProfileRegistry {
-  Id get isarId => fastHash(id);
+  Id isarId = Isar.autoIncrement;
 
   String id = "profile";
 

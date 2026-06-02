@@ -82,4 +82,5 @@ class SecureStorageKeys {
   static const String refreshToken = 'refresh_token';
   static const String tokenType = 'token_type';
   static const String guestMode = 'guest_mode';
+  static const String fcmToken = 'fcm_token';
 }

@@ -5,7 +5,7 @@ class Credentials {
   const Credentials._();
 
   // Used for Data Sources
-  // static const String baseUrl = 'http://10.0.2.2:$port/api/v1';
-  // static const String port = '8888';
-  static const String baseUrl = 'https://api-gateway-production-2ce8.up.railway.app/api/v1';
+  static const String baseUrl = 'http://10.0.2.2:$port/api/v1';
+  static const String port = '8888';
+  // static const String baseUrl = 'https://api-gateway-production-2ce8.up.railway.app/api/v1';
 }
