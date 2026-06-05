@@ -247,9 +247,9 @@ Response for "/sinaker/public/wilayah/kecamatan/1101":
 
 ### [GET] Wilayah Kelurahan List
 
-Endpoint: /sinaker/public/wilayah/desa/{id_kecamatan}
+Endpoint: /sinaker/public/wilayah/kelurahan/{id_kecamatan}
 
-Response for "/sinaker/public/wilayah/desa/110101":
+Response for "/sinaker/public/wilayah/kelurahan/110101":
 ```json
 {
   "pesan": "Data Wilayah",

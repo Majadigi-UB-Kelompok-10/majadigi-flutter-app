@@ -40,7 +40,7 @@ class BapendaTaxScreen extends HookConsumerWidget {
           );
         }
       } catch (e) {
-        error.value = 'Gagal mengambil data. Silakan coba lagi.';
+        error.value = 'Gagal mengambil data. Silakan coba lagi. ${e.toString()}';
       } finally {
         isLoading.value = false;
       }

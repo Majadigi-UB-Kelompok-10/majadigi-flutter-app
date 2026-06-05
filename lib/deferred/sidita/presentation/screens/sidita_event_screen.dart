@@ -146,7 +146,7 @@ class SiditaEventScreen extends HookConsumerWidget {
                               items: [
                                 const DropdownMenuItem(value: null, child: Text('Semua Wilayah')),
                                 ...areas.map((a) => DropdownMenuItem(
-                                      value: a.slug,
+                                      value: a.nama,
                                       child: Text(a.nama ?? ''),
                                     )),
                               ],

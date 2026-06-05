@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:majadigi_mobile_rebuild/main/core/http.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -49,15 +51,21 @@ class NotificationNotifier extends _$NotificationNotifier {
     final String? lastSavedToken = await storage.read(key: SecureStorageKeys.fcmToken);
 
     if (newToken != lastSavedToken) {
-      // TODO: POST request to your colleague's backend endpoint
+      final dio = ref.watch(dioProvider);
+      final response = await dio.post("/user/auth/device-token", options: Options(
+        validateStatus: (status) => true,
+      ));
 
-      await storage.write(key: SecureStorageKeys.fcmToken, value: newToken);
+      // If successful
+      if (response.statusCode == 200) {
+        await storage.write(key: SecureStorageKeys.fcmToken, value: newToken);
+      }
     }
   }
 
   Future<void> disableNotifications() async {
     // Tell your backend to stop sending notifications to this token
-    // TODO: POST /api/v1/notifications/disable
+    // Welp, no backend endpoint to remove token so we'll just hit it all lmao
 
     // Delete the token locally
     await FirebaseMessaging.instance.deleteToken();

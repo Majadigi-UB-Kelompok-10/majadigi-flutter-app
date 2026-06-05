@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/auth/auth_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
@@ -139,18 +140,26 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
 
   @override
   Future<(bool, String)> register(RegisterEntity entity) async {
-    final response = await dio.put("/user/auth/register", data: {
-      "first_name": entity.firstName,
-      "last_name": entity.lastName,
-      "phone": entity.phone,
-      "nik": entity.nik,
-      "email": entity.email,
-      "address": entity.address,
-      "birth_date": entity.birthDate,
-      "gender": entity.gender,
-      "password": entity.password,
-      "confirm_password": entity.confirmPassword
-    });
+    Map<String, dynamic> data = {
+      "first_name": entity.firstName.toString().trim(),
+      "last_name": entity.lastName.toString().trim(),
+      "phone": entity.phone.toString().trim(),
+      "nik": entity.nik.toString().trim(),
+      "email": entity.email.toString().trim(),
+      "address": entity.address.toString().trim(),
+      "birth_date": entity.birthDate.toString().trim(),
+      "gender": entity.gender.toString().trim(),
+      "password": entity.password.toString().trim(),
+      "confirm_password": entity.confirmPassword.toString().trim()
+    };
+
+    final response = await dio.post(
+        "/user/auth/register",
+        data: data,
+        options: Options(
+          validateStatus: (status) => true,
+        )
+    );
 
     final processedData = await cleanupData(response: response, zstandard: zstandard);
 
@@ -160,7 +169,7 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
 
     if (response.statusCode != 201) {
       final statusCode = response.statusCode.toString();
-      final message = processedData["message"];
+      final message = processedData["message"] ?? "Unknown error occurred";
 
       return (false, "Failed to register [$statusCode]: $message");
     }

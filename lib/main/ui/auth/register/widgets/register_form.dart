@@ -29,6 +29,9 @@ class RegisterForm extends HookConsumerWidget {
     final passwordController = useTextEditingController();
     final confirmPasswordController = useTextEditingController();
 
+    // Use State for Gender
+    final genderPick = useState<String>("");
+
     // Page Controller
     final pageController = usePageController();
 
@@ -51,6 +54,11 @@ class RegisterForm extends HookConsumerWidget {
         if (entry.value.text.trim().isEmpty) {
           return (false, '${entry.key} tidak boleh kosong');
         }
+      }
+
+      // Gender value
+      if (genderPick.value.trim().isEmpty) {
+        return (false, "Jenis Kelamin tidak boleh kosong!");
       }
 
       // Email Check
@@ -77,7 +85,35 @@ class RegisterForm extends HookConsumerWidget {
       return (true, null);
     }
 
-    void sendRegistration() async {
+    String formatPhoneNumber(String rawPhone) {
+      // 1. Remove all spaces, dashes, and non-numeric characters (except '+')
+      String cleaned = rawPhone.replaceAll(RegExp(r'[^\d+]'), '');
+
+      // 2. If it already starts with +62, return it as is
+      if (cleaned.startsWith('+62')) {
+        return cleaned;
+      }
+
+      // 3. If it starts with '62' (missing the +), add the +
+      if (cleaned.startsWith('62')) {
+        return '+$cleaned';
+      }
+
+      // 4. If it starts with '0', replace the '0' with '+62'
+      if (cleaned.startsWith('0')) {
+        return '+62${cleaned.substring(1)}';
+      }
+
+      // 5. If it starts with '8' (e.g., user just typed 81122223333), prepend +62
+      if (cleaned.startsWith('8')) {
+        return '+62$cleaned';
+      }
+
+      // Fallback: just return the cleaned version if it doesn't match expected patterns
+      return cleaned;
+    }
+
+    Future<void> sendRegistration() async {
       // Package it into an entity since it's a pain to send the whole thing
       final RegisterEntity entity = RegisterEntity(
         firstName: firstNameController.text,
@@ -85,9 +121,9 @@ class RegisterForm extends HookConsumerWidget {
         address: addressController.text,
         nik: nikController.text,
         email: emailController.text,
-        phone: phoneController.text,
+        phone: formatPhoneNumber(phoneController.text),
         birthDate: birthController.text,
-        gender: genderController.text,
+        gender: genderPick.value,
         password: passwordController.text,
         confirmPassword: confirmPasswordController.text
       );
@@ -96,37 +132,45 @@ class RegisterForm extends HookConsumerWidget {
 
       // If registration fail
       if (!isSuccess && context.mounted) {
-        ScaffoldMessenger.of(context).showMaterialBanner(
-          MaterialBanner(
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  final (isValid, errMessage) = validateForm();
+        final messenger = ScaffoldMessenger.of(context);
 
-                  if (isValid && context.mounted) {
-                    sendRegistration();
-                  }
-
-                  if (!isValid && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(errMessage ?? "Something Went Wrong"))
-                    );
-                  }
-                },
-                child: const Text("Retry"),
-              ),
-              TextButton(
-                onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-                child: const Text('Dismiss'),
-              ),
-            ],
-          )
+        messenger.showSnackBar(
+          SnackBar(content: Text(message))
         );
+
+        // messenger.showMaterialBanner(
+        //   MaterialBanner(
+        //     content: Text(message),
+        //     actions: [
+        //       TextButton(
+        //         onPressed: () {
+        //           messenger.clearMaterialBanners();
+        //
+        //           final (isValid, errMessage) = validateForm();
+        //
+        //           if (isValid && context.mounted) {
+        //             sendRegistration();
+        //           }
+        //
+        //           if (!isValid && context.mounted) {
+        //             ScaffoldMessenger.of(context).showSnackBar(
+        //                 SnackBar(content: Text(errMessage ?? "Something Went Wrong"))
+        //             );
+        //           }
+        //         },
+        //         child: const Text("Retry"),
+        //       ),
+        //       TextButton(
+        //         onPressed: () => messenger.clearMaterialBanners(),
+        //         child: const Text('Dismiss'),
+        //       ),
+        //     ],
+        //   )
+        // );
       }
 
       // Only redirect if register is successful
-      if (isSuccess) {
+      if (isSuccess && context.mounted) {
         context.pushReplacement('/verify-email', extra: {
           "email": emailController.text
         });
@@ -152,6 +196,7 @@ class RegisterForm extends HookConsumerWidget {
               addressController: addressController,
               birthController: birthController,
               genderController: genderController,
+              onGenderChanged: (value) => genderPick.value = value ?? "",
               passwordController: passwordController,
               confirmPasswordController: confirmPasswordController,
             ),
@@ -227,8 +272,8 @@ class _RedirectToLoginWidget extends HookConsumerWidget {
 
 class _ContinueButton extends ConsumerWidget {
   final PageController pageController;
-  final Function validateForm;
-  final VoidCallback sendRegistration;
+  final (bool, String?) Function() validateForm;
+  final Future<void> Function() sendRegistration;
   const _ContinueButton({required this.pageController, required this.validateForm, required this.sendRegistration});
 
   @override
@@ -238,7 +283,7 @@ class _ContinueButton extends ConsumerWidget {
     return SizedBox(
       height: 52,
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           if (index == 0) {
             pageController.nextPage(
               duration: const Duration(milliseconds: 300),
@@ -250,7 +295,7 @@ class _ContinueButton extends ConsumerWidget {
             final (isValid, message) = validateForm();
 
             if (isValid && context.mounted) {
-              sendRegistration();
+              await sendRegistration();
             }
 
             if (!isValid && context.mounted) {

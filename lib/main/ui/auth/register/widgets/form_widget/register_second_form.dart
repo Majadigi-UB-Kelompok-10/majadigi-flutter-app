@@ -9,6 +9,7 @@ class RegisterSecondForm extends HookWidget {
   final TextEditingController genderController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
+  final ValueChanged<String?> onGenderChanged;
   const RegisterSecondForm({
     super.key,
     required this.nikController,
@@ -16,7 +17,8 @@ class RegisterSecondForm extends HookWidget {
     required this.birthController,
     required this.genderController,
     required this.passwordController,
-    required this.confirmPasswordController
+    required this.confirmPasswordController,
+    required this.onGenderChanged
   });
 
   @override
@@ -129,7 +131,12 @@ class RegisterSecondForm extends HookWidget {
                 dropdownMenuEntries: const <DropdownMenuEntry>[
                   DropdownMenuEntry(value: 'LAKI_LAKI', label: 'Laki-laki'),
                   DropdownMenuEntry(value: 'PEREMPUAN', label: 'Perempuan'),
-                ]
+                ],
+                onSelected: (value) {
+                  if (value != null) {
+                    onGenderChanged(value.toString());
+                  }
+                },
               ),
             ),
           ],

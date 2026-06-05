@@ -53,153 +53,157 @@ class TjMapPreview extends HookConsumerWidget {
           .toList();
     }, [routeCoordinates]);
 
-    return Stack(
-      children: [
-        // Map itself
-        FlutterMap(
-          mapController: mapController,
-          options: MapOptions(
-            initialCenter: initialCenter,
-            initialZoom: 13.0,
-            onTap: (_, __) {
-              if (selectedMarkerIndex.value != null) {
-                selectedMarkerIndex.value = null;
-              }
-            },
-          ),
-          children: [
-            // 1. The Map Tiles
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.majadigi.mobile.rebuild.app',
+    return SizedBox(
+      height: 300,
+      child: Stack(
+        children: [
+          // Map itself
+          FlutterMap(
+            mapController: mapController,
+            options: MapOptions(
+              initialCenter: initialCenter,
+              initialZoom: 13.0,
+              onTap: (_, __) {
+                if (selectedMarkerIndex.value != null) {
+                  selectedMarkerIndex.value = null;
+                }
+              },
             ),
-
-            // 2. Draw the Route Path (If available)
-            if (polylinePoints.isNotEmpty)
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: polylinePoints,
-                    color: Colors.blueAccent,
-                    strokeWidth: 5.0,
-                  ),
-                ],
-              ),
-
-            // 3. Draw the Place Markers (Stops)
-            if (stops != null)
-              MarkerLayer(
-                markers: stops!.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final stop = entry.value;
-                  final isSelected = selectedMarkerIndex.value == index;
-
-                  if (stop.lat == null || stop.lng == null) {
-                    // Fallback to empty marker if coordinates are invalid
-                    return Marker(
-                      point: const LatLng(0, 0),
-                      width: 0,
-                      height: 0,
-                      child: const SizedBox(),
-                    );
-                  }
-
-                  return Marker(
-                    point: LatLng(stop.lat!, stop.lng!),
-                    width: isSelected ? 200 : 40,
-                    height: isSelected ? 80 : 40,
-                    child: GestureDetector(
-                      onTap: () {
-                        selectedMarkerIndex.value = isSelected ? null : index;
-                      },
-                      child: isSelected
-                          ? _buildPopupMarker(stop)
-                          : const Icon(
-                              Icons.location_on,
-                              color: Color(0xFF0F3B8C), // AppTheme.jdihBlue approximation
-                              size: 36,
-                            ),
-                    ),
-                  );
-                }).where((m) => m.width > 0).toList(),
-              ),
-
-            // 4. GPS Capability (Tracks user's live location seamlessly)
-            CurrentLocationLayer(
-              alignPositionOnUpdate: AlignOnUpdate.never,
-              alignDirectionOnUpdate: AlignOnUpdate.never,
-            ),
-            
-            // Attribution
-            const SimpleAttributionWidget(
-              source: Text("flutter_map | OpenStreetMap Contributors"),
-            ),
-          ],
-        ),
-
-        // Location button
-        Positioned(
-          bottom: 16,
-          left: 16,
-          child: FloatingActionButton(
-            heroTag: 'tj_location_btn',
-            backgroundColor: Colors.white,
-            onPressed: () async {
-              try {
-                // Fetch the current physical location
-                final position = await Geolocator.getCurrentPosition(
-                  locationSettings: const LocationSettings(
-                    accuracy: LocationAccuracy.high,
-                  ),
-                );
-                // Move the map camera to the user's location
-                mapController.move(
-                  LatLng(position.latitude, position.longitude),
-                  13.0, // Zoom level when centered
-                );
-              } catch (e) {
-                // Handle location permissions denied scenario
-                debugPrint("Location access denied: \$e");
-              }
-            },
-            child: const Icon(Icons.my_location, color: Colors.blue),
-          ),
-        ),
-
-        // 4. Zoom Controls (Bottom Right)
-        Positioned(
-          bottom: 20,
-          right: 20,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              FloatingActionButton(
-                heroTag: 'tj_zoom_in_btn',
-                backgroundColor: Colors.white,
-                mini: true,
-                onPressed: () {
-                  final currentZoom = mapController.camera.zoom;
-                  final center = mapController.camera.center;
-                  mapController.move(center, currentZoom + 1);
-                },
-                child: const Icon(Icons.add, color: Colors.black87),
+              // 1. The Map Tiles
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'com.majadigi.mobile.rebuild.app',
               ),
-              const SizedBox(height: 8),
-              FloatingActionButton(
-                heroTag: 'tj_zoom_out_btn',
-                backgroundColor: Colors.white,
-                mini: true,
-                onPressed: () {
-                  final currentZoom = mapController.camera.zoom;
-                  final center = mapController.camera.center;
-                  mapController.move(center, currentZoom - 1);
-                },
-                child: const Icon(Icons.remove, color: Colors.black87),
+
+              // 2. Draw the Route Path (If available)
+              if (polylinePoints.isNotEmpty)
+                PolylineLayer(
+                  polylines: [
+                    Polyline(
+                      points: polylinePoints,
+                      color: Colors.blueAccent,
+                      strokeWidth: 5.0,
+                    ),
+                  ],
+                ),
+
+              // 3. Draw the Place Markers (Stops)
+              if (stops != null)
+                MarkerLayer(
+                  markers: stops!.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final stop = entry.value;
+                    final isSelected = selectedMarkerIndex.value == index;
+
+                    if (stop.lat == null || stop.lng == null) {
+                      // Fallback to empty marker if coordinates are invalid
+                      return Marker(
+                        point: const LatLng(0, 0),
+                        width: 0,
+                        height: 0,
+                        child: const SizedBox(),
+                      );
+                    }
+
+                    return Marker(
+                      point: LatLng(stop.lat!, stop.lng!),
+                      width: isSelected ? 200 : 40,
+                      height: isSelected ? 80 : 40,
+                      child: GestureDetector(
+                        onTap: () {
+                          selectedMarkerIndex.value = isSelected ? null : index;
+                        },
+                        child: isSelected
+                            ? _buildPopupMarker(stop)
+                            : const Icon(
+                          Icons.location_on,
+                          color: Color(0xFF0F3B8C), // AppTheme.jdihBlue approximation
+                          size: 36,
+                        ),
+                      ),
+                    );
+                  }).where((m) => m.width > 0).toList(),
+                ),
+
+              // 4. GPS Capability (Tracks user's live location seamlessly)
+              CurrentLocationLayer(
+                alignPositionOnUpdate: AlignOnUpdate.never,
+                alignDirectionOnUpdate: AlignOnUpdate.never,
+              ),
+
+              // Attribution
+              const SimpleAttributionWidget(
+                alignment: Alignment.topLeft,
+                source: Text("OpenStreetMap Contributors"),
               ),
             ],
           ),
-        ),
-      ],
+
+          // Location button
+          Positioned(
+            bottom: 16,
+            left: 16,
+            child: FloatingActionButton(
+              heroTag: 'tj_location_btn',
+              backgroundColor: Colors.white,
+              onPressed: () async {
+                try {
+                  // Fetch the current physical location
+                  final position = await Geolocator.getCurrentPosition(
+                    locationSettings: const LocationSettings(
+                      accuracy: LocationAccuracy.high,
+                    ),
+                  );
+                  // Move the map camera to the user's location
+                  mapController.move(
+                    LatLng(position.latitude, position.longitude),
+                    13.0, // Zoom level when centered
+                  );
+                } catch (e) {
+                  // Handle location permissions denied scenario
+                  debugPrint("Location access denied: \$e");
+                }
+              },
+              child: const Icon(Icons.my_location, color: Colors.blue),
+            ),
+          ),
+
+          // 4. Zoom Controls (Bottom Right)
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FloatingActionButton(
+                  heroTag: 'tj_zoom_in_btn',
+                  backgroundColor: Colors.white,
+                  mini: true,
+                  onPressed: () {
+                    final currentZoom = mapController.camera.zoom;
+                    final center = mapController.camera.center;
+                    mapController.move(center, currentZoom + 1);
+                  },
+                  child: const Icon(Icons.add, color: Colors.black87),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton(
+                  heroTag: 'tj_zoom_out_btn',
+                  backgroundColor: Colors.white,
+                  mini: true,
+                  onPressed: () {
+                    final currentZoom = mapController.camera.zoom;
+                    final center = mapController.camera.center;
+                    mapController.move(center, currentZoom - 1);
+                  },
+                  child: const Icon(Icons.remove, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

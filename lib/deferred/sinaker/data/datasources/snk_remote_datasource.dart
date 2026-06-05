@@ -176,7 +176,7 @@ class SnkRemoteDatasourceImpl implements SnkRemoteDatasource {
   @override
   Future<List<WilayahDto>?> fetchDesaList({required String idKecamatan}) async {
     try {
-      final response = await dio.get('$_basePrefix/public/wilayah/desa/$idKecamatan');
+      final response = await dio.get('$_basePrefix/public/wilayah/kelurahan/$idKecamatan');
 
       if (response.statusCode != 200) return null;
 
@@ -188,7 +188,7 @@ class SnkRemoteDatasourceImpl implements SnkRemoteDatasource {
           .map((json) => WilayahDto.fromJson(json))
           .toList();
     } catch (e) {
-      throw Exception('Failed to fetch desa list: $e');
+      throw Exception('Failed to fetch kelurahan list: $e');
     }
   }
 

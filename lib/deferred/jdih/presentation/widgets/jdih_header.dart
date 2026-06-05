@@ -9,26 +9,23 @@ class JdihHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          height: height,
-          decoration: const BoxDecoration(
-            color: AppTheme.jdihBlue,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(50),
-              bottomRight: Radius.circular(50),
-            ),
-          ),
+    return Container(
+      width: double.infinity,
+      // height: height,
+      decoration: const BoxDecoration(
+        color: AppTheme.jdihBlue,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(35),
+          bottomRight: Radius.circular(35),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: child,
-          ),
+      ),
+      padding: const EdgeInsets.all(0),
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+          child: child,
         ),
-      ],
+      ),
     );
   }
 }

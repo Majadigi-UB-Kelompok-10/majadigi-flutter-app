@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/decompression.dart';
 import 'package:zstandard/zstandard.dart';
 
@@ -62,8 +63,13 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
         'nomor_rangka': nomorRangka,
       }),
     );
+
+    debugPrint("Status Code of response: ${response.statusCode}");
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return PajakInfoDto.fromJson(data as Map<String, dynamic>);
+
+    debugPrint("Type of data: ${data.runtimeType}");
+
+    return PajakInfoDto.fromJson(data["data"]);
   }
 
   // ── NJKB Cascading Options ─────────────────────────────────────
@@ -72,7 +78,7 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
   Future<List<String>> fetchJenis() async {
     final response = await _dio.get('/bapenda/njkb/jenis');
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return (data as List).cast<String>();
+    return (data["data"]).cast<String>();
   }
 
   @override
@@ -82,7 +88,7 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
       queryParameters: {'jenis': jenis},
     );
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return (data as List).cast<String>();
+    return (data["data"]).cast<String>();
   }
 
   @override
@@ -95,7 +101,7 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
       queryParameters: {'jenis': jenis, 'merk': merk},
     );
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return (data as List).cast<String>();
+    return (data["data"]).cast<String>();
   }
 
   @override
@@ -109,7 +115,7 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
       queryParameters: {'jenis': jenis, 'merk': merk, 'model': model},
     );
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return (data as List).cast<String>();
+    return (data["data"]).cast<String>();
   }
 
   @override
@@ -129,7 +135,7 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
       },
     );
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return (data as List).cast<int>();
+    return (data["data"]).cast<int>();
   }
 
   // ── NJKB Kalkulasi ─────────────────────────────────────────────
@@ -153,6 +159,6 @@ class BpdRemoteDatasourceImpl implements BpdRemoteDatasource {
       },
     );
     final data = await cleanupData(zstandard: _zstandard, response: response);
-    return NjkbKalkulasiDto.fromJson(data as Map<String, dynamic>);
+    return NjkbKalkulasiDto.fromJson(data["data"]);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/app_theme.dart';
 import '../core/providers/jd_providers.dart';
@@ -364,7 +365,17 @@ class _DetailContent extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () async {
+                    if (document.pdfUrl != null && document.pdfUrl!.isNotEmpty) {
+                      await SharePlus.instance.share(
+                          ShareParams(
+                              title: document.judul ?? "Sharing",
+                              text: "Lihat dokumen ${document.jenis != null ? document.jenis!.toUpperCase() : "JDIH" } ini!\n${document.pdfUrl!}",
+                              subject: 'Great Read!'
+                          )
+                      );
+                    }
+                  },
                   icon: const Icon(Icons.share_outlined, size: 20),
                   label: const Text('Bagikan',
                       style: TextStyle(

@@ -118,10 +118,12 @@ class EventCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Detail Event', style: TextStyle(fontWeight: FontWeight.bold)),
+                          Flexible(
+                            child: Text('Detail Event', style: TextStyle(fontWeight: FontWeight.bold, overflow: TextOverflow.ellipsis)),
+                          ),
                           SizedBox(width: 4),
                           Icon(Icons.arrow_forward, size: 16),
                         ],

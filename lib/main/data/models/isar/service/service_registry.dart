@@ -22,11 +22,11 @@ class IsarServiceRegistry {
   late String description;
 
   @Index(type: IndexType.value, caseSensitive: false)
-  List<String> get contentWords => Isar.splitWords('$longTitle $description');
+  List<String> get contentWords => Isar.splitWords('$title $longTitle $description');
 
   @Index(type: IndexType.value, caseSensitive: false)
   List<String> get revContentWords {
-    return Isar.splitWords('$longTitle $description')
+    return Isar.splitWords('$title $longTitle $description')
         .map((word) => word.split('')
         .reversed
         .join(''))

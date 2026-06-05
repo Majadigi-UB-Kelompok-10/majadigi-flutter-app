@@ -175,49 +175,51 @@ class BapendaTaxSearchResult extends StatelessWidget {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child: GridView.builder(
-                        itemCount: vehicleInfo.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 1.2,
-                          crossAxisSpacing: 14,
-                          mainAxisSpacing: 30,
-                        ),
-                        itemBuilder: (context, index) {
-                          final entry = vehicleInfo[index];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                entry.label,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  letterSpacing: 0.7,
-                                  color: Color(0xFF9AA3B5),
-                                  fontWeight: FontWeight.w700,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          // Calculate width for 2 columns, subtracting the 14px gap between them
+                          final double itemWidth = (constraints.maxWidth - 14) / 2;
+
+                          return Wrap(
+                            spacing: 14, // Replaces crossAxisSpacing
+                            runSpacing: 30, // Replaces mainAxisSpacing
+                            children: vehicleInfo.map((entry) {
+                              return SizedBox(
+                                width: itemWidth,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min, // Adapts to child height dynamically
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      entry.label,
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                        letterSpacing: 0.7,
+                                        color: Color(0xFF9AA3B5),
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      entry.value,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        height: 1.2,
+                                        fontWeight: entry.label == 'MASA PAJAK'
+                                            ? FontWeight.w700
+                                            : FontWeight.w600,
+                                        color: entry.label == 'MASA PAJAK'
+                                            ? AppTheme.jdihBlue
+                                            : const Color(0xFF252B36),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                entry.value,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  height: 1.2,
-                                  fontWeight: entry.label == 'MASA PAJAK'
-                                      ? FontWeight.w700
-                                      : FontWeight.w600,
-                                  color: entry.label == 'MASA PAJAK'
-                                      ? AppTheme.jdihBlue
-                                      : const Color(0xFF252B36),
-                                ),
-                              ),
-                            ],
+                              );
+                            }).toList(),
                           );
                         },
-                      ),
+                      )
                     ),
                   ],
                 ),

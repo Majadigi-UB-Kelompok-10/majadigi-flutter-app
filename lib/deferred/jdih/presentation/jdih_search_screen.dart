@@ -61,194 +61,198 @@ class JdihSearchScreen extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF1F3F6),
-      body: Column(
-        children: [
-          JdihHeader(
-            height: 220,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => context.pop(),
-                      child: Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.18),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Text(
-                        searchTitle,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          height: 1.2,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                _SearchBar(
-                  controller: searchCtrl,
-                  onSubmitted: (value) {
-                    keyword.value = value.isNotEmpty ? value : null;
-                    page.value = 1;
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Sort filter chips
-          SizedBox(
-            height: 36,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                const _FilterChipButton(
-                  label: 'Filter',
-                  selected: true,
-                  icon: Icons.tune,
-                ),
-                const SizedBox(width: 10),
-                ...sortFilters.map((entry) {
-                  final isSelected = sort.value == entry.$2;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: GestureDetector(
-                      onTap: () {
-                        sort.value = entry.$2;
-                        page.value = 1;
-                      },
-                      child: _FilterChipButton(
-                        label: entry.$1,
-                        selected: isSelected,
-                      ),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
-
-          // Pagination progress indicator
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: searchAsync.when(
-                data: (result) {
-                  final pagination = result.pagination;
-                  if (pagination?.total != null && pagination!.total! > 0) {
-                    final totalPages = (pagination.total! / (pagination.limit ?? 10)).ceil();
-                    final progress = page.value / totalPages;
-                    return Row(
-                      children: [
-                        SizedBox(
-                          width: 122,
-                          child: LinearProgressIndicator(
-                            value: progress.clamp(0.0, 1.0),
-                            minHeight: 6,
-                            backgroundColor: const Color(0xFFC7CCD3),
-                            color: const Color(0xFF8D939C),
-                            borderRadius: const BorderRadius.all(Radius.circular(999)),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            JdihHeader(
+              height: 220,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () => context.pop(),
+                        child: Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.arrow_back_ios_new,
+                            color: Colors.white,
+                            size: 18,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          '${pagination.total} dokumen',
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Text(
+                          searchTitle,
                           style: const TextStyle(
-                            color: Color(0xFF8D939C),
-                            fontSize: 12,
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                            height: 1.2,
                           ),
                         ),
-                      ],
-                    );
-                  }
-                  return const SizedBox();
-                },
-                loading: () => const SizedBox(
-                  width: 122,
-                  child: LinearProgressIndicator(
-                    minHeight: 6,
-                    backgroundColor: Color(0xFFC7CCD3),
-                    borderRadius: BorderRadius.all(Radius.circular(999)),
+                      ),
+                    ],
                   ),
-                ),
-                error: (_, _) => const SizedBox(),
+                  const SizedBox(height: 24),
+                  _SearchBar(
+                    controller: searchCtrl,
+                    onSubmitted: (value) {
+                      keyword.value = value.isNotEmpty ? value : null;
+                      page.value = 1;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                ],
               ),
             ),
-          ),
+            const SizedBox(height: 12),
 
-          // Results list
-          Expanded(
-            child: searchAsync.when(
-              data: (result) {
-                final items = result.results;
-                if (items.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'Tidak ada hasil ditemukan',
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                  );
-                }
-                return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 20),
-                  itemCount: items.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == items.length) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 16),
-                        child: _SourceDataPanel(),
-                      );
-                    }
-
-                    final item = items[index];
+            // Sort filter chips
+            SizedBox(
+              height: 36,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                children: [
+                  const _FilterChipButton(
+                    label: 'Filter',
+                    selected: true,
+                    icon: Icons.tune,
+                  ),
+                  const SizedBox(width: 10),
+                  ...sortFilters.map((entry) {
+                    final isSelected = sort.value == entry.$2;
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 12),
-                      child: JdihCard(
-                        layout: CardLayout.vertical,
-                        status: item.status,
-                        title: item.judul ?? '',
-                        description: item.ringkasan,
-                        category: item.jenis?.toUpperCase(),
-                        views: item.jumlahView != null
-                            ? _formatViews(item.jumlahView!)
-                            : null,
-                        date: item.tanggal,
+                      padding: const EdgeInsets.only(right: 10),
+                      child: GestureDetector(
                         onTap: () {
-                          context.push("/jdih/detail", extra: {
-                            "documentId": item.id
-                          });
+                          sort.value = entry.$2;
+                          page.value = 1;
                         },
+                        child: _FilterChipButton(
+                          label: entry.$1,
+                          selected: isSelected,
+                        ),
                       ),
                     );
-                  },
-                );
-              },
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('Error: $e')),
+                  }),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            // Pagination progress indicator
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: searchAsync.when(
+                  data: (result) {
+                    final pagination = result.pagination;
+                    if (pagination?.total != null && pagination!.total! > 0) {
+                      final totalPages = (pagination.total! / (pagination.limit ?? 10)).ceil();
+                      final progress = page.value / totalPages;
+                      return Row(
+                        children: [
+                          SizedBox(
+                            width: 122,
+                            child: LinearProgressIndicator(
+                              value: progress.clamp(0.0, 1.0),
+                              minHeight: 6,
+                              backgroundColor: const Color(0xFFC7CCD3),
+                              color: const Color(0xFF8D939C),
+                              borderRadius: const BorderRadius.all(Radius.circular(999)),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${pagination.total} dokumen',
+                            style: const TextStyle(
+                              color: Color(0xFF8D939C),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                  loading: () => const SizedBox(
+                    width: 122,
+                    child: LinearProgressIndicator(
+                      minHeight: 6,
+                      backgroundColor: Color(0xFFC7CCD3),
+                      borderRadius: BorderRadius.all(Radius.circular(999)),
+                    ),
+                  ),
+                  error: (_, _) => const SizedBox(),
+                ),
+              ),
+            ),
+
+            // Results list
+            Expanded(
+              child: searchAsync.when(
+                data: (result) {
+                  final items = result.results;
+                  if (items.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'Tidak ada hasil ditemukan',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(14, 12, 14, 20),
+                    itemCount: items.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == items.length) {
+                        return const Padding(
+                          padding: EdgeInsets.only(top: 16),
+                          child: _SourceDataPanel(),
+                        );
+                      }
+
+                      final item = items[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: JdihCard(
+                          layout: CardLayout.vertical,
+                          status: item.status,
+                          title: item.judul ?? '',
+                          description: item.ringkasan,
+                          category: item.jenis?.toUpperCase(),
+                          views: item.jumlahView != null
+                              ? _formatViews(item.jumlahView!)
+                              : null,
+                          date: item.tanggal,
+                          onTap: () {
+                            context.push("/jdih/detail", extra: {
+                              "documentId": item.id
+                            });
+                          },
+                        ),
+                      );
+                    },
+                  );
+                },
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Center(child: Text('Error: $e')),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
