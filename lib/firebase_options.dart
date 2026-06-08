@@ -56,7 +56,6 @@ class DefaultFirebaseOptions {
     projectId: 'fcm-majadigi',
     storageBucket: 'fcm-majadigi.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyD6lkNpTKYkP_Zv9M-OAVRWmOApgccSqOY',
     appId: '1:186977414537:ios:210fcaeb882b7e2cd4c558',
@@ -65,5 +64,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'fcm-majadigi.firebasestorage.app',
     iosBundleId: 'com.example.majadigiMobileRebuild',
   );
-
 }
