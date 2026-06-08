@@ -132,7 +132,17 @@ class RouterNotifier extends ChangeNotifier {
     final isLoggingIn = state.matchedLocation == '/onboarding';
 
     // Page Exclusion from redirect to Login Page
-    final List<String> excludedPage = ['/', '/onboarding', '/login', '/register', '/example', '/personalization'];
+    final List<String> excludedPage = [
+      '/',
+      '/onboarding',
+      '/login',
+      '/register',
+      '/example',
+      'verify-email',
+      '/personalization',
+      '/request-password-reset',
+      '/reset-password'
+    ];
     final isExcluded = excludedPage.contains(state.matchedLocation);
 
     if (!isLoggedIn && !isExcluded) {
