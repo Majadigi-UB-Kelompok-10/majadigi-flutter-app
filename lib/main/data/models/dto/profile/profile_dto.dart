@@ -17,8 +17,12 @@ class ProfileDto with _$ProfileDto {
     this.phone,
     this.email,
     this.nik,
+    this.address,
+    this.birthDate,
+    this.gender,
     this.role,
-    this.isActive
+    this.isActive,
+    this.updatedAt
   });
 
   @override
@@ -46,12 +50,28 @@ class ProfileDto with _$ProfileDto {
   final String? nik;
 
   @override
+  @JsonKey(name: 'address')
+  final String? address;
+
+  @override
+  @JsonKey(name: 'birth_date')
+  final String? birthDate;
+
+  @override
+  @JsonKey(name: 'gender')
+  final String? gender;
+
+  @override
   @JsonKey(name: 'role')
   final String? role;
 
   @override
   @JsonKey(name: 'is_active')
   final bool? isActive;
+
+  @override
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
 
   // Json Serializable
   factory ProfileDto.fromJson(Map<String, dynamic> json) =>
@@ -68,8 +88,12 @@ class ProfileDto with _$ProfileDto {
       phone: entity.phone,
       email: entity.email,
       nik: entity.nik,
+      address: entity.address,
+      birthDate: entity.birthDate,
+      gender: entity.gender,
       role: entity.role,
       isActive: entity.isActive,
+      updatedAt: entity.updatedAt,
     );
   }
 
@@ -82,7 +106,11 @@ class ProfileDto with _$ProfileDto {
       ..email = email!
       ..phone = phone ?? ''
       ..nik = nik ?? ''
+      ..address = address ?? ''
+      ..birthDate = birthDate ?? ''
+      ..gender = gender ?? ''
       ..role = role ?? ''
-      ..isActive = isActive!;
+      ..isActive = isActive!
+      ..updatedAt = updatedAt;
   }
 }

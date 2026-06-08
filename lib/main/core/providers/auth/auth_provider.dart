@@ -138,7 +138,7 @@ class RouterNotifier extends ChangeNotifier {
       '/login',
       '/register',
       '/example',
-      'verify-email',
+      '/verify-email',
       '/personalization',
       '/request-password-reset',
       '/reset-password'

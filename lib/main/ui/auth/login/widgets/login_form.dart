@@ -84,7 +84,9 @@ class LoginForm extends HookConsumerWidget {
             ),
             const Spacer(),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.push("/request-password-reset");
+              },
               style: TextButton.styleFrom(
                 padding: EdgeInsets.zero,
                 minimumSize: Size.zero,

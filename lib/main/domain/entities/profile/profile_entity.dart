@@ -13,8 +13,11 @@ class ProfileEntity with _$ProfileEntity {
     this.email,
     this.nik,
     this.address,
+    this.birthDate,
+    this.gender,
     this.role,
-    this.isActive
+    this.isActive,
+    this.updatedAt,
   });
 
   @override
@@ -39,8 +42,17 @@ class ProfileEntity with _$ProfileEntity {
   final String? address;
 
   @override
+  final String? birthDate;
+
+  @override
+  final String? gender;
+
+  @override
   final String? role;
 
   @override
   final bool? isActive;
+
+  @override
+  final DateTime? updatedAt;
 }

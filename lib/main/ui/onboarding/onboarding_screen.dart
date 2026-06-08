@@ -21,6 +21,7 @@ class OnboardingScreen extends HookConsumerWidget {
         if (!context.mounted) return;
 
         final isLoggedIn = await ref.read(authRepositoryProvider).isLoggedIn();
+        debugPrint("isLoggedIn? $isLoggedIn");
 
         final isGuest = await ref.read(guestStatusProvider.future);
 
@@ -43,7 +44,9 @@ class OnboardingScreen extends HookConsumerWidget {
             ref.read(removeAuthMiddlewareProvider);
             ref.read(authFeatureToggleProvider.notifier).disableAuth();
 
-            context.go('/homepage');
+            if (context.mounted) {
+              context.go('/homepage');
+            }
           }
         }
       }

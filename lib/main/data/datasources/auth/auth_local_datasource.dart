@@ -79,6 +79,7 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
   @override
   Future<void> updateLocalProfile(ProfileEntity entity) async {
     final isarObj = IsarProfileRegistry()
+      ..id = "profile"
       ..authId = entity.authId!
       ..firstName = entity.firstName!
       ..lastName = entity.lastName!
@@ -86,8 +87,11 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
       ..phone = entity.phone
       ..nik = entity.nik
       ..address = entity.address
+      ..gender = entity.gender
+      ..birthDate = entity.birthDate
       ..role = entity.role
-      ..isActive = entity.isActive!;
+      ..isActive = entity.isActive!
+      ..updatedAt = entity.updatedAt;
       
     await _isar.writeTxn(() async {
       await _isar.isarProfileRegistrys.clear();

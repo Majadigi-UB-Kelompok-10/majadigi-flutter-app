@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart' show debugPrint;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/auth/auth_entity.dart';
 import 'package:majadigi_mobile_rebuild/main/domain/entities/profile/profile_entity.dart';
@@ -126,7 +126,17 @@ class AuthRemoteDatasourceImpl extends AuthRemoteDatasource {
     }
 
     final dto = ProfileDto.fromJson(data);
-    return dto.toIsar().toEntity();
+    return ProfileEntity(
+      authId: dto.authId,
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      phone: dto.phone,
+      email: dto.email,
+      nik: dto.nik,
+      address: dto.address,
+      isActive: dto.isActive,
+      role: dto.role
+    );
   }
 
   @override

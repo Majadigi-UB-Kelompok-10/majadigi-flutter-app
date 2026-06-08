@@ -50,7 +50,10 @@ class NotificationPage extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: list.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
+            separatorBuilder: (context, index) => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 10),
+              child: Divider(height: 1)
+            ),
             itemBuilder: (context, index) {
               final notification = list[index];
 
@@ -88,7 +91,7 @@ class _NotificationCard extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
-          color: notification.isRead ? null : Colors.blue.withValues(alpha: 0.05),
+          color: notification.isRead ? Colors.blue.withValues(alpha: 0.05) : Colors.blue.withValues(alpha: 0.25),
           borderRadius: BorderRadius.circular(16.0),
         ),
         child: Column(

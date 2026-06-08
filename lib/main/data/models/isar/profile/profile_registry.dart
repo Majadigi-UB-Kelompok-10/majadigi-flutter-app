@@ -23,9 +23,15 @@ class IsarProfileRegistry {
 
   late String? address;
 
+  late String? birthDate;
+
+  late String? gender;
+
   late String? role;
 
   late bool isActive;
+
+  late DateTime? updatedAt;
 
   @ignore
   ProfileEntity toEntity() {
@@ -37,8 +43,11 @@ class IsarProfileRegistry {
       email: email,
       nik: nik,
       address: address,
+      birthDate: birthDate,
+      gender: gender,
       role: role,
-      isActive: isActive
+      isActive: isActive,
+      updatedAt: updatedAt
     );
   }
 }
