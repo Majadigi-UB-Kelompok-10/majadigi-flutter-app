@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import '../../../../core/http.dart';
+import '../../../../core/providers/category/category_providers.dart';
 import '../../../../core/providers/service/service_providers.dart';
 import './login_input_field.dart';
 
@@ -121,7 +122,15 @@ class LoginForm extends HookConsumerWidget {
               }
 
               if (context.mounted && authState.hasValue && authState.value! == true) {
-                context.go('/homepage');
+                // Check if user has set category preferences
+                final prefs = await ref.read(getUserCategoryPreferencesProvider.future);
+                if (context.mounted) {
+                  if (prefs.length < 2) {
+                    context.go('/personalization');
+                  } else {
+                    context.go('/homepage');
+                  }
+                }
               }
 
               if (context.mounted && authState.hasError) {

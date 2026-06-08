@@ -1,5 +1,6 @@
 import 'package:isar_community/isar.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/category_registry.dart';
+import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/prefer_category_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/service/service_registry.dart';
 
 /// Represent the Contract for Category Local Datasource.
@@ -7,10 +8,14 @@ import 'package:majadigi_mobile_rebuild/main/data/models/isar/service/service_re
 abstract class CategoryLocalDatasource {
   Stream<List<IsarCategoryRegistry>> watchCachedCategory();
   Future<List<IsarCategoryRegistry>> getCachedCategory();
+  Future<List<IsarCategoryRegistry>> getCachedCategoryByCategoryIds(List<String> categoryIds);
   Future<List<IsarCategoryRegistry>> getCachedCategoryByService(
     String serviceId,
   );
   Future<void> cacheCategory(List<IsarCategoryRegistry> category);
+  Future<bool> saveUserCategoryPreference(List<String> categoryIds);
+  Future<List<String>> getUserCategoryPreference();
+  Future<void> clearUserCategoryPreference();
 }
 
 /// Represent the Category Local Datasource Implementation
@@ -52,4 +57,37 @@ class CategoryLocalDatasourceImpl implements CategoryLocalDatasource {
 
     return service.categories.toList();
   }
+
+  @override
+  Future<List<IsarCategoryRegistry>> getCachedCategoryByCategoryIds(List<String> categoryIds) async {
+    final results = await _isar.isarCategoryRegistrys.getAllById(categoryIds);
+    return results.whereType<IsarCategoryRegistry>().toList();
+  }
+
+  @override
+  Future<List<String>> getUserCategoryPreference() async {
+    final record = await _isar.isarPreferCategoryRegistrys
+        .filter()
+        .idEqualTo("preferred_categories")
+        .findFirst();
+    return record?.categoryIds ?? [];
+  }
+
+  @override
+  Future<bool> saveUserCategoryPreference(List<String> categoryIds) async {
+    await _isar.writeTxn(() async {
+      final record = IsarPreferCategoryRegistry()
+        ..categoryIds = categoryIds;
+      await _isar.isarPreferCategoryRegistrys.putById(record);
+    });
+    return true;
+  }
+
+  @override
+  Future<void> clearUserCategoryPreference() async {
+    await _isar.writeTxn(() async {
+      await _isar.isarPreferCategoryRegistrys.clear();
+    });
+  }
 }
+

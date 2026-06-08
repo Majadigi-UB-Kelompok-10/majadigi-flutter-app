@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/category_registry.dart';
+import 'package:majadigi_mobile_rebuild/main/data/models/isar/category/prefer_category_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/endpoint/endpoint_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/favorites/favorite_registry.dart';
 import 'package:majadigi_mobile_rebuild/main/data/models/isar/profile/profile_registry.dart';
@@ -15,18 +16,20 @@ import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
+import '../data/models/isar/notification/notification_registry.dart';
+
 part 'storage.g.dart';
 
-@riverpod
-Future<Directory> directory(Ref ref) async {
-  return await getApplicationDocumentsDirectory();
-}
+class IsarSchemaStorage {
+  IsarSchemaStorage._internal();
 
-@riverpod
-Future<Isar> openIsar(Ref ref) async {
-  final dir = await ref.read(directoryProvider.future);
+  static final IsarSchemaStorage _instance = IsarSchemaStorage._internal();
 
-  return await Isar.open([
+  factory IsarSchemaStorage() {
+    return _instance;
+  }
+
+  final List<CollectionSchema<Object>> isarSchemaList = <CollectionSchema<Object>>[
     IsarProfileRegistrySchema,
     IsarFavoriteRegistrySchema,
     IsarCategoryRegistrySchema,
@@ -37,7 +40,22 @@ Future<Isar> openIsar(Ref ref) async {
     IsarImageRegistrySchema,
     IsarEndpointRegistrySchema,
     IsarEtagRegistrySchema,
-  ],
+    IsarNotificationLogRegistrySchema,
+    IsarPreferCategoryRegistrySchema,
+  ];
+}
+
+@riverpod
+Future<Directory> directory(Ref ref) async {
+  return await getApplicationDocumentsDirectory();
+}
+
+@riverpod
+Future<Isar> openIsar(Ref ref) async {
+  final dir = await ref.read(directoryProvider.future);
+
+  return await Isar.open(
+    IsarSchemaStorage().isarSchemaList,
     directory: dir.path,
     name: "majadigi-main"
   );
@@ -73,7 +91,7 @@ CacheManager getCustomCacheManager(Ref ref) {
 
 @riverpod
 FlutterSecureStorage secureStorage(Ref ref) {
-  return const FlutterSecureStorage();
+  return const FlutterSecureStorage(aOptions: AndroidOptions.defaultOptions, iOptions: IOSOptions.defaultOptions);
 }
 
 /// Constants for Secure Storage

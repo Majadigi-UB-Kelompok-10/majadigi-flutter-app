@@ -7,6 +7,8 @@ import 'package:zstandard/zstandard.dart';
 /// Uses Public API Gateway.
 abstract class CategoryRemoteDatasource {
   Future<List<CategoryDto>?> fetchCategoryFromNetwork();
+  Future<bool> saveUserCategoryPreference(List<String> categoryIds);
+  Future<List<String>?> getUserCategoryPreference();
 }
 
 /// Represent the Category Remote Datasource Implementation
@@ -23,5 +25,26 @@ class CategoryRemoteDatasourceImpl implements CategoryRemoteDatasource {
 
     final data = await cleanupData(zstandard: zstandard, response: response);
     return (data["data"] as List).map((json) => CategoryDto.fromJson(json)).toList();
+  }
+
+  @override
+  Future<List<String>?> getUserCategoryPreference() async {
+    final response = await dio.get('/user/auth/preferences');
+
+    if (response.statusCode != 200) return null;
+
+    final data = await cleanupData(zstandard: zstandard, response: response);
+    return (data["data"] as List<String>);
+  }
+
+  @override
+  Future<bool> saveUserCategoryPreference(List<String> categoryIds) async {
+    final response = await dio.post('/user/auth/preferences', data: {
+      "category_ids": categoryIds,
+    });
+
+    if (response.statusCode != 200) return false;
+
+    return true;
   }
 }

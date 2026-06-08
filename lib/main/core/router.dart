@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:flutter/material.dart' show SizedBox;
+import 'package:flutter/material.dart' show SizedBox, WidgetsBinding;
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/forget_password/password_reset_new_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/forget_password/password_reset_request_screen.dart';
@@ -7,7 +7,9 @@ import 'package:majadigi_mobile_rebuild/main/ui/auth/login/login_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_verification_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/notification/notification_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/onboarding/onboarding_screen.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/personalization/personalization_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/search/search_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/service_detail/service_detail_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/splash/splash_screen.dart';
@@ -40,24 +42,26 @@ final List<RouteBase> goRoutes = <RouteBase>[
   GoRoute(
     path: '/verify-email',
     builder: (context, state) {
-      if (state.extra == null) {
-        if (context.mounted) {
-          context.pop();
-        }
+      // Guard: extra must be a Map<String, String> with a non-empty 'email'
+      final extra = state.extra;
+
+      if (extra == null || extra is! Map<String, String>) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) context.pop();
+        });
+        return const SizedBox.shrink();
       }
 
-      final data = state.extra as Map<String, String>;
-      final email = data["email"];
+      final email = extra["email"];
 
       if (email == null || email.isEmpty) {
-        if (context.mounted) {
-          context.pop();
-        }
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (context.mounted) context.pop();
+        });
+        return const SizedBox.shrink();
       }
 
-      return RegisterVerificationScreen(
-        email: email!,
-      );
+      return RegisterVerificationScreen(email: email);
     },
   ),
 
@@ -127,7 +131,17 @@ final List<RouteBase> goRoutes = <RouteBase>[
     }
   ),
 
-  // No Notification Page yet
+  // Notification
+  GoRoute(
+    path: '/notifications',
+    builder: (context, state) => const NotificationPage(),
+  ),
+
+  // Personalization
+  GoRoute(
+    path: '/personalization',
+    builder: (context, state) => const PersonalizationScreen(),
+  ),
 
   // Add Deferred Routes
   ...deferredRoutes,

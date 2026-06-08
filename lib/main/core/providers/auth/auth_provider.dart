@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart' show ChangeNotifier, BuildContext;
 import 'package:go_router/go_router.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/category/category_providers.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/notification/notification_provider.dart';
 import 'package:majadigi_mobile_rebuild/main/core/storage.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/auth/auth_local_datasource.dart';
 import 'package:majadigi_mobile_rebuild/main/data/datasources/auth/auth_remote_datasource.dart';
@@ -80,7 +82,9 @@ class AuthNotifier extends _$AuthNotifier {
   Future<void> logout() async {
     state = const AsyncValue.loading();
 
+    await ref.read(notificationProvider.notifier).disableNotifications();
     await ref.read(authRepositoryProvider).logout();
+    await ref.read(clearUserCategoryPreferenceUseCaseProvider).execute();
 
     state = const AsyncValue.data(false);
   }
@@ -128,7 +132,7 @@ class RouterNotifier extends ChangeNotifier {
     final isLoggingIn = state.matchedLocation == '/onboarding';
 
     // Page Exclusion from redirect to Login Page
-    final List<String> excludedPage = ['/', '/onboarding', '/login', '/register', '/example'];
+    final List<String> excludedPage = ['/', '/onboarding', '/login', '/register', '/example', '/personalization'];
     final isExcluded = excludedPage.contains(state.matchedLocation);
 
     if (!isLoggedIn && !isExcluded) {

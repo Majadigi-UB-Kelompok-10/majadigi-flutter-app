@@ -50,9 +50,19 @@ SyncCategoryUseCase syncCategoryUseCase(Ref ref) {
 /// Get all categories in a specific service as a List\<CategoryEntity\>
 @riverpod
 GetAllCategoryForServiceUseCase _getAllCategoryForServiceUseCase(Ref ref) {
-  return GetAllCategoryForServiceUseCase(
-    ref.watch(_categoryRepositoryProvider),
-  );
+  return GetAllCategoryForServiceUseCase(ref.watch(_categoryRepositoryProvider));
+}
+
+/// Save User Category Preferences
+@riverpod
+SaveUserCategoryPreferenceUseCase _saveUserCategoryPreferenceUseCase(Ref ref) {
+  return SaveUserCategoryPreferenceUseCase(ref.watch(_categoryRepositoryProvider));
+}
+
+/// Get User Category Preferences
+@riverpod
+GetUserCategoryPreferenceUseCase _getUserCategoryPreferenceUseCase(Ref ref) {
+  return GetUserCategoryPreferenceUseCase(ref.watch(_categoryRepositoryProvider));
 }
 
 // -- Exposed Use Case for Category --
@@ -76,4 +86,30 @@ Future<List<CategoryEntity>> getAllCategoryForService(
   );
 
   return await getAllCategoryForServiceUseCase.execute(serviceId);
+}
+
+/// Save User Category Preferences (Passthrough)
+@riverpod
+Future<bool> saveUserCategoryPreferences(Ref ref, List<String> categoryIds) async {
+  final saveUserCategoryPreferencesUseCase = ref.watch(
+    _saveUserCategoryPreferenceUseCaseProvider
+  );
+
+  return await saveUserCategoryPreferencesUseCase.execute(categoryIds);
+}
+
+/// Get User Category Preferences (Passthrough)
+@riverpod
+Future<List<CategoryEntity>> getUserCategoryPreferences(Ref ref) async {
+  final getUserCategoryPreferencesUseCase = ref.watch(
+    _getUserCategoryPreferenceUseCaseProvider
+  );
+
+  return await getUserCategoryPreferencesUseCase.execute();
+}
+
+/// Clear User Category Preference (for logout use)
+@riverpod
+ClearUserCategoryPreferenceUseCase clearUserCategoryPreferenceUseCase(Ref ref) {
+  return ClearUserCategoryPreferenceUseCase(ref.watch(_categoryRepositoryProvider));
 }

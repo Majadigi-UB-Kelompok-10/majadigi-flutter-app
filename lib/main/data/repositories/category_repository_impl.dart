@@ -40,4 +40,47 @@ class CategoryRepositoryImpl implements CategoryRepository {
       return category.map((category) => category.toEntity()).toList();
     });
   }
+
+  @override
+  Future<List<CategoryEntity>> getUserCategoryPreference() async {
+    // 1. Always try local first (SWR — local is source of truth)
+    final localIds = await localDatasource.getUserCategoryPreference();
+
+    if (localIds.isNotEmpty) {
+      final categories = await localDatasource.getCachedCategoryByCategoryIds(localIds);
+      return categories.map((c) => c.toEntity()).toList();
+    }
+
+    // 2. If local is empty, try remote (initial login / fresh install)
+    try {
+      final remoteIds = await remoteDatasource.getUserCategoryPreference();
+
+      if (remoteIds != null && remoteIds.isNotEmpty) {
+        // Persist to local for future reads
+        await localDatasource.saveUserCategoryPreference(remoteIds);
+        final categories = await localDatasource.getCachedCategoryByCategoryIds(remoteIds);
+        return categories.map((c) => c.toEntity()).toList();
+      }
+    } catch (_) { /* Offline — just return empty */ }
+
+    return [];
+  }
+
+  @override
+  Future<bool> saveUserCategoryPreference(List<String> categoryIds) async {
+    // 1. Always save locally first (SWR — local is source of truth)
+    await localDatasource.saveUserCategoryPreference(categoryIds);
+
+    // 2. Fire-and-forget sync to remote
+    try {
+      await remoteDatasource.saveUserCategoryPreference(categoryIds);
+    } catch (_) { /* Will sync on next startup */ }
+
+    return true;
+  }
+
+  @override
+  Future<void> clearUserCategoryPreference() async {
+    await localDatasource.clearUserCategoryPreference();
+  }
 }

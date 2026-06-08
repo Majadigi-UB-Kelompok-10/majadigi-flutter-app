@@ -8,4 +8,7 @@ abstract class CategoryRepository {
 
   // General Use Cases
   Future<List<CategoryEntity>> getAllCategoryForService(String serviceId);
+  Future<bool> saveUserCategoryPreference(List<String> categoryIds);
+  Future<List<CategoryEntity>> getUserCategoryPreference();
+  Future<void> clearUserCategoryPreference();
 }

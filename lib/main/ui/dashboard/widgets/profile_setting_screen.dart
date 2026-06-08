@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/notification/notification_provider.dart';
 
-class AccountSettingScreen extends HookWidget {
+class AccountSettingScreen extends HookConsumerWidget {
   final VoidCallback onBack;
 
   const AccountSettingScreen({super.key, required this.onBack});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final gpsEnabled = useState(false);
     final selectedLanguage = useState('English (US)');
     final notificationSetting = useState('Do not Disturb');
@@ -21,6 +23,15 @@ class AccountSettingScreen extends HookWidget {
         if (gpsPermission == LocationPermission.whileInUse || gpsPermission == LocationPermission.always) {
           gpsEnabled.value = true;
         }
+
+        // Check for Notification Token
+        final notification = ref.watch(notificationProvider);
+
+        notification.whenData((value) {
+          if (value != null && value.isNotEmpty) {
+            notificationSetting.value = 'On';
+          }
+        });
       }
 
       initSettings();
@@ -140,7 +151,7 @@ class AccountSettingScreen extends HookWidget {
                     ),
                     _buildDivider(),
                     GestureDetector(
-                      onTap: () => _showNotificationDialog(context, notificationSetting),
+                      onTap: () => _showNotificationDialog(context, ref, notificationSetting),
                       child: _buildSettingItem(
                         icon: Icons.notifications,
                         title: 'Notifications',
@@ -261,7 +272,7 @@ class AccountSettingScreen extends HookWidget {
     );
   }
 
-  void _showNotificationDialog(BuildContext context, ValueNotifier<String> notificationSetting) {
+  void _showNotificationDialog(BuildContext context, WidgetRef ref, ValueNotifier<String> notificationSetting) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -301,7 +312,18 @@ class AccountSettingScreen extends HookWidget {
                 'On',
                 'We’ll notify you about important updates and activities.',
                 isBlue: notificationSetting.value == 'On',
-                onTap: () => notificationSetting.value = 'On',
+                onTap: () async {
+                  try {
+                    await ref.read(notificationProvider.notifier).enableNotifications();
+                    notificationSetting.value = 'On';
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Error enabling notification: ${e.toString()}"))
+                      );
+                    }
+                  }
+                },
               ),
               const Divider(height: 1),
               _buildDialogOption(
@@ -309,7 +331,18 @@ class AccountSettingScreen extends HookWidget {
                 'Off',
                 'You won’t receive updates, reminders, or announcements.',
                 isBlue: notificationSetting.value == 'Off',
-                onTap: () => notificationSetting.value = 'Off',
+                onTap: () async {
+                  try {
+                    await ref.read(notificationProvider.notifier).disableNotifications();
+                    notificationSetting.value = 'Off';
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Error disabling notification: ${e.toString()}"))
+                      );
+                    }
+                  }
+                },
               ),
               const Divider(height: 1),
               _buildDialogOption(
@@ -317,7 +350,18 @@ class AccountSettingScreen extends HookWidget {
                 'Do not Disturb',
                 'All notifications will be silenced during this period.',
                 isBlue: notificationSetting.value == 'Do not Disturb',
-                onTap: () => notificationSetting.value = 'Do not Disturb',
+                onTap: () async {
+                  try {
+                    await ref.read(notificationProvider.notifier).disableNotifications();
+                    notificationSetting.value = 'Do not Disturb';
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Error disabling notification: ${e.toString()}"))
+                      );
+                    }
+                  }
+                },
               ),
               const SizedBox(height: 10),
             ],

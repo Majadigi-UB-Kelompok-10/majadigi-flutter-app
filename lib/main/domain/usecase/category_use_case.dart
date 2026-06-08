@@ -36,3 +36,39 @@ class SyncCategoryUseCase {
     return await repository.syncCategory();
   }
 }
+
+/// Save User Categories Preference to Remote
+/// @return bool
+class SaveUserCategoryPreferenceUseCase {
+  final CategoryRepository repository;
+
+  SaveUserCategoryPreferenceUseCase(this.repository);
+
+  Future<bool> execute(List<String> categoryIds) async {
+    return await repository.saveUserCategoryPreference(categoryIds);
+  }
+}
+
+/// Get User Categories Preference from remote
+/// @return List<CategoryEntity>
+class GetUserCategoryPreferenceUseCase {
+  final CategoryRepository repository;
+
+  GetUserCategoryPreferenceUseCase(this.repository);
+
+  Future<List<CategoryEntity>> execute() async {
+    return await repository.getUserCategoryPreference();
+  }
+}
+
+/// Clear User Category Preference (for logout)
+/// @return void
+class ClearUserCategoryPreferenceUseCase {
+  final CategoryRepository repository;
+
+  ClearUserCategoryPreferenceUseCase(this.repository);
+
+  Future<void> execute() async {
+    return await repository.clearUserCategoryPreference();
+  }
+}

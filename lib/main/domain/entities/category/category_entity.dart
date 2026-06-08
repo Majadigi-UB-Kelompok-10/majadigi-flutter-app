@@ -12,6 +12,7 @@ class CategoryEntity with _$CategoryEntity {
     this.description,
     this.services,
     this.createdAt,
+    this.isPopular,
   });
 
   @override
@@ -28,4 +29,7 @@ class CategoryEntity with _$CategoryEntity {
 
   @override
   final DateTime? createdAt;
+
+  @override
+  final bool? isPopular;
 }

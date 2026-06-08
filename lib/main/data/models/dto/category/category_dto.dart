@@ -9,7 +9,13 @@ part 'category_dto.g.dart';
 @freezed
 @JsonSerializable(explicitToJson: true)
 class CategoryDto with _$CategoryDto {
-  const CategoryDto({this.id, this.name, this.description, this.createdAt});
+  const CategoryDto({
+    this.id,
+    this.name,
+    this.description,
+    this.createdAt,
+    this.isPopular
+  });
 
   @override
   @JsonKey(name: 'CategoryListID')
@@ -27,6 +33,10 @@ class CategoryDto with _$CategoryDto {
   @JsonKey(name: 'CreatedAt')
   final DateTime? createdAt;
 
+  @override
+  @JsonKey(name: 'IsPopular')
+  final bool? isPopular;
+
   // Json Serializable
   factory CategoryDto.fromJson(Map<String, dynamic> json) =>
       _$CategoryDtoFromJson(json);
@@ -39,6 +49,7 @@ class CategoryDto with _$CategoryDto {
       ..id = id!
       ..name = name!
       ..description = description ?? ''
-      ..createdAt = createdAt!;
+      ..createdAt = createdAt!
+      ..isPopular = isPopular ?? false;
   }
 }

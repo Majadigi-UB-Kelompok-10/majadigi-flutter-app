@@ -22,6 +22,8 @@ class IsarCategoryRegistry {
 
   late DateTime createdAt;
 
+  late bool isPopular;
+
   @Backlink(to: 'categories')
   final services = IsarLinks<IsarServiceRegistry>();
 
@@ -43,6 +45,7 @@ class IsarCategoryRegistry {
           )
           .toList(),
       createdAt: createdAt,
+      isPopular: isPopular,
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:majadigi_mobile_rebuild/main/core/http.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/auth/auth_provider.dart';
+import 'package:majadigi_mobile_rebuild/main/core/providers/category/category_providers.dart';
 import 'package:majadigi_mobile_rebuild/main/core/providers/service/service_providers.dart';
 import 'widgets/onboarding_action_area.dart';
 import 'widgets/onboarding_header.dart';
@@ -25,11 +26,20 @@ class OnboardingScreen extends HookConsumerWidget {
 
         if (context.mounted) {
           if (isLoggedIn) {
-            context.go('/homepage');
+            // Check if user has set category preferences
+            final prefs = await ref.read(getUserCategoryPreferencesProvider.future);
+            if (context.mounted) {
+              if (prefs.length < 2) {
+                context.go('/personalization');
+              } else {
+                context.go('/homepage');
+              }
+            }
           }
 
           if (isGuest) {
             // Only disable auth without removing personalization
+            // Guests skip personalization entirely
             ref.read(removeAuthMiddlewareProvider);
             ref.read(authFeatureToggleProvider.notifier).disableAuth();
 

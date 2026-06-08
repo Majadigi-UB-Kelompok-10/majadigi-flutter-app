@@ -41,6 +41,19 @@ class StartupSyncAll extends _$StartupSyncAll {
         await syncFavorite.execute().timeout(const Duration(seconds: 20));
       }
 
+      /// Sync category preferences: push local to remote as catch-up
+      Future<void> syncCategoryPreferences() async {
+        try {
+          final getUserPrefs = ref.read(getUserCategoryPreferencesProvider.future);
+          final prefs = await getUserPrefs;
+          if (prefs.isNotEmpty) {
+            final ids = prefs.map((c) => c.id!).toList();
+            final saveUseCase = ref.read(saveUserCategoryPreferencesProvider(ids).future);
+            await saveUseCase;
+          }
+        } catch (_) { /* Skip silently */ }
+      }
+
       // 2. Run the chain in parallel with all independent tasks
       await Future.wait([
         syncDependentChain(), // This sequence takes up to 60s max
@@ -49,6 +62,7 @@ class StartupSyncAll extends _$StartupSyncAll {
         syncPolicy.execute().timeout(const Duration(seconds: 20)),
         syncImage.execute().timeout(const Duration(seconds: 20)),
         syncEndpoints.execute().timeout(const Duration(seconds: 20)),
+        syncCategoryPreferences(),
       ]);
 
       debugPrint("Silent sync completed successfully.");

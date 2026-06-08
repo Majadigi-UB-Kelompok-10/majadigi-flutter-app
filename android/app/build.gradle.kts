@@ -38,6 +38,8 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            // isMinifyEnabled = false
+            // isShrinkResources = false
         }
     }
 }
@@ -49,15 +51,19 @@ flutter {
 dependencies {
     // This dependency is downloaded from the Google's Maven repository.
     // Make sure you also include that repository in your project's build.gradle file.
-    implementation("com.google.android.play:feature-delivery:2.1.0")
+    //implementation("com.google.android.play:feature-delivery:2.1.0")
 
     // For Kotlin users, also import the Kotlin extensions library for Play Feature Delivery:
-    implementation("com.google.android.play:feature-delivery-ktx:2.1.0")
+    //implementation("com.google.android.play:feature-delivery-ktx:2.1.0")
 
     // This dependency is downloaded from the Google's Maven repository.
     // So, make sure you also include that repository in your project's build.gradle file.
-    implementation("com.google.android.play:asset-delivery:2.3.0")
+    //implementation("com.google.android.play:asset-delivery:2.3.0")
 
     // For Kotlin users also import the Kotlin extensions library for Play Asset Delivery:
-    implementation("com.google.android.play:asset-delivery-ktx:2.3.0")
+    //implementation("com.google.android.play:asset-delivery-ktx:2.3.0")
+
+    // Deprecated Library
+    //noinspection RiskyLibrary,PlaySdkIndexDeprecated
+    implementation("com.google.android.play:core:1.8.0")
 }
