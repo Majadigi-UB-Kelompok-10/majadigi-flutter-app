@@ -50,10 +50,7 @@ class NotificationPage extends ConsumerWidget {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: list.length,
-            separatorBuilder: (context, index) => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 10),
-              child: Divider(height: 1)
-            ),
+            separatorBuilder: (context, index) => const SizedBox(height: 10),
             itemBuilder: (context, index) {
               final notification = list[index];
 
@@ -74,61 +71,78 @@ class _NotificationCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () async {
-        if (!notification.isRead) {
-          final success = await ref.read(markNotificationAsReadProvider(notification.id).future);
-          if (success) {
-            ref.invalidate(watchNotificationsProvider);
-          } else {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to mark notification as read')));
-            }
-          }
-        }
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: notification.isRead ? Colors.blue.withValues(alpha: 0.05) : Colors.blue.withValues(alpha: 0.25),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+      decoration: BoxDecoration(
+        color: notification.isRead
+            ? Colors.blue.withValues(alpha: 0.1)
+            : Colors.lightGreen.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(16.0),
+      ),
+      // 2. A transparent Material widget allows InkWell to draw splashes
+      // while letting the AnimatedContainer's color show through.
+      child: Material(
+        color: Colors.transparent,
+        // 3. InkWell replaces GestureDetector
+        child: InkWell(
+          // Important: Tell the InkWell to clip the ripple to your border radius
           borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Timestamp
-            Text(
-              _formatNotificationDate(notification.receivedAt),
-              style: TextStyle(
-                fontSize: 12.0,
-                color: Colors.grey.shade600,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 8.0),
+          onTap: () async {
+            if (!notification.isRead) {
+              final success = await ref.read(markNotificationAsReadProvider(notification.id).future);
+              if (success) {
+                ref.invalidate(watchNotificationsProvider);
+              } else {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Failed to mark notification as read'))
+                  );
+                }
+              }
+            }
+          },
+          // 4. Move the padding INSIDE the InkWell so the clickable area
+          // stretches to the edges of the card.
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Timestamp
+                Text(
+                  _formatNotificationDate(notification.receivedAt),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8.0),
 
-            // Title
-            Text(
-              notification.title ?? 'No Title',
-              style: TextStyle(
-                fontSize: 16.0,
-                fontWeight: notification.isRead ? FontWeight.normal : FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 4.0),
+                // Title
+                Text(
+                  notification.title ?? 'No Title',
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 4.0),
 
-            // Description
-            Text(
-              notification.body ?? 'No Description',
-              style: const TextStyle(
-                fontSize: 14.0,
-                color: Colors.black87,
-                height: 1.4, // Line height for better readability
-              ),
+                // Description
+                Text(
+                  notification.body ?? 'No Description',
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black87,
+                    height: 1.4,
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

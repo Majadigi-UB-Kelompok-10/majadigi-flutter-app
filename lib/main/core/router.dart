@@ -7,6 +7,7 @@ import 'package:majadigi_mobile_rebuild/main/ui/auth/login/login_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/auth/register/register_verification_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/dashboard/dashboard_navigation.dart';
+import 'package:majadigi_mobile_rebuild/main/ui/dashboard/widgets/news_detail_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/notification/notification_page.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/onboarding/onboarding_screen.dart';
 import 'package:majadigi_mobile_rebuild/main/ui/personalization/personalization_screen.dart';
@@ -15,6 +16,8 @@ import 'package:majadigi_mobile_rebuild/main/ui/service_detail/service_detail_pa
 import 'package:majadigi_mobile_rebuild/main/ui/splash/splash_screen.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:majadigi_mobile_rebuild/main/deferred_registry.dart';
+
+import '../ui/dashboard/mock/news_model.dart';
 
 part 'router.g.dart';
 
@@ -141,6 +144,24 @@ final List<RouteBase> goRoutes = <RouteBase>[
   GoRoute(
     path: '/personalization',
     builder: (context, state) => const PersonalizationScreen(),
+  ),
+
+  // News Detail
+  GoRoute(
+    path: "/news-detail",
+    builder: (context, state) {
+      if (state.extra == null) {
+        if (context.mounted) {
+          context.pop();
+        }
+
+        return const SizedBox.shrink();
+      }
+
+      final data = state.extra as NewsModel;
+
+      return NewsDetailScreen(news: data);
+    },
   ),
 
   // Add Deferred Routes

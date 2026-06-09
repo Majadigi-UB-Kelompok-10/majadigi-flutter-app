@@ -361,7 +361,7 @@ class _DetailContent extends StatelessWidget {
           ),
           child: Row(
             children: [
-              _BottomIconButton(icon: Icons.bookmark_border),
+              // _BottomIconButton(icon: Icons.bookmark_border),
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton.icon(
@@ -391,7 +391,7 @@ class _DetailContent extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              _BottomIconButton(icon: Icons.print_outlined),
+              // _BottomIconButton(icon: Icons.print_outlined),
             ],
           ),
         ),

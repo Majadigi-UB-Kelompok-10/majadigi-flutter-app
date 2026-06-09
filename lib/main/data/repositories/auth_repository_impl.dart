@@ -119,6 +119,14 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       // If token refresh failed or unable to reach network
       debugPrint("Token refresh failed with error: ${e.toString()}");
+
+      // Attempt to check whether there is a profile in local
+      final profile = await localDatasource.getLocalProfile();
+
+      if (profile != null && profile.authId != null) {
+        return true;
+      }
+
       return false;
     }
   }
