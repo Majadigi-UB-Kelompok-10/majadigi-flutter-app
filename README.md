@@ -61,13 +61,7 @@ If you find yourself confused or in need for more documentation, refer to [docs]
 ## Releases
 
 For built APK, refer to releases and download the latest version
-or use this [link]()
-
-For built iOS, refer to releases and download the latest version
-or use this [link]()
-
-For Deferred Version of the App (Android Only), refer to releases and download the latest version
-or use this [link]()
+or use this [link](https://github.com/Majadigi-UB-Kelompok-10/majadigi-flutter-app/releases)
 
 Changelog:
 - ...
